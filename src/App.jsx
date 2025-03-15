@@ -3,15 +3,23 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import { Button } from "@material-tailwind/react";
-import Nav from './components/Nav'; 
+import Profile from './pages/profile/Profile';
+
+import Nav from './components/Nav';
+import {Route, Routes} from 'react-router-dom'
 
 function App() {
   
 
   return (
-    <div>
-      <div className='w-full'>  <Nav /></div>
-     
+    <div >
+      <Nav/>
+      <div className=''>
+  <Routes>
+<Route path='/profile' element={<Profile/>} />
+      
+</Routes>
+</div>
       
     </div>
   )

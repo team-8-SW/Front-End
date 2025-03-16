@@ -7,6 +7,7 @@ import Profile from './pages/profile/Profile';
 
 import Nav from './components/Nav';
 import {Route, Routes} from 'react-router-dom'
+import Home from './pages/home/Home';
 
 function App() {
   
@@ -17,6 +18,7 @@ function App() {
       <div className=''>
   <Routes>
 <Route path='/profile' element={<Profile/>} />
+<Route path='/' element={<Home/>} />
       
 </Routes>
 </div>

@@ -6,6 +6,7 @@ import {
     Typography,
     Button,
   } from "@material-tailwind/react";
+  import { PlusIcon, PencilIcon } from "@heroicons/react/24/outline";
 
 const SideTop = () => {
   return (
@@ -13,8 +14,8 @@ const SideTop = () => {
         <Card className="mt-6 ">
       <CardBody>
 <div className='flex flex-col gap-4'>
-
-    <div className='flex flex-col justify-center  gap-0'>
+<div className='flex justify-between align-top'>
+<div className='flex flex-col justify-center  gap-0'>
         <Typography variant="h6" color="blue-gray" className="mb-2">
           Profile Language
         </Typography>
@@ -22,6 +23,11 @@ const SideTop = () => {
           English
         </Typography>
         </div>
+        <button className="text-gray-600 hover:text-gray-800">
+              <PencilIcon className="w-5 h-5" />
+            </button>
+</div>
+    
         <hr/>   
     <div className='flex flex-col gap-0'>
     <Typography variant="h6" color="blue-gray" className="mb-2">

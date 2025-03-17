@@ -1,9 +1,12 @@
-import React from 'react'
+import React from "react";
+import CreatePost from "./CreatePost";
 
 const Home = () => {
   return (
-    <div>Home</div>
-  )
-}
+    <div>
+      <CreatePost />
+    </div>
+  );
+};
 
-export default Home
+export default Home;

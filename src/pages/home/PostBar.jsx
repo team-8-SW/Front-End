@@ -5,19 +5,13 @@ import {
   CalendarIcon,
   DocumentTextIcon,
 } from "@heroicons/react/24/outline";
+import ProfilePicture from "./ProfilePicture";
 
 const PostBar = ({ photo, toggleModal }) => {
   return (
     <div className="mt-8 mx-auto max-w-2xl p-4 bg-white rounded-lg shadow-md">
       <div className="flex items-center space-x-4">
-        <Avatar
-          src={
-            photo ||
-            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3bHGb_Zk4zWeD4jw9ew8HboAT2zQIUZhYNA&s"
-          }
-          alt="profile-picture"
-          className="w-12 h-12 rounded-full"
-        />
+        <ProfilePicture photo={photo} />
         <Button
           onClick={toggleModal}
           color="white"

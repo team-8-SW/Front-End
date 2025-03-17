@@ -5,7 +5,6 @@ import PostBar from "./PostBar";
 
 const CreatePost = () => {
   const userId = useUserId();
-  console.log(userId);
   const photo = useProfilePicture(userId);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -15,7 +14,11 @@ const CreatePost = () => {
 
   return (
     <div>
-      <PostBar photo={photo} toggleModal={toggleModal} />
+      <PostBar
+        photo={photo}
+        toggleModal={toggleModal}
+        className="w-12 h-12 rounded-full"
+      />
       <PostModal isOpen={isModalOpen} toggleModal={toggleModal} />
     </div>
   );

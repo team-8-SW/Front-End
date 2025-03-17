@@ -1,9 +1,9 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import "./App.css";
 import { Button } from "@material-tailwind/react";
-import Profile from './pages/profile/Profile';
+import Profile from "./pages/profile/Profile";
+
+
 
 import Nav from './components/Nav';
 import {Route, Routes} from 'react-router-dom'
@@ -12,13 +12,12 @@ import DetailsEducation from './pages/DetailedEducation/DetailsEducation';
 import DetailsExperience from './pages/Detailedexperience/DetailsExperience';
 import DetailedSkills from './pages/DetailedSkills/DetailedSkills';
 
-function App() {
-  
 
+function App() {
   return (
-    <div >
+    <div "bg-backGroundColor min-h-screen">
       <Nav/>
-      <div className=''>
+      <div className="pt-4">
   <Routes>
 <Route path='/profile' element={<Profile/>} />
 <Route path='/' element={<Home/>} />
@@ -31,7 +30,7 @@ function App() {
 </div>
       
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

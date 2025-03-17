@@ -2,10 +2,15 @@ import React from 'react'
 import ProfileCard from './ProfileCard'
 import Side from './Side'
 import ProfileMain from './ProfileMain'
+import Footer from '../../components/Footer'  
 
 const Profile = () => {
   return (
-    <div className='flex justify-center gap-10 mt-2 w-screen overflow-hidden'>
+    <div className='bg-[#F3F2EF] '>
+
+    
+    <div className='flex flex-col items-center'>
+    <div className='flex justify-center gap-10 mt-2 w-screen '>
       <div className='w-[50%]'>
       <ProfileMain /> 
       </div>
@@ -13,8 +18,13 @@ const Profile = () => {
        <div className='w-[20%]'>
        <Side />
         </div> 
-       
 
+       
+        </div>
+        <div className='w-[70%]'>
+<Footer />  
+        </div>
+        </div>
     </div>
   )
 }

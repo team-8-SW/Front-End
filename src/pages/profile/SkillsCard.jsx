@@ -5,6 +5,7 @@ import {
   Typography,Button
 } from "@material-tailwind/react";
 import { PlusIcon, PencilIcon } from "@heroicons/react/24/outline";
+import { Link } from "react-router-dom";
 
 const SkillsCard = () => {
     const [skills, setskills] =useState([]);
@@ -63,9 +64,11 @@ const SkillsCard = () => {
             <button className="text-gray-600 hover:text-gray-800">
               <PlusIcon className="w-5 h-5" />
             </button>
-            <button className="text-gray-600 hover:text-gray-800">
-              <PencilIcon className="w-5 h-5" />
-            </button>
+            <Link to="/skills">
+                  <button className="text-gray-600 hover:text-gray-800">
+                    <PencilIcon className="w-5 h-5" />
+                  </button>
+                </Link>
           </div>
         </div>
 

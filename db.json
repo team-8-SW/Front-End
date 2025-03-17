@@ -1,54 +1,4 @@
 {
-
-   
-    "users": [
-      { "id": 1,
-       "fname": "youssef", 
-        "lname": "mohamed",
-        "bio": "hello",
-        "location":{
-          "city": "cairo",
-          "country": "egypt"
-        },
-       "password": "123", 
-       "email": "shshhs",
-       "education":[
-          {
-            "degree": "bachelor",
-            "major": "computer science",
-            "school": "helwan university",
-            "from": "2015",
-            "to": "2019"
-          }
-
-       ],
-       "skills":[
-
-       ],
-        "experience":[
-  
-          {
-            "title": "web developer",
-            "company": "google",
-            "location": "cairo",
-            "from": "2019",
-            "to": "2020",
-            "description": "i was a web developer"
-          }
-        ],
-        "industry":[
-          {
-            "name": "web development"
-          }
-        ]
-        
-
-
-      }
-    ]
-    
-  }
-
   "currentUser": {
     "id": 1
   },
@@ -109,4 +59,3 @@
     }
   ]
 }
-

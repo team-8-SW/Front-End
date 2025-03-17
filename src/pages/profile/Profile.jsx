@@ -5,7 +5,7 @@ import ProfileMain from './ProfileMain'
 
 const Profile = () => {
   return (
-    <div className='flex justify-center gap-10 mt-2 w-screen overflow-hidden'>
+    <div className='flex justify-center gap-10 mt-2 w-screen bg-[#F3F2EF]'>
       <div className='w-[50%]'>
       <ProfileMain /> 
       </div>

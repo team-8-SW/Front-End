@@ -3,12 +3,13 @@ import {
   Card,
   Typography,
   Button,
+  
 } from "@material-tailwind/react";
+import {Link} from 'react-router-dom'
 import { PlusIcon, PencilIcon } from "@heroicons/react/24/outline";
-import { Link } from "react-router-dom";
 
 
-const Exp = () => {
+const Education = () => {
     const [exp, setexp] =useState([]);
   return (
     <div>
@@ -18,17 +19,16 @@ const Exp = () => {
           {/* Header */}
           <div className="flex items-center justify-between">
             <Typography variant="h6" className="font-semibold text-gray-900">
-              Experience
+              Education
             </Typography>
             <div className="flex items-center space-x-3">
               <button className="text-gray-600 hover:text-gray-800">
+                
                 <PlusIcon className="w-5 h-5" />
               </button>
-              <Link to="/experience">
-                  <button className="text-gray-600 hover:text-gray-800">
-                    <PencilIcon className="w-5 h-5" />
-                  </button>
-                </Link>
+              <button className="text-gray-600 hover:text-gray-800">
+                <PencilIcon className="w-5 h-5" />
+              </button>
             </div>
           </div>
   
@@ -55,18 +55,20 @@ const Exp = () => {
           {/* Header */}
           <div className="flex items-center justify-between">
             <Typography variant="h6" className="font-semibold text-gray-900">
-              Experience
+              Education
             </Typography>
             <div className="flex items-center space-x-3">
-              <button className="text-gray-600 hover:text-gray-800">
-                <PlusIcon className="w-5 h-5" />
-              </button>
-              
-              <Link to="/experience">
+            <Link to="/">
+                  <button className="text-gray-600 hover:text-gray-800">
+                    <PlusIcon className="w-5 h-5" />
+                  </button>
+                </Link>
+                <Link to="/education">
                   <button className="text-gray-600 hover:text-gray-800">
                     <PencilIcon className="w-5 h-5" />
                   </button>
                 </Link>
+              
             </div>
           </div>
   
@@ -77,19 +79,19 @@ const Exp = () => {
             </div>
             <div>
               <Typography variant="body1" className="font-medium text-gray-800">
-               Job Title
+               School
               </Typography>
               <Typography variant="small" className="text-gray-500">
-                organization
+                Degree,Field of study
               </Typography>
               <Typography variant="small" className="text-gray-500">
-                2023 - Present    {/* Added date */}
+                2019 - 2023   {/* Added date */}
               </Typography>
               
             </div>
           </div>
            <div className="mt-3">
-                     <Button variant="outlined" color="blue">add Experience</Button>
+                     <Button variant="outlined" color="blue">add Education</Button>
                   </div>
         </Card>
       </div>)}
@@ -97,4 +99,4 @@ const Exp = () => {
   );
 };
 
-export default Exp;
+export default Education;

@@ -1,61 +1,22 @@
-import React from "react";
-import { Button } from "@material-tailwind/react";
-import {
-  CameraIcon,
-  CalendarIcon,
-  DocumentTextIcon,
-} from "@heroicons/react/24/outline";
+import React, { useState } from "react";
+import { useProfilePicture, useUserId } from "../../services/api";
+import PostModal from "./PostModal";
+import PostBar from "./PostBar";
 
 const CreatePost = () => {
+  const userId = useUserId();
+  console.log(userId);
+  const photo = useProfilePicture(userId);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const toggleModal = () => {
+    setIsModalOpen(!isModalOpen);
+  };
+
   return (
-    <div className="mt-8 mx-auto max-w-3xl p-4 bg-white rounded-lg shadow-md">
-      <div className="flex items-center space-x-4">
-        <img
-          src="https://via.placeholder.com/40"
-          alt="Profile"
-          className="w-10 h-10 rounded-full"
-        />
-        <input
-          type="text"
-          placeholder="Start a post"
-          className="flex-1 p-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-      <div className="flex justify-around mt-4">
-        <Button
-          color="blue"
-          buttonType="outline"
-          size="sm"
-          rounded={true}
-          ripple="light"
-          className="flex items-center space-x-2"
-        >
-          <CameraIcon className="h-5 w-5" />
-          <span>Media</span>
-        </Button>
-        <Button
-          color="blue"
-          buttonType="outline"
-          size="sm"
-          rounded={true}
-          ripple="light"
-          className="flex items-center space-x-2"
-        >
-          <CalendarIcon className="h-5 w-5" />
-          <span>Event</span>
-        </Button>
-        <Button
-          color="blue"
-          buttonType="outline"
-          size="sm"
-          rounded={true}
-          ripple="light"
-          className="flex items-center space-x-2"
-        >
-          <DocumentTextIcon className="h-5 w-5" />
-          <span>Write article</span>
-        </Button>
-      </div>
+    <div>
+      <PostBar photo={photo} toggleModal={toggleModal} />
+      <PostModal isOpen={isModalOpen} toggleModal={toggleModal} />
     </div>
   );
 };

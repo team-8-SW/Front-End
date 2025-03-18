@@ -1,0 +1,88 @@
+{
+  "currentUser": {
+    "id": 2
+  },
+  "users": [
+    {
+      "id": "1",
+      "fname": "youssef",
+      "lname": "mohamed",
+      "bio": "hello",
+      "location": {
+        "city": "cairo",
+        "country": "egypt"
+      },
+      "password": "123",
+      "email": "shshhs",
+      "profilePicture": "https://images.unsplash.com/photo-1540553016722-983e48a2cd10?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80",
+      "coverPhoto": "https://images.unsplash.com/photo-1540553016722-983e48a2cd10?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80",
+      "education": [
+        {
+          "degree": "bachelor",
+          "major": "computer science",
+          "school": "helwan university",
+          "from": "2015",
+          "to": "2019"
+        }
+      ],
+      "skills": [],
+      "experience": [
+        {
+          "title": "web developer",
+          "company": "google",
+          "location": "cairo",
+          "from": "2019",
+          "to": "2020",
+          "description": "i was a web developer"
+        }
+      ],
+      "industry": [
+        {
+          "name": "web development"
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "fname": "ahmed",
+      "lname": "mohamed",
+      "bio": "hello",
+      "location": {
+        "city": "cairo",
+        "country": "egypt"
+      },
+      "password": "123",
+      "email": "shshhs",
+      "profilePicture": "",
+      "coverPhoto": "",
+      "education": [],
+      "skills": [],
+      "experience": [],
+      "industry": []
+    }
+  ],
+  "posts": [
+    {
+      "id": "1",
+      "author": "youssef mohamed",
+      "content": "hello",
+      "likes": 10,
+      "comments": [
+        {
+          "id": 2,
+          "author": "ahmed mohamed",
+          "content": "hello"
+        }
+      ],
+      "shares": 39
+    },
+    {
+      "id": 2,
+      "content": "hi",
+      "author": "ahmed mohamed",
+      "likes": 0,
+      "comments": [],
+      "shares": 0
+    }
+  ]
+}

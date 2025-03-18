@@ -8,7 +8,8 @@ import Home from './pages/home/Home';
 import DetailsEducation from './pages/DetailedEducation/DetailsEducation';
 import DetailsExperience from './pages/Detailedexperience/DetailsExperience';
 import DetailedSkills from './pages/DetailedSkills/DetailedSkills';
-
+import LoginPage from "./pages/login/LoginPage";
+import SignUp from "./pages/signup/SignUp";
 
 function App() {
   const [loggedUser, setLoggedUser] = useState({});
@@ -35,7 +36,8 @@ function App() {
           <Route path='/education' element={<DetailsEducation  loggedUser={loggedUser}/>} />
           <Route path='/experience' element={<DetailsExperience loggedUser={loggedUser} />} />
           <Route path='/skills' element={<DetailedSkills loggedUser={loggedUser} />} />
-          
+          <Route path="/login" element={<LoginPage/>}/>
+          <Route path="/signup" element={<SignUp/>}/>
         </Routes>
       </div>
     </div>

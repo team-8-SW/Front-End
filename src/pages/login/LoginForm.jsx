@@ -12,17 +12,17 @@ const LoginForm = () => {
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
-            {/* Form Container */}
+            
             <div className="bg-white shadow-sm rounded-lg px-20 pt-10 pb-8 mb-6 w-full max-w-xlg">
-                {/* Heading */}
+                
                 <h2 className="text-3xl font-semibold mb-8 text-center">Sign in</h2>
 
-                {/* Social Login Button */}
+                
                 <div className="mb-6">
                     <SocialLogin />
                 </div>
 
-                {/* Divider */}
+                
                 <div className="flex items-center my-6">
                     <div className="flex-grow border-t border-gray-300"></div>
                     <span className="px-3 text-gray-500 text-sm">or</span>

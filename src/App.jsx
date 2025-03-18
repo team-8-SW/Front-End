@@ -16,7 +16,7 @@ function App() {
     <div>
       <div className='w-full'>  <Nav /></div>
        
-    <div> <LoginPage/> </div>
+    <div> <SignUpPage/> </div>
 
     </div>
   )

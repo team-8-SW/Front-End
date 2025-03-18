@@ -1,6 +1,6 @@
 {
   "currentUser": {
-    "id": 2
+    "id": 1
   },
   "users": [
     {
@@ -77,9 +77,33 @@
       "shares": 39
     },
     {
-      "id": 2,
+      "id": "2",
       "content": "hi",
       "author": "ahmed mohamed",
+      "likes": 0,
+      "comments": [],
+      "shares": 0
+    },
+    {
+      "id": "1",
+      "content": "This is test 4\n",
+      "author": "youssef mohamed",
+      "likes": 0,
+      "comments": [],
+      "shares": 0
+    },
+    {
+      "id": "1",
+      "content": "sw",
+      "author": "youssef mohamed",
+      "likes": 0,
+      "comments": [],
+      "shares": 0
+    },
+    {
+      "id": "1",
+      "content": "s",
+      "author": "youssef mohamed",
       "likes": 0,
       "comments": [],
       "shares": 0

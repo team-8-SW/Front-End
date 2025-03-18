@@ -25,8 +25,8 @@ const HomeProfileCard = () => {
 
   return (
     <Link to={`/profile`}>
-      <Card className="w-full max-w-xs mx-auto cursor-pointer">
-        <CardHeader floated={false} shadow={false} className="relative h-40 ">
+      <Card className="w-full max-w-xs mx-auto cursor-pointer p-4 mt-4">
+        <CardHeader floated={false} shadow={false} className="relative h-24 ">
           <img
             src={coverPhoto}
             alt="cover-photo"

@@ -1,14 +1,59 @@
-import React from "react";
-import { useProfilePicture } from "../../services/api";
+import React, { useState, useEffect } from "react";
+import { useProfilePicture, useUserId } from "../../services/api";
 import { Button } from "@material-tailwind/react";
+import axios from "axios";
 import {
-  HandThumbUpIcon,
+  HandThumbUpIcon as OutlineThumbUpIcon,
   ChatBubbleOvalLeftEllipsisIcon,
   ShareIcon,
 } from "@heroicons/react/24/outline";
+import { HandThumbUpIcon as SolidThumbUpIcon } from "@heroicons/react/24/solid";
 
 const PostDetails = ({ post }) => {
-  const posterProfilePicture = useProfilePicture(post.id);
+  const posterProfilePicture = useProfilePicture(post.authorId);
+  const [liked, setLiked] = useState(false);
+  const [likesCount, setLikesCount] = useState(post.likes?.length || 0);
+  const userId = useUserId();
+
+  useEffect(() => {
+    if (Array.isArray(post.likes) && post.likes.includes(userId)) {
+      setLiked(true);
+    }
+  }, [post.likes, userId]);
+
+  const handleLike = async () => {
+    if (liked) {
+      await unlikePost(post.id, userId);
+      setLiked(false);
+      setLikesCount(likesCount - 1);
+    } else {
+      await likePost(post.id, userId);
+      setLiked(true);
+      setLikesCount(likesCount + 1);
+    }
+  };
+
+  const likePost = async (postId, userId) => {
+    try {
+      const response = await axios.get(`http://localhost:3000/posts/${postId}`);
+      const post = response.data;
+      post.likes.push(userId);
+      await axios.put(`http://localhost:3000/posts/${postId}`, post);
+    } catch (error) {
+      console.error("Error liking the post:", error);
+    }
+  };
+
+  const unlikePost = async (postId, userId) => {
+    try {
+      const response = await axios.get(`http://localhost:3000/posts/${postId}`);
+      const post = response.data;
+      post.likes = post.likes.filter((id) => id !== userId);
+      await axios.put(`http://localhost:3000/posts/${postId}`, post);
+    } catch (error) {
+      console.error("Error unliking the post:", error);
+    }
+  };
 
   return (
     <div className="bg-white border border-gray-300 rounded-lg shadow-sm p-4 mb-4">
@@ -41,9 +86,14 @@ const PostDetails = ({ post }) => {
           variant="text"
           color="blue"
           className="flex items-center gap-1 hover:text-blue-600"
+          onClick={handleLike}
         >
-          <HandThumbUpIcon className="h-5 w-5" />
-          Like {post.likes || 0}
+          {liked ? (
+            <SolidThumbUpIcon className="h-5 w-5 text-blue-600" />
+          ) : (
+            <OutlineThumbUpIcon className="h-5 w-5" />
+          )}
+          Like {likesCount}
         </Button>
 
         {/* Comment Button */}

@@ -44,13 +44,7 @@
     },
     {
       "id": "2",
-      "fname": "ahmed",
-      "lname": "mohamed",
-      "bio": "hello",
-      "location": {
-        "city": "cairo",
-        "country": "egypt"
-      },
+      "name": "ahmed",
       "password": "123",
       "email": "shshhs",
       "profilePicture": "",
@@ -59,18 +53,62 @@
       "skills": [],
       "experience": [],
       "industry": []
+    },
+    {
+      "id": "3",
+      "fname": "Mark",
+      "lname": "Maged",
+      "bio": "hello",
+      "location": {
+        "city": "cairo",
+        "country": "egypt"
+      },
+      "password": "123",
+      "email": "shshhs",
+      "profilePicture": "https://images.unsplash.com/photo-1540553016722-983e48a2cd10?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80",
+      "coverPhoto": "https://images.unsplash.com/photo-1540553016722-983e48a2cd10?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80",
+      "education": [
+        {
+          "degree": "bachelor",
+          "major": "computer science",
+          "school": "helwan university",
+          "from": "2015",
+          "to": "2019"
+        }
+      ],
+      "skills": [],
+      "experience": [
+        {
+          "title": "web developer",
+          "company": "google",
+          "location": "cairo",
+          "from": "2019",
+          "to": "2020",
+          "description": "i was a web developer"
+        }
+      ],
+      "industry": [
+        {
+          "name": "web development"
+        }
+      ]
     }
   ],
   "posts": [
     {
       "id": "1",
-      "author": "youssef mohamed",
+      "authorId": 1,
+      "authorName": "youssef mohamed",
       "content": "hello",
-      "likes": 10,
+      "likes": [
+        2,
+        3
+      ],
       "comments": [
         {
-          "id": 2,
-          "author": "ahmed mohamed",
+          "id": 1,
+          "authorId": 2,
+          "authorName": "ahmed mohamed",
           "content": "hello"
         }
       ],
@@ -79,32 +117,56 @@
     {
       "id": "2",
       "content": "hi",
-      "author": "ahmed mohamed",
-      "likes": 0,
+      "authorId": 2,
+      "authorName": "ahmed mohamed",
+      "likes": [
+        1
+      ],
       "comments": [],
       "shares": 0
     },
     {
-      "id": "1",
+      "id": "3",
       "content": "This is test 4\n",
-      "author": "youssef mohamed",
-      "likes": 0,
+      "authorId": 1,
+      "authorName": "youssef mohamed",
+      "likes": [],
       "comments": [],
       "shares": 0
     },
     {
-      "id": "1",
+      "id": "4",
       "content": "sw",
-      "author": "youssef mohamed",
-      "likes": 0,
+      "authorId": 1,
+      "authorName": "youssef mohamed",
+      "likes": [],
       "comments": [],
       "shares": 0
     },
     {
-      "id": "1",
+      "id": "5",
       "content": "s",
-      "author": "youssef mohamed",
-      "likes": 0,
+      "authorId": 1,
+      "authorName": "youssef mohamed",
+      "likes": [],
+      "comments": [],
+      "shares": 0
+    },
+    {
+      "id": "6",
+      "content": "Test",
+      "authorId": 1,
+      "authorName": "youssef mohamed",
+      "likes": [],
+      "comments": [],
+      "shares": 0
+    },
+    {
+      "id": "7",
+      "content": "g\n",
+      "authorId": 1,
+      "authorName": "youssef mohamed",
+      "likes": [],
       "comments": [],
       "shares": 0
     }

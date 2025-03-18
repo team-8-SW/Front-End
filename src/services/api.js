@@ -4,12 +4,17 @@ const fetchProfilePicture = async (userId, setProfilePicture) => {
   try {
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     const response = await fetch(`http://localhost:3002/users/${userId}`);
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }
     const data = await response.json();
     setProfilePicture(data.profilePicture);
+=======
+    const response = await axios.get(`http://localhost:3000/users/${userId}`);
+    setProfilePicture(response.data.profilePicture);
+>>>>>>> Stashed changes
 =======
     const response = await axios.get(`http://localhost:3000/users/${userId}`);
     setProfilePicture(response.data.profilePicture);
@@ -40,12 +45,17 @@ const fetchUserId = async (setUserId) => {
   try {
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     const response = await fetch("http://localhost:3002/currentUser");
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }
     const data = await response.json();
     setUserId(data.id);
+=======
+    const response = await axios.get("http://localhost:3000/currentUser");
+    setUserId(response.data.id);
+>>>>>>> Stashed changes
 =======
     const response = await axios.get("http://localhost:3000/currentUser");
     setUserId(response.data.id);
@@ -157,6 +167,9 @@ export const fetchPosts = async (page) => {
 };
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes

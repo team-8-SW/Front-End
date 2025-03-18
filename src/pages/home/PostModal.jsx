@@ -1,11 +1,14 @@
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 import React from "react";
 import { Button } from "@material-tailwind/react";
 
 const PostModal = ({ isOpen, toggleModal }) => {
   if (!isOpen) return null;
 =======
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 import React, { useState, useEffect } from "react";

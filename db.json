@@ -1,0 +1,61 @@
+{
+  "currentUser": {
+    "id": 1
+  },
+  "users": [
+    {
+      "id": 1,
+      "fname": "youssef",
+      "lname": "mohamed",
+      "bio": "hello",
+      "location": {
+        "city": "cairo",
+        "country": "egypt"
+      },
+      "password": "123",
+      "email": "shshhs",
+      "profilePicture": "https://images.unsplash.com/photo-1540553016722-983e48a2cd10?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80",
+
+      "coverPhoto": "https://images.unsplash.com/photo-1540553016722-983e48a2cd10?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80",
+
+      "education": [
+        {
+          "degree": "bachelor",
+          "major": "computer science",
+          "school": "helwan university",
+          "from": "2015",
+          "to": "2019"
+        }
+      ],
+      "skills": [],
+      "experience": [
+        {
+          "title": "web developer",
+          "company": "google",
+          "location": "cairo",
+          "from": "2019",
+          "to": "2020",
+          "description": "i was a web developer"
+        }
+      ],
+      "industry": [
+        {
+          "name": "web development"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "ahmed",
+      "password": "123",
+      "email": "shshhs",
+
+      "profilePicture": "",
+      "coverPhoto": "",
+      "education": [],
+      "skills": [],
+      "experience": [],
+      "industry": []
+    }
+  ]
+}

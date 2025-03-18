@@ -4,10 +4,12 @@ import { Typography, Card } from "@material-tailwind/react";
 import SkillsData from "./SkillsData";
 import { FaArrowLeft } from "react-icons/fa";
 import AddSkillModal from "./AddSkillModal";
+import { Link } from "react-router-dom";  
 
 const DetailedSkillsCard = ({ loggedUser }) => {
   const [skills, setSkills] = useState(loggedUser?.skills || []);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  console.log("skills",skills);  
 
   const handleSkillAdded = (newSkill) => {
     setSkills([...skills, newSkill]); // Update UI
@@ -30,9 +32,11 @@ const DetailedSkillsCard = ({ loggedUser }) => {
           <div className="flex flex-col gap-2">
             <div className="flex justify-between">
               <div className="flex gap-2 items-center">
+                <Link to="/profile"> 
                 <button className="text-gray-600 hover:text-gray-800">
                   <FaArrowLeft className="w-5 h-5" />
                 </button>
+                </Link>
                 <Typography variant="h3" className="font-medium text-gray-800">
                   Skills
                 </Typography>
@@ -48,6 +52,7 @@ const DetailedSkillsCard = ({ loggedUser }) => {
                 skills.map((skill, index) => (
                   <SkillsData key={index} skill={skill} userId={loggedUser.id} onDelete={handleSkillDelete} />
                 ))
+                
               ) : (
                 <Typography color="gray">No Skills Added</Typography>
               )}

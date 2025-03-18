@@ -4,21 +4,8 @@ import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { PiBagSimpleBold } from "react-icons/pi";
 
-const ExpData = ({ experiences, userId, onDelete }) => {
-  const handleDelete = () => {
-    axios
-      .get(`http://localhost:3000/users/${userId}`)
-      .then((res) => {
-        const updatedExperience = res.data.experience.filter((exp) => exp.title !== experiences.title);
-        return axios.patch(`http://localhost:3000/users/${userId}`, {
-          experience: updatedExperience,
-        });
-      })
-      .then(() => {
-        onDelete(experiences); // Update the UI in React
-      })
-      .catch((err) => console.error("Error deleting experience:", err));
-  };
+const ExpData2 = ({ experiences, userId, onDelete }) => {
+  
 
   return (
     <div className="flex justify-between mt-3">
@@ -52,12 +39,10 @@ const ExpData = ({ experiences, userId, onDelete }) => {
         {/* <button className="text-gray-600 hover:text-gray-800">
           <PencilIcon className="w-5 h-5" />
         </button> */}
-        <button onClick={handleDelete} className="text-red-600 hover:text-red-800">
-          <TrashIcon className="w-5 h-5" />
-        </button>
+        
       </div>
     </div>
   );
 };
 
-export default ExpData;
+export default ExpData2;

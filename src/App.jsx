@@ -8,7 +8,8 @@ import Home from './pages/home/Home';
 import DetailsEducation from './pages/DetailedEducation/DetailsEducation';
 import DetailsExperience from './pages/Detailedexperience/DetailsExperience';
 import DetailedSkills from './pages/DetailedSkills/DetailedSkills';
-import ExpForm from './pages/Detailedexperience/ExpForm';
+
+
 
 function App() {
   const [loggedUser, setLoggedUser] = useState({
@@ -33,11 +34,11 @@ function App() {
       <div>
         <Routes>
           <Route path='/profile' element={<Profile loggedUser={loggedUser} />} />
-          <Route path='/' element={<Home />} />
+          <Route path='/' element={<Home  loggedUser={loggedUser}/>} />
           <Route path='/education' element={<DetailsEducation  loggedUser={loggedUser}/>} />
-          <Route path='/experience' element={<DetailsExperience />} />
+          <Route path='/experience' element={<DetailsExperience loggedUser={loggedUser}/>} />
           <Route path='/skills' element={<DetailedSkills loggedUser={loggedUser} />} />
-          <Route path='/experienceform' element={<ExpForm />} />
+          
         </Routes>
       </div>
     </div>

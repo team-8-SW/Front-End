@@ -10,10 +10,10 @@ const Main = ({loggedUser}) => {
     <div className='w-full'>
         <div className='w-full'>
         <ProfileCard  loggedUser={loggedUser}/>
-        <Exp />
-        <Education />
+        <Exp loggedUser={loggedUser}/>
+        <Education  loggedUser={loggedUser}/>
 
-        <SkillsCard />  
+        <SkillsCard loggedUser={loggedUser} />  
         </div>
         
     </div>

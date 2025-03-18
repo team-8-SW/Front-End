@@ -4,11 +4,12 @@ import SkillsCard from './SkillsCard'
 import Exp from './Exp'
 import Education from './Education' 
 
-const Main = () => {
+const Main = ({loggedUser}) => {
+
   return (
     <div className='w-full'>
         <div className='w-full'>
-        <ProfileCard />
+        <ProfileCard  loggedUser={loggedUser}/>
         <Exp />
         <Education />
 

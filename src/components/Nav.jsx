@@ -48,7 +48,7 @@ const Nav = () => {
         <div className="flex gap-6 text-gray-600">
           {[
             { to: "/", icon:  IoHomeSharp, label: "Home" },
-            { to: "/network", icon: MdPeople, label: "Network" },
+            { to: "/experienceform", icon: MdPeople, label: "Network" },
             { to: "/jobs", icon: MdWork , label: "Jobs" },
             { to: "/messaging", icon: AiFillMessage, label: "Messaging" },
             { to: "/notifications", icon: FaBell, label: "Notifications" },

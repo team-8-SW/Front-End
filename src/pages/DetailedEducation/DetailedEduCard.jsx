@@ -1,39 +1,58 @@
-import React from 'react'
-import { PlusIcon, PencilIcon } from "@heroicons/react/24/outline";
-import { Typography } from '@material-tailwind/react';
-import { Card } from '@material-tailwind/react';
-import EduData from './EduData';
+import React, { useState, useEffect } from "react";
+import { PlusIcon } from "@heroicons/react/24/outline";
+import { Typography, Card } from "@material-tailwind/react";
+import EduData from "./EduData";
+import EducationFormModal from "./EducationFormModal";
 import { FaArrowLeft } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
-const DetailedEduCard = () => {
+
+const DetailedEduCard = ({ loggedUser }) => {
+  const [education, setEducation] = useState(loggedUser?.education || []);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    setEducation(loggedUser?.education || []);
+  }, [loggedUser]);
+
+  // Add new education entry
+  const handleAddEducation = (newEdu) => {
+    setEducation([...education, newEdu]);
+  };
+
+  // Delete education entry
+  const handleDeleteEducation = (deletedEdu) => {
+    setEducation(education.filter((edu) => edu.school !== deletedEdu.school));
+  };
+
   return (
-    <div className=''>
-
-         <div className="flex justify-center mt-6"> {/* Added top margin */}
-        <Card className="border border-gray-300 shadow-sm rounded-lg p-4 w-full  bg-white">
-          <div className='flex flex-col gap-2'>
-
+    <div>
+      <Card className="border border-gray-300 shadow-sm rounded-lg p-4 w-full bg-white">
+        <div className="flex justify-between">
           
-          <div className='flex justify-between'>
-        <div className='flex justify-start gap-2'>
+          <div className="flex gap-2 items-center">
+{/* add here button */}
+<Link to="/profile">
 <button className="text-gray-600 hover:text-gray-800">
-                <FaArrowLeft className="w-5 h-5" />
-              </button>
-              <Typography variant="h3" className="font-medium text-gray-800">
-                Education
-              </Typography>
-        </div>
-        <button className="text-gray-600 hover:text-gray-800">
-                <PlusIcon className="w-5 h-5" />
-              </button>
-        </div>
-        <EduData /> 
-        </div>
-        </Card>
-      </div>
+                  <FaArrowLeft className="w-5 h-5" />
+                </button>
+                </Link>
+          <Typography variant="h3">Education</Typography>
 
+          </div>
+          
+          <button onClick={() => setIsModalOpen(true)} className="text-gray-600 hover:text-gray-800">
+            <PlusIcon className="w-5 h-5" />
+          </button>
+        </div>
+        {education.length > 0 ? education.map((edu, index) => (
+          <EduData key={index} edu={edu} userId={loggedUser.id} onDelete={handleDeleteEducation} />
+        )) : <Typography>No Education Added</Typography>}
+      </Card>
+
+      {isModalOpen && <EducationFormModal userId={loggedUser?.id} onClose={() => setIsModalOpen(false)} onSave={handleAddEducation} />}
     </div>
-  )
-}
+  );
+};
 
-export default DetailedEduCard
+export default DetailedEduCard;

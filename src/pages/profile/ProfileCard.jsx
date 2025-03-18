@@ -8,8 +8,13 @@ import {
   Button,
   Avatar,
 } from "@material-tailwind/react";
+import { Link } from "react-router-dom";
+import { PlusIcon, PencilIcon } from "@heroicons/react/24/outline";
 
-const ProfileCard = () => {
+const ProfileCard = ({loggedUser}) => {
+  if (!loggedUser) {
+    return <p>Loading...</p>; // Display a loading message while data is being fetched
+  }
   return (
     <Card className="relative w-[100%] mx-auto shadow-lg rounded-lg overflow-hidden">
       {/* Cover Image */}
@@ -35,11 +40,21 @@ const ProfileCard = () => {
         <div className="flex flex-col  gap-2">
             <div className="flex justify-between">
             <Typography variant="h3" color="blue-gray" className="font-semibold">
-          Youssef Mansi
+            {loggedUser.fname} {loggedUser.lname}
         </Typography>
+        <div className="flex flex-col gap-2">
+        <Link to="/education" className="self-end" >
+                  <button className="text-gray-600 hover:text-gray-800 ">
+                    <PencilIcon className="w-5 h-5" />
+                  </button>
+                </Link>
         <Typography variant="h5" color="blue-gray" className="font-semibold">
           cairo univerity
         </Typography>
+        
+
+        </div>
+        
             </div>
             <Typography variant="small" className="text-gray-500">
          --

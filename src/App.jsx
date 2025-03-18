@@ -49,6 +49,9 @@ function App() {
             element={<DetailedSkills loggedUser={loggedUser} />}
           />
           <Route path="/experienceform" element={<ExpForm />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignUp />} />
+ 
         </Routes>
       </div>
     </div>

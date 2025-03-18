@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Routes, Route } from 'react-router-dom';
@@ -39,31 +38,6 @@ function App() {
           <Route path='/experience' element={<DetailsExperience />} />
           <Route path='/skills' element={<DetailedSkills loggedUser={loggedUser} />} />
           <Route path='/experienceform' element={<ExpForm />} />
-=======
-import { useState } from "react";
-import "./App.css";
-import { Button } from "@material-tailwind/react";
-import Profile from "./pages/profile/Profile";
-
-import Nav from "./components/Nav";
-import { Route, Routes } from "react-router-dom";
-import Home from "./pages/home/Home";
-import DetailsEducation from "./pages/DetailedEducation/DetailsEducation";
-import DetailsExperience from "./pages/Detailedexperience/DetailsExperience";
-import DetailedSkills from "./pages/DetailedSkills/DetailedSkills";
-
-function App() {
-  return (
-    <div className="bg-backGroundColor min-h-screen">
-      <Nav />
-      <div className="pt-4">
-        <Routes>
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/" element={<Home />} />
-          <Route path="/education" element={<DetailsEducation />} />
-          <Route path="/experience" element={<DetailsExperience />} />
-          <Route path="/skills" element={<DetailedSkills />} />
->>>>>>> 969a29295ffb1528b09404335f8c37614a70c1e8
         </Routes>
       </div>
     </div>

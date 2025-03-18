@@ -5,10 +5,15 @@ import { useUserId, useName } from "../../services/api";
 const PostModal = ({ isOpen, toggleModal }) => {
   if (!isOpen) return null;
   const [postContent, setPostContent] = useState("");
+  const [error, setError] = useState("");
   const userId = useUserId();
   const name = useName(userId);
-
   const handlePost = async () => {
+    if (postContent.trim() === "") {
+      setError("Post content cannot be empty.");
+      return;
+    }
+    setError(""); // Clear any previous error
     try {
       const response = await fetch("http://localhost:3000/posts", {
         method: "POST",
@@ -51,13 +56,16 @@ const PostModal = ({ isOpen, toggleModal }) => {
         onClick={handleModalClick}
       >
         <h2 className="text-xl font-bold mb-4">Create a Post</h2>
-        <textarea
-          value={postContent}
-          onChange={(e) => setPostContent(e.target.value)}
-          className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          rows="4"
-          placeholder="What's on your mind?"
-        />
+        <div>
+          <textarea
+            value={postContent}
+            onChange={(e) => setPostContent(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            rows="4"
+            placeholder="What's on your mind?"
+          />
+          {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+        </div>
         <div className="flex justify-end mt-4">
           <Button onClick={toggleModal} className="mr-2">
             Cancel

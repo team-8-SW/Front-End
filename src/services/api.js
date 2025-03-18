@@ -113,14 +113,14 @@ export const useUserData = (userId) => {
   return user;
 };
 
-export const fetchPost = async (postId) => {
-  return axios
-    .get(`http://localhost:3000/posts/${postId}`)
-    .then((response) => {
-      return response.data;
-    })
-    .catch((error) => {
-      console.error("Error fetching post:", error);
-      return null;
-    });
+export const fetchPosts = async (page) => {
+  try {
+    const response = await axios.get(
+      `http://localhost:3000/posts?page=${page}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching posts:", error);
+    throw new Error("Network response was not ok");
+  }
 };

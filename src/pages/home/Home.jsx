@@ -11,7 +11,9 @@ const Home = () => {
       </div>
       <div className="w-3/5">
         <CreatePost />
-        <Posts />
+        <div className="mt-4">
+          <Posts />
+        </div>
       </div>
       <div className="w-1/5"></div>
     </div>

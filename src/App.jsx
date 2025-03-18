@@ -8,6 +8,8 @@ import Profile from './pages/profile/Profile';
 import Nav from './components/Nav';
 import {Route, Routes} from 'react-router-dom'
 import Home from './pages/home/Home';
+import Login from "./pages/login/Login";
+import ResetPassword from "./pages/login/ResetPassword";
 
 function App() {
   
@@ -19,6 +21,8 @@ function App() {
   <Routes>
 <Route path='/profile' element={<Profile/>} />
 <Route path='/' element={<Home/>} />
+<Route path="/login" element={<Login />} />;
+<Route path="/reset-password" element={<ResetPassword />} />
       
 </Routes>
 </div>

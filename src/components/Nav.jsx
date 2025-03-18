@@ -15,12 +15,26 @@ import { MdPeople } from "react-icons/md";
 import { AiFillMessage } from "react-icons/ai";
 import { FaBell } from "react-icons/fa";
 
+import { useNavigate } from "react-router-dom"; // Import useNavigate
+
+
+
+
+
 const Nav = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const location = useLocation(); // Get current route
+  const navigate = useNavigate(); // Create navigate function
 
   // Function to check if a link is active
   const isActive = (path) => location.pathname === path;
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    sessionStorage.removeItem("user");
+
+    setIsDropdownOpen(false); // Close dropdown
+    navigate("/login"); // Redirect to login page
+  };
 
   return (
     <div className="sticky top-0 left-0 w-full bg-white shadow-md z-50 h-[52px]">
@@ -94,13 +108,12 @@ const Nav = () => {
               >
                 Settings
               </Link>
-              <Link
-                to="/logout"
-                className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                onClick={() => setIsDropdownOpen(false)}
-              >
-                Logout
-              </Link>
+              <button
+  className="block px-4 py-2 text-gray-700 hover:bg-gray-100 w-full text-left"
+  onClick={handleLogout}
+>
+  Logout
+</button>
             </div>
           )}
         </div>

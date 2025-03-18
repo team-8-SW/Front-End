@@ -4,7 +4,7 @@
   },
   "users": [
     {
-      "id": 1,
+      "id": "1",
       "fname": "youssef",
       "lname": "mohamed",
       "bio": "hello",
@@ -15,9 +15,7 @@
       "password": "123",
       "email": "shshhs",
       "profilePicture": "https://images.unsplash.com/photo-1540553016722-983e48a2cd10?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80",
-
       "coverPhoto": "https://images.unsplash.com/photo-1540553016722-983e48a2cd10?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80",
-
       "education": [
         {
           "degree": "bachelor",
@@ -45,11 +43,10 @@
       ]
     },
     {
-      "id": 2,
+      "id": "2",
       "name": "ahmed",
       "password": "123",
       "email": "shshhs",
-
       "profilePicture": "",
       "coverPhoto": "",
       "education": [],
@@ -122,7 +119,9 @@
       "content": "hi",
       "authorId": 2,
       "authorName": "ahmed mohamed",
-      "likes": [],
+      "likes": [
+        1
+      ],
       "comments": [],
       "shares": 0
     },
@@ -156,6 +155,15 @@
     {
       "id": "6",
       "content": "Test",
+      "authorId": 1,
+      "authorName": "youssef mohamed",
+      "likes": [],
+      "comments": [],
+      "shares": 0
+    },
+    {
+      "id": "7",
+      "content": "g\n",
       "authorId": 1,
       "authorName": "youssef mohamed",
       "likes": [],

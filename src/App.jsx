@@ -33,9 +33,9 @@ function App() {
           <Route path='/profile' element={<Profile loggedUser={loggedUser} />} />
           <Route path='/' element={<Home />} />
           <Route path='/education' element={<DetailsEducation  loggedUser={loggedUser}/>} />
-          <Route path='/experience' element={<DetailsExperience  loggedUser={loggedUser} />} />
+          <Route path='/experience' element={<DetailsExperience loggedUser={loggedUser} />} />
           <Route path='/skills' element={<DetailedSkills loggedUser={loggedUser} />} />
-         
+          
         </Routes>
       </div>
     </div>

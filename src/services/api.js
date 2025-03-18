@@ -1,16 +1,15 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
 
 const fetchProfilePicture = async (userId, setProfilePicture) => {
-  try {
-    const response = await fetch(`http://localhost:3000/users/${userId}`);
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-    const data = await response.json();
-    setProfilePicture(data.profilePicture);
-  } catch (error) {
-    console.error("Error fetching profile picture:", error);
-  }
+  axios
+    .get(`http://localhost:3000/users/${userId}`)
+    .then((response) => {
+      setProfilePicture(response.data.profilePicture);
+    })
+    .catch((error) => {
+      console.error("Error fetching profile picture:", error);
+    });
 };
 
 export const useProfilePicture = (userId) => {
@@ -27,16 +26,14 @@ export const useProfilePicture = (userId) => {
 };
 
 const fetchUserId = async (setUserId) => {
-  try {
-    const response = await fetch("http://localhost:3000/currentUser");
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-    const data = await response.json();
-    setUserId(data.id);
-  } catch (error) {
-    console.error("Error fetching user ID:", error);
-  }
+  axios
+    .get("http://localhost:3000/currentUser")
+    .then((response) => {
+      setUserId(response.data.id);
+    })
+    .catch((error) => {
+      console.error("Error fetching user ID:", error);
+    });
 };
 
 export const useUserId = () => {
@@ -48,16 +45,14 @@ export const useUserId = () => {
 };
 
 const fetchCoverPhoto = async (userId, setCoverPhoto) => {
-  try {
-    const response = await fetch(`http://localhost:3000/users/${userId}`);
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-    const data = await response.json();
-    setCoverPhoto(data.coverPhoto);
-  } catch (error) {
-    console.error("Error fetching cover photo:", error);
-  }
+  axios
+    .get(`http://localhost:3000/users/${userId}`)
+    .then((response) => {
+      setCoverPhoto(response.data.coverPhoto);
+    })
+    .catch((error) => {
+      console.error("Error fetching cover photo:", error);
+    });
 };
 
 export const useCoverPhoto = (userId) => {
@@ -74,17 +69,15 @@ export const useCoverPhoto = (userId) => {
 };
 
 const fetchName = async (userId, setName) => {
-  try {
-    const response = await fetch(`http://localhost:3000/users/${userId}`);
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-    const data = await response.json();
-    const fullName = `${data.fname} ${data.lname}`;
-    setName(fullName);
-  } catch (error) {
-    console.error("Error fetching name:", error);
-  }
+  axios
+    .get(`http://localhost:3000/users/${userId}`)
+    .then((response) => {
+      const fullName = `${response.data.fname} ${response.data.lname}`;
+      setName(fullName);
+    })
+    .catch((error) => {
+      console.error("Error fetching name:", error);
+    });
 };
 
 export const useName = (userId) => {
@@ -99,16 +92,14 @@ export const useName = (userId) => {
 };
 
 const fetchUserData = async (userId, setUser) => {
-  try {
-    const response = await fetch(`http://localhost:3000/users/${userId}`);
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-    const data = await response.json();
-    setUser(data);
-  } catch (error) {
-    console.error("Error fetching user data:", error);
-  }
+  axios
+    .get(`http://localhost:3000/users/${userId}`)
+    .then((response) => {
+      setUser(response.data);
+    })
+    .catch((error) => {
+      console.error("Error fetching user data:", error);
+    });
 };
 
 export const useUserData = (userId) => {
@@ -123,15 +114,13 @@ export const useUserData = (userId) => {
 };
 
 export const fetchPost = async (postId) => {
-  try {
-    const response = await fetch(`http://localhost:3000/posts/${postId}`);
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-    const post = await response.json();
-    return post;
-  } catch (error) {
-    console.error("Error fetching post:", error);
-    return null;
-  }
+  return axios
+    .get(`http://localhost:3000/posts/${postId}`)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error fetching post:", error);
+      return null;
+    });
 };

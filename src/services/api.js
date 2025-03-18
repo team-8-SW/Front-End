@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 
 const fetchProfilePicture = async (userId, setProfilePicture) => {
   try {
-    const response = await fetch(`http://localhost:3002/users/${userId}`);
+    const response = await fetch(`http://localhost:3000/users/${userId}`);
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }
@@ -28,7 +28,7 @@ export const useProfilePicture = (userId) => {
 
 const fetchUserId = async (setUserId) => {
   try {
-    const response = await fetch("http://localhost:3002/currentUser");
+    const response = await fetch("http://localhost:3000/currentUser");
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }
@@ -49,7 +49,7 @@ export const useUserId = () => {
 
 const fetchCoverPhoto = async (userId, setCoverPhoto) => {
   try {
-    const response = await fetch(`http://localhost:3002/users/${userId}`);
+    const response = await fetch(`http://localhost:3000/users/${userId}`);
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }
@@ -75,7 +75,7 @@ export const useCoverPhoto = (userId) => {
 
 const fetchName = async (userId, setName) => {
   try {
-    const response = await fetch(`http://localhost:3002/users/${userId}`);
+    const response = await fetch(`http://localhost:3000/users/${userId}`);
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }
@@ -100,7 +100,7 @@ export const useName = (userId) => {
 
 const fetchUserData = async (userId, setUser) => {
   try {
-    const response = await fetch(`http://localhost:3002/users/${userId}`);
+    const response = await fetch(`http://localhost:3000/users/${userId}`);
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }
@@ -120,4 +120,18 @@ export const useUserData = (userId) => {
   }, [userId]);
 
   return user;
+};
+
+export const fetchPost = async (postId) => {
+  try {
+    const response = await fetch(`http://localhost:3000/posts/${postId}`);
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+    const post = await response.json();
+    return post;
+  } catch (error) {
+    console.error("Error fetching post:", error);
+    return null;
+  }
 };

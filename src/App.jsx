@@ -4,12 +4,20 @@ import viteLogo from '/vite.svg'
 import './App.css'
 import { Button } from "@material-tailwind/react";
 
+import Nav from './components/Nav'; 
+import LoginPage from './pages/login/LoginPage';
+import SignUp from './pages/signup/SignUp';
+import { GoogleLogin } from '@react-oauth/google';
+import SocialLogin from './components/SocialLogin';
 function App() {
   
 
   return (
     <div>
-      <p>hellooo</p>
+      <div className='w-full'>  <Nav /></div>
+       
+    <div> <LoginPage/> </div>
+
     </div>
   )
 }

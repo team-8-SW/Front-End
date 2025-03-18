@@ -9,6 +9,10 @@ import DetailsEducation from "./pages/DetailedEducation/DetailsEducation";
 import DetailsExperience from "./pages/Detailedexperience/DetailsExperience";
 import DetailedSkills from "./pages/DetailedSkills/DetailedSkills";
 import ExpForm from "./pages/Detailedexperience/ExpForm";
+import LoginPage from './pages/login/LoginPage';
+import SignUp from './pages/signup/SignUp';
+import { GoogleLogin } from '@react-oauth/google';
+import SocialLogin from './components/SocialLogin';
 
 function App() {
   const [loggedUser, setLoggedUser] = useState({});

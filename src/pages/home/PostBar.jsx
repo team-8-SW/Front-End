@@ -23,7 +23,6 @@ const PostBar = ({ photo, toggleModal }) => {
       <div className="flex justify-around mt-4">
         <Button
           color="blue"
-          buttonType="outline"
           size="sm"
           rounded={true}
           ripple="light"
@@ -34,7 +33,6 @@ const PostBar = ({ photo, toggleModal }) => {
         </Button>
         <Button
           color="blue"
-          buttonType="outline"
           size="sm"
           rounded={true}
           ripple="light"
@@ -45,7 +43,6 @@ const PostBar = ({ photo, toggleModal }) => {
         </Button>
         <Button
           color="blue"
-          buttonType="outline"
           size="sm"
           rounded={true}
           ripple="light"

@@ -21,7 +21,7 @@ const DetailedExpCard = ({ loggedUser }) => {
   };
 
   const handleExpDelete = (deletedExp) => {
-    setExperiences(experiences.filter((exp) => exp.title !== deletedExp.title));
+    setExperiences(experiences.filter((exp) => !(exp.title== deletedExp.title && exp.company == deletedExp.company && exp.startDate == deletedExp.startDate && exp.endDate == deletedExp.endDate)));
   };
 
   if (!loggedUser) return <p>Loading user data...</p>;

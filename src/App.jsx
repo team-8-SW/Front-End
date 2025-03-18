@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Routes, Route } from 'react-router-dom';
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { Routes, Route } from "react-router-dom";
 
 import Nav from './components/Nav';
 import Profile from './pages/profile/Profile';
@@ -10,33 +10,30 @@ import DetailsExperience from './pages/Detailedexperience/DetailsExperience';
 import DetailedSkills from './pages/DetailedSkills/DetailedSkills';
 
 
-
 function App() {
-  const [loggedUser, setLoggedUser] = useState({
-   
-  });
+  const [loggedUser, setLoggedUser] = useState({});
 
   useEffect(() => {
     axios
-      .get('http://localhost:3000/users/1') // ✅ Fixed URL formatting
+      .get("http://localhost:3000/users/1")
       .then((res) => {
         setLoggedUser(res.data);
-        console.log("User data fetched:", loggedUser); // ✅ Log fetched data
+        console.log("User data fetched:", loggedUser);
       })
       .catch((error) => {
         console.error("Error fetching user data:", error);
       });
-  }, []); // ✅ Runs once when the component mounts
+  }, []);
 
   return (
-    <div>
+    <div className="bg-backGroundColor min-h-screen">
       <Nav />
       <div>
         <Routes>
           <Route path='/profile' element={<Profile loggedUser={loggedUser} />} />
-          <Route path='/' element={<Home  loggedUser={loggedUser}/>} />
+          <Route path='/' element={<Home />} />
           <Route path='/education' element={<DetailsEducation  loggedUser={loggedUser}/>} />
-          <Route path='/experience' element={<DetailsExperience loggedUser={loggedUser}/>} />
+          <Route path='/experience' element={<DetailsExperience loggedUser={loggedUser} />} />
           <Route path='/skills' element={<DetailedSkills loggedUser={loggedUser} />} />
           
         </Routes>

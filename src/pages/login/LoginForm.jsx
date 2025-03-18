@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import SocialLogin from '../../components/SocialLogin';
+import { Link } from 'react-router-dom';
 
 const LoginForm = () => {
     const [email, setEmail] = useState('');
@@ -50,12 +51,12 @@ const LoginForm = () => {
                         required
                     />
                 </div>
-                <a
+                <Link
                         className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
-                        href="#"
+                        to="/ResetPassword"
                     >
                         Forgot Password?
-                    </a>
+                    </Link>
 
                 <div className="flex items-center justify-between">
                     <button
@@ -67,12 +68,12 @@ const LoginForm = () => {
                 </div>
             </div>
             <div>
-                New to linked in? <a
+                New to linked in? <Link
                         className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800 underline"
-                        href="#"
+                        to="/Signup"
                     >
                        Sign up
-                    </a>
+                    </Link>
             </div>
         </div>
     );

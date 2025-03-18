@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import ReCAPTCHA from "react-google-recaptcha";
 import SocialLogin from '../../components/SocialLogin';
 import { GoogleLogin } from '@react-oauth/google';
-
+import { Link } from 'react-router-dom';
 const SignUpForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -84,9 +84,9 @@ const SignUpForm = () => {
       </div>
       <div className="mt-6 text-gray-600">
         Already on LinkedIn?{' '}
-        <a className="text-blue-600 hover:underline" href="#">
+        <Link className="text-blue-600 hover:underline" to="/login">
           Sign in
-        </a>
+        </Link>
       </div>
     </div>
   );

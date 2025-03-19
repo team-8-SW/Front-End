@@ -14,13 +14,11 @@ const Posts = () => {
   }, [page]);
 
   useEffect(() => {
-    // Reset posts and page number when the component mounts
     setPosts([]);
     setPage(1);
   }, []);
 
   useEffect(() => {
-    // Fetch the initial posts when the component mounts
     const fetchInitialPosts = async () => {
       const initialPosts = await fetchPosts(1);
       setPosts(initialPosts);

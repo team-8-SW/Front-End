@@ -2,14 +2,18 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { Routes, Route } from "react-router-dom";
 
-import Nav from './components/Nav';
-import Profile from './pages/profile/Profile';
-import Home from './pages/home/Home';
-import DetailsEducation from './pages/DetailedEducation/DetailsEducation';
-import DetailsExperience from './pages/Detailedexperience/DetailsExperience';
-import DetailedSkills from './pages/DetailedSkills/DetailedSkills';
-import LoginPage from "./pages/login/LoginPage";
-import SignUp from "./pages/signup/SignUp";
+import Nav from "./components/Nav";
+import Profile from "./pages/profile/Profile";
+import Home from "./pages/home/Home";
+import DetailsEducation from "./pages/DetailedEducation/DetailsEducation";
+import DetailsExperience from "./pages/Detailedexperience/DetailsExperience";
+import DetailedSkills from "./pages/DetailedSkills/DetailedSkills";
+//import ExpForm from "./pages/Detailedexperience/ExpForm";
+import LoginPage from './pages/login/LoginPage';
+import SignUp from './pages/signup/SignUp';
+import { GoogleLogin } from '@react-oauth/google';
+import SocialLogin from './components/SocialLogin';
+import ResetPassword from "./pages/login/ResetPassword";
 
 function App() {
   const [loggedUser, setLoggedUser] = useState({});
@@ -31,13 +35,24 @@ function App() {
       <Nav />
       <div>
         <Routes>
-          <Route path='/profile' element={<Profile loggedUser={loggedUser} />} />
-          <Route path='/' element={<Home />} />
-          <Route path='/education' element={<DetailsEducation  loggedUser={loggedUser}/>} />
-          <Route path='/experience' element={<DetailsExperience loggedUser={loggedUser} />} />
-          <Route path='/skills' element={<DetailedSkills loggedUser={loggedUser} />} />
-          <Route path="/login" element={<LoginPage/>}/>
-          <Route path="/signup" element={<SignUp/>}/>
+          <Route
+            path="/profile"
+            element={<Profile loggedUser={loggedUser} />}
+          />
+          <Route path="/" element={<Home />} />
+          <Route
+            path="/education"
+            element={<DetailsEducation loggedUser={loggedUser} />}
+          />
+          <Route path="/experience" element={<DetailsExperience />} />
+          <Route
+            path="/skills"
+            element={<DetailedSkills loggedUser={loggedUser} />}
+          />
+        
+          <Route path="/login" element={<LoginPage />} /> 
+          <Route path="/signup" element={<SignUp/>} /> 
+          <Route path="/ResetPassword" element={<ResetPassword />} /> 
         </Routes>
       </div>
     </div>

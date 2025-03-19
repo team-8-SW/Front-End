@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 
 const fetchProfilePicture = async (userId, setProfilePicture) => {
-<<<<<<< HEAD
+
   axios
     .get(`http://localhost:3000/users/1`)
     .then((response) => {
@@ -11,14 +11,13 @@ const fetchProfilePicture = async (userId, setProfilePicture) => {
     .catch((error) => {
       console.error("Error fetching profile picture:", error);
     });
-=======
+
   try {
     const response = await axios.get(`http://localhost:3000/users/${userId}`);
     setProfilePicture(response.data.profilePicture);
   } catch (error) {
     console.error("Error fetching profile picture:", error);
   }
->>>>>>> b1c1a9f9e4108dca41a19b9c12730c55efeb6454
 };
 
 export const useProfilePicture = (userId) => {
@@ -125,5 +124,18 @@ export const fetchPosts = async (page) => {
   } catch (error) {
     console.error("Error fetching posts:", error);
     throw new Error("Network response was not ok");
+  }
+};
+export const resetPassword = async (email) => {
+  try {
+    const response = await axios.get(`http://localhost:3000/users?email=${email}`);
+    
+    if (response.data.length === 0) {
+      throw new Error("Email not found.");
+    }
+
+    return "Password reset link sent!";
+  } catch (error) {
+    return error.response?.data?.error || error.message || "Something went wrong. Please try again.";
   }
 };

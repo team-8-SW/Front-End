@@ -8,7 +8,7 @@ import Home from "./pages/home/Home";
 import DetailsEducation from "./pages/DetailedEducation/DetailsEducation";
 import DetailsExperience from "./pages/Detailedexperience/DetailsExperience";
 import DetailedSkills from "./pages/DetailedSkills/DetailedSkills";
-import ExpForm from "./pages/Detailedexperience/ExpForm";
+//import ExpForm from "./pages/Detailedexperience/ExpForm";
 import LoginPage from './pages/login/LoginPage';
 import SignUp from './pages/signup/SignUp';
 import { GoogleLogin } from '@react-oauth/google';
@@ -49,7 +49,7 @@ function App() {
             path="/skills"
             element={<DetailedSkills loggedUser={loggedUser} />}
           />
-          <Route path="/experienceform" element={<ExpForm />} />
+        
           <Route path="/login" element={<LoginPage />} /> 
           <Route path="/signup" element={<SignUp/>} /> 
           <Route path="/ResetPassword" element={<ResetPassword />} /> 

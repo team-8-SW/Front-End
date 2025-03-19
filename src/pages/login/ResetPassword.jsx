@@ -1,13 +1,29 @@
 import { useState } from "react";
+import { resetPassword } from "../../services/api";
 
 const ResetPassword = () => {
   const [email, setEmail] = useState("");
-  const handleSubmit = (e) => {
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Reset link sent to:", email);
+    setLoading(true);
+    setMessage(""); 
+
+    try {
+      const result = await resetPassword(email);
+      setMessage(result);
+    } catch (error) {
+      setMessage("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
+  
+
 
   return (
+    
     <div className="flex min-h-screen items-center justify-center bg-gray-100">
       <div className="w-full max-w-md p-6 bg-white rounded-2xl shadow-lg">
         <h2 className="text-2xl font-bold text-center text-gray-700 mb-4">Reset Password</h2>
@@ -29,10 +45,15 @@ const ResetPassword = () => {
           <button
             type="submit"
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition"
+            disabled={loading}
           >
             Send Reset Link
           </button>
         </form>
+        {message && (
+  <p className="mt-4 text-center text-sm text-red-500">{message}</p>
+)}
+
       </div>
     </div>
   );

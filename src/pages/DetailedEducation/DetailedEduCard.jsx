@@ -10,6 +10,7 @@ import { Link } from "react-router-dom";
 const DetailedEduCard = ({ loggedUser }) => {
   const [education, setEducation] = useState(loggedUser?.education || []);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  console.log(education);
 
   useEffect(() => {
     setEducation(loggedUser?.education || []);
@@ -22,7 +23,9 @@ const DetailedEduCard = ({ loggedUser }) => {
 
   // Delete education entry
   const handleDeleteEducation = (deletedEdu) => {
-    setEducation(education.filter((edu) => edu.school !== deletedEdu.school));
+    setEducation(education.filter((edu) => 
+      !(edu.school === deletedEdu.school && edu.degree === deletedEdu.degree)
+    ));
   };
 
   return (

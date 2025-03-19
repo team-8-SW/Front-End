@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 
 const fetchProfilePicture = async (userId, setProfilePicture) => {
+<<<<<<< HEAD
   axios
     .get(`http://localhost:3000/users/1`)
     .then((response) => {
@@ -10,6 +11,14 @@ const fetchProfilePicture = async (userId, setProfilePicture) => {
     .catch((error) => {
       console.error("Error fetching profile picture:", error);
     });
+=======
+  try {
+    const response = await axios.get(`http://localhost:3000/users/${userId}`);
+    setProfilePicture(response.data.profilePicture);
+  } catch (error) {
+    console.error("Error fetching profile picture:", error);
+  }
+>>>>>>> b1c1a9f9e4108dca41a19b9c12730c55efeb6454
 };
 
 export const useProfilePicture = (userId) => {
@@ -20,20 +29,19 @@ export const useProfilePicture = (userId) => {
       fetchProfilePicture(userId, setProfilePicture);
     }
   }, [userId]);
+
   if (profilePicture === "") {
     return "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3bHGb_Zk4zWeD4jw9ew8HboAT2zQIUZhYNA&s";
   } else return profilePicture;
 };
 
 const fetchUserId = async (setUserId) => {
-  axios
-    .get("http://localhost:3000/currentUser")
-    .then((response) => {
-      setUserId(response.data.id);
-    })
-    .catch((error) => {
-      console.error("Error fetching user ID:", error);
-    });
+  try {
+    const response = await axios.get("http://localhost:3000/currentUser");
+    setUserId(response.data.id);
+  } catch (error) {
+    console.error("Error fetching user ID:", error);
+  }
 };
 
 export const useUserId = () => {
@@ -45,14 +53,12 @@ export const useUserId = () => {
 };
 
 const fetchCoverPhoto = async (userId, setCoverPhoto) => {
-  axios
-    .get(`http://localhost:3000/users/${userId}`)
-    .then((response) => {
-      setCoverPhoto(response.data.coverPhoto);
-    })
-    .catch((error) => {
-      console.error("Error fetching cover photo:", error);
-    });
+  try {
+    const response = await axios.get(`http://localhost:3000/users/${userId}`);
+    setCoverPhoto(response.data.coverPhoto);
+  } catch (error) {
+    console.error("Error fetching cover photo:", error);
+  }
 };
 
 export const useCoverPhoto = (userId) => {
@@ -63,21 +69,20 @@ export const useCoverPhoto = (userId) => {
       fetchCoverPhoto(userId, setCoverPhoto);
     }
   }, [userId]);
+
   if (coverPhoto === "") {
     return "https://thingscareerrelated.com/wp-content/uploads/2021/10/default-background-image.png?w=862";
   } else return coverPhoto;
 };
 
 const fetchName = async (userId, setName) => {
-  axios
-    .get(`http://localhost:3000/users/${userId}`)
-    .then((response) => {
-      const fullName = `${response.data.fname} ${response.data.lname}`;
-      setName(fullName);
-    })
-    .catch((error) => {
-      console.error("Error fetching name:", error);
-    });
+  try {
+    const response = await axios.get(`http://localhost:3000/users/${userId}`);
+    const fullName = `${response.data.fname} ${response.data.lname}`;
+    setName(fullName);
+  } catch (error) {
+    console.error("Error fetching name:", error);
+  }
 };
 
 export const useName = (userId) => {
@@ -92,14 +97,12 @@ export const useName = (userId) => {
 };
 
 const fetchUserData = async (userId, setUser) => {
-  axios
-    .get(`http://localhost:3000/users/${userId}`)
-    .then((response) => {
-      setUser(response.data);
-    })
-    .catch((error) => {
-      console.error("Error fetching user data:", error);
-    });
+  try {
+    const response = await axios.get(`http://localhost:3000/users/${userId}`);
+    setUser(response.data);
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+  }
 };
 
 export const useUserData = (userId) => {

@@ -139,3 +139,12 @@ export const resetPassword = async (email) => {
     return error.response?.data?.error || error.message || "Something went wrong. Please try again.";
   }
 };
+export const sendSignupEmail = async (email) => {
+  try {
+    const response = await axios.post(`http://localhost:3000/users?email=${email}`);
+    return response.data.message;
+  } catch (error) {
+    console.error("Error sending signup email:", error);
+    throw new Error("Failed to send signup email.");
+  }
+};

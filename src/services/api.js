@@ -3,7 +3,7 @@ import axios from "axios";
 
 const fetchProfilePicture = async (userId, setProfilePicture) => {
   axios
-    .get(`http://localhost:3000/users/${userId}`)
+    .get(`http://localhost:3000/users/1`)
     .then((response) => {
       setProfilePicture(response.data.profilePicture);
     })

@@ -31,7 +31,7 @@ function App() {
       <Nav />
       <div>
         <Routes>
-          <Route path='/profile' element={<Profile loggedUser={loggedUser} />} />
+          <Route path='/profile' element={<Profile loggedUser={loggedUser} setLoggedUser={setLoggedUser}/>} />
           <Route path='/' element={<Home />} />
           <Route path='/education' element={<DetailsEducation  loggedUser={loggedUser}/>} />
           <Route path='/experience' element={<DetailsExperience loggedUser={loggedUser} />} />

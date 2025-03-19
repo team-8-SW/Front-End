@@ -3,17 +3,20 @@ import ProfileCard from './ProfileCard'
 import SkillsCard from './SkillsCard'
 import Exp from './Exp'
 import Education from './Education' 
+import Resume from './Resume'
 
-const Main = ({loggedUser}) => {
+const Main = ({loggedUser,setLoggedUser}) => {
 
   return (
     <div className='w-full'>
         <div className='w-full'>
-        <ProfileCard  loggedUser={loggedUser}/>
+        <ProfileCard  loggedUser={loggedUser} setLoggedUser={setLoggedUser}/>
         <Exp loggedUser={loggedUser}/>
         <Education  loggedUser={loggedUser}/>
 
         <SkillsCard loggedUser={loggedUser} />  
+        <Resume loggedUser={loggedUser} />
+
         </div>
         
     </div>

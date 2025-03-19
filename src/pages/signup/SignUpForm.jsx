@@ -3,6 +3,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 import SocialLogin from '../../components/SocialLogin';
 import { GoogleLogin } from '@react-oauth/google';
 import { Link } from 'react-router-dom';
+
 const SignUpForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -31,7 +32,7 @@ const SignUpForm = () => {
          <h2 className="text-xl font-semibold text-center mb-6 text-gray-800">
           Make the most of your professional life
         </h2>
-      <div className="bg-white shadow-lg rounded-lg px-10 pt-8 pb-10 w-full max-w-md border border-gray-200 w-full md:max-w-lg"> 
+      <div className="bg-white shadow-lg rounded-lg px-8 pt-8 pb-10 w-full max-w-md border border-gray-200 w-full md:max-w-lg"> 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
           <label className="block text-gray-700 text-sm font-bold mb-2 mt-4" htmlFor="email">

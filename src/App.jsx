@@ -13,6 +13,7 @@ import LoginPage from './pages/login/LoginPage';
 import SignUp from './pages/signup/SignUp';
 import { GoogleLogin } from '@react-oauth/google';
 import SocialLogin from './components/SocialLogin';
+import ResetPassword from "./pages/login/ResetPassword";
 
 function App() {
   const [loggedUser, setLoggedUser] = useState({});
@@ -49,6 +50,9 @@ function App() {
             element={<DetailedSkills loggedUser={loggedUser} />}
           />
           <Route path="/experienceform" element={<ExpForm />} />
+          <Route path="/login" element={<LoginPage />} /> 
+          <Route path="/signup" element={<SignUp/>} /> 
+          <Route path="/ResetPassword" element={<ResetPassword />} /> 
         </Routes>
       </div>
     </div>

@@ -13,7 +13,7 @@
         "country": "egypt"
       },
       "password": "123",
-      "email": "shshhs",
+      "email": "mt773502@gmail.com",
       "profilePicture": "https://images.unsplash.com/photo-1540553016722-983e48a2cd10?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80",
       "coverPhoto": "https://images.unsplash.com/photo-1540553016722-983e48a2cd10?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80",
       "education": [
@@ -134,6 +134,86 @@
     },
     {
       "id": "edb8"
+    },
+    {
+      "id": "a33b"
+    },
+    {
+      "id": "1642"
+    },
+    {
+      "id": "0ab2"
+    },
+    {
+      "id": "d7e8"
+    },
+    {
+      "id": "56cf"
+    },
+    {
+      "id": "e571"
+    },
+    {
+      "id": "332f"
+    },
+    {
+      "id": "efd1"
+    },
+    {
+      "id": "4aca"
+    },
+    {
+      "id": "f53e"
+    },
+    {
+      "id": "5ae9"
+    },
+    {
+      "id": "f596"
+    },
+    {
+      "id": "6269"
+    },
+    {
+      "id": "9c60"
+    },
+    {
+      "id": "ddf3"
+    },
+    {
+      "id": "89dc"
+    },
+    {
+      "id": "9902"
+    },
+    {
+      "id": "3338"
+    },
+    {
+      "id": "2aa4"
+    },
+    {
+      "id": "d32b"
+    },
+    {
+      "id": "504f",
+      "email": "mona.fathy427@gmail.com",
+      "password": "343232"
+    },
+    {
+      "id": "ac5a",
+      "email": "mt773502@gmail.commm",
+      "password": "4321"
+    },
+    {
+      "id": "1b32",
+      "email": "mt773502@gmail.comm",
+      "password": "43232"
+    },
+    {
+      "id": "a371",
+      "email": "mt773502@gmail.commmm",
+      "password": "345654"
     }
   ],
   "posts": [
@@ -144,7 +224,8 @@
       "content": "hello",
       "likes": [
         2,
-        3
+        3,
+        1
       ],
       "comments": [
         {
@@ -206,6 +287,24 @@
     {
       "id": "7",
       "content": "g\n",
+      "authorId": 1,
+      "authorName": "youssef mohamed",
+      "likes": [],
+      "comments": [],
+      "shares": 0
+    },
+    {
+      "id": "8",
+      "content": "hgfd",
+      "authorId": 1,
+      "authorName": "youssef mohamed",
+      "likes": [],
+      "comments": [],
+      "shares": 0
+    },
+    {
+      "id": "9",
+      "content": "hgfd",
       "authorId": 1,
       "authorName": "youssef mohamed",
       "likes": [],

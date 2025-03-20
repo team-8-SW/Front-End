@@ -148,3 +148,54 @@ export const sendSignupEmail = async (email) => {
     throw new Error("Failed to send signup email.");
   }
 };
+
+export const checkEmail = async (email, password) => {
+  try {
+    const normalizedEmail = email.trim().toLowerCase();
+
+    // Fetch all users and manually filter
+    const response = await axios.get("http://localhost:3000/users");
+    const users = response.data;
+
+    // Check if any user has the same email
+    const existingUser = users.find(user => user.email === normalizedEmail);
+
+    if (existingUser) {
+      throw new Error("Email is already registered.");
+    }
+
+    // Proceed with user registration
+    const newUser = { email: normalizedEmail, password };
+    await axios.post("http://localhost:3000/users", newUser);
+
+    return { success: true, message: "Signup successful! Redirecting to login..." };
+  } catch (error) {
+    return { success: false, message: error.message || "Signup failed. Please try again." };
+  }
+};
+
+export const signIn = async (email, password) => {
+  try {
+    // Fetch the user by email
+    const response = await axios.get(`http://localhost:3000/users?email=${email}`);
+
+    if (response.data.length === 0) {
+      return "Incorrect email or password";
+    }
+
+    const user = response.data[0]; // Assuming only one user with that email
+
+    // Check password manually (This should ideally be handled by the backend)
+    if (user.password !== password) {
+      return "Incorrect email or password";
+    }
+
+    // Return user data and simulate a token
+    return { token: "dummy-token", user };
+  } catch (error) {
+    return error.response?.data?.error || "Login failed. Please try again.";
+  }
+  
+};
+
+

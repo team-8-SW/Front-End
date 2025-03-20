@@ -126,19 +126,39 @@ export const fetchPosts = async (page) => {
     throw new Error("Network response was not ok");
   }
 };
+
+
 export const resetPassword = async (email) => {
   try {
+    // Check if email exists in the database
     const response = await axios.get(`http://localhost:3000/users?email=${email}`);
-    
+
     if (response.data.length === 0) {
       throw new Error("Email not found.");
     }
 
-    return "Password reset link sent!";
+    const user = response.data[0]; // Get user data
+
+    // Generate a fake reset token (In a real app, this would be securely created)
+    const resetToken = Math.random().toString(36).substring(2, 15); 
+
+    // Save token in the database (mocking this in JSON server)
+    await axios.patch(`http://localhost:3000/users/${user.id}`, {
+      resetToken
+    });
+
+    // Create the reset link
+    const resetLink = `http://localhost:5173/reset-password/${resetToken}`;
+
+    // Simulate sending an email (Replace this with an actual email service)
+    console.log(`Reset link sent: ${resetLink}`);
+
+    return "Password reset link sent! Check your email.";
   } catch (error) {
     return error.response?.data?.error || error.message || "Something went wrong. Please try again.";
   }
 };
+
 export const sendSignupEmail = async (email) => {
   try {
     const response = await axios.post(`http://localhost:3000/users?email=${email}`);

@@ -126,7 +126,7 @@ export const fetchPosts = async (page) => {
     throw new Error("Network response was not ok");
   }
 };
-import axios from "axios";
+
 
 export const resetPassword = async (email) => {
   try {

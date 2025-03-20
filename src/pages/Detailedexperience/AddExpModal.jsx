@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Dialog, Button, Typography } from "@material-tailwind/react";
 import axios from "axios";
-
+import { handleAddExperience } from "../../services/profile";
 const jobTitles = ["Software Engineer", "Data Scientist", "Product Manager", "UX Designer"];
 const companies = ["Google", "Microsoft", "Amazon", "Facebook"];
 const locations = ["New York, USA", "London, UK", "Berlin, Germany", "Tokyo, Japan"];
@@ -35,32 +35,9 @@ const AddExpModal = ({ open, onClose, userId, onExpAdded }) => {
       return;
     }
     setError(false);
+    handleAddExperience(newExp, userId, onExpAdded, onClose,setNewExp);
 
-    axios
-      .get(`http://localhost:3000/users/${userId}`)
-      .then((response) => {
-        const updatedExp = [...(response.data.experience || []), newExp];
-        return axios.patch(`http://localhost:3000/users/${userId}`, {
-          experience: updatedExp,
-        });
-      })
-      .then(() => {
-        onExpAdded(newExp);
-        setNewExp({
-          title: "",
-          company: "",
-          employmentType: "",
-          locationType: "",
-          startDate: "",
-          endDate: "",
-          description: "",
-          location: "",
-          profileHeadline: "",
-          foundJobSource: ""
-        });
-        onClose();
-      })
-      .catch((error) => console.error("Error adding experience:", error));
+  
   };
 
   return (

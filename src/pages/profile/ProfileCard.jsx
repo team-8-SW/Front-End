@@ -16,24 +16,18 @@ import axios from "axios";
 const ProfileCard = ({ loggedUser }) => {
   const [open, setOpen] = useState(false);
   const [userData, setUserData] = useState(null);
+  console.log("aaa",loggedUser);
+  console.log("bbb",userData);
 
   // Default placeholder images
   const defaultProfile = "";
   const defaultCover = "";
 
-  // Fetch updated user data from JSON Server
-  const fetchUserData = async () => {
-    try {
-      const res = await axios.get(`http://localhost:3000/users/${loggedUser.id}`);
-      setUserData(res.data);
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-    }
-  };
+ 
 
   useEffect(() => {
-    if (loggedUser?.id) {
-      fetchUserData();
+    if (loggedUser) {
+     setUserData(loggedUser);
     }
   }, [loggedUser]);
 

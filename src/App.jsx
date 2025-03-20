@@ -14,21 +14,17 @@ import SignUp from './pages/signup/SignUp';
 import { GoogleLogin } from '@react-oauth/google';
 import SocialLogin from './components/SocialLogin';
 import ResetPassword from "./pages/login/ResetPassword";
+import { setLogged } from "./services/profile";
+
 
 function App() {
   const [loggedUser, setLoggedUser] = useState({});
 
   useEffect(() => {
-    axios
-      .get("http://localhost:3000/users/1")
-      .then((res) => {
-        setLoggedUser(res.data);
-        console.log("User data fetched:", loggedUser);
-      })
-      .catch((error) => {
-        console.error("Error fetching user data:", error);
-      });
-  }, []);
+    
+    
+      setLogged(setLoggedUser);
+  }, [loggedUser]);
 
   return (
     <div className="bg-backGroundColor min-h-screen">
@@ -44,7 +40,7 @@ function App() {
             path="/education"
             element={<DetailsEducation loggedUser={loggedUser} />}
           />
-          <Route path="/experience" element={<DetailsExperience />} />
+          <Route path="/experience" element={<DetailsExperience  loggedUser={loggedUser}/>} />
           <Route
             path="/skills"
             element={<DetailedSkills loggedUser={loggedUser} />}

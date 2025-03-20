@@ -289,7 +289,9 @@
       "content": "g\n",
       "authorId": 1,
       "authorName": "youssef mohamed",
-      "likes": [],
+      "likes": [
+        1
+      ],
       "comments": [],
       "shares": 0
     },

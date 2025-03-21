@@ -304,3 +304,27 @@ export const handleAddNewComment = (newComment, userId,authorName, comments, set
 export const handleLoadMoreComments = (setVisibleComments) => {
   setVisibleComments((prev) => prev + 2);
 };
+
+export const sendPin = async (email) => {
+  try {
+      console.log('Sending PIN to:', email);
+      const response = await axios.post(`http://localhost:3000/users?email=${email}`);
+      console.log('Response from sendPin:', response.data); 
+      return response.data; 
+  } catch (error) {
+      console.error('Error sending PIN:', error.message);
+      throw new Error('Error sending PIN: ' + error.message);
+  }
+};
+
+export const verifyEmailCode = async (pin) => {
+  try {
+      console.log('Verifying PIN:', pin); 
+      const response = await axios.post(`http://localhost:3000/users?email=${pin}`);
+      console.log('Response from verifyEmailCode:', response.data); 
+      return response.data; 
+  } catch (error) {
+      console.error('Error verifying email:', error.message); 
+      throw new Error('Error verifying email: ' + error.message);
+  }
+};

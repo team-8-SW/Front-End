@@ -1,13 +1,19 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; 
+import { sendPin } from '../../services/api';
 
 const EmailManagement = ({ primaryEmail }) => {
     const [email, setEmail] = useState('');
     const navigate = useNavigate(); 
 
     const handleAddEmail = async () => {
-            navigate('/VerifyEmail',{state:{ primaryEmail } });
-
+        try {
+            await sendPin(email);
+            navigate('/VerifyEmail', { state: { primaryEmail } });
+        } catch (error) {
+            console.error('Error sending email:', error);
+            alert('Failed to send email. Please try again.');
+        }
     };
 
     return (

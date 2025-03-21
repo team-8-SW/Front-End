@@ -1,11 +1,15 @@
-
 import React, { useState } from 'react';
-
+import { verifyEmailCode } from '../../services/api';
 
 const VerifyEmail = ({primaryEmail}) => {
     const [pin, setPin] = useState('');
 
     const handleSubmit = async () => {
+        if (!pin) {
+            alert('Please enter the PIN code.'); 
+            return; 
+        }
+        console.log('Attempting to verify PIN:', pin);
         try {
             await verifyEmailCode(pin);
             alert('Email verified successfully!');

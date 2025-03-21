@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
-// import { checkEmail, sendSignupEmail } from "../../services/api";
+import { checkEmail, sendSignupEmail } from "../../services/api";
 import SocialLogin from "../../components/SocialLogin";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";

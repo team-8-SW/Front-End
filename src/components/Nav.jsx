@@ -14,6 +14,7 @@ import { MdWork } from "react-icons/md";
 import { MdPeople } from "react-icons/md";
 import { AiFillMessage } from "react-icons/ai";
 import { FaBell } from "react-icons/fa";
+import { logout } from "../services/profile"; // Import the logout function
 
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 const Nav = () => {
@@ -93,11 +94,15 @@ const Nav = () => {
     >
       Settings
     </Link>
-    <button className="block px-4 py-2 text-gray-700 hover:bg-gray-100 w-full text-left"
-      onClick={() => setIsDropdownOpen(false)}
-    >
-      Logout
-    </button>
+    <button
+            className="block px-4 py-2 text-gray-700 hover:bg-gray-100 w-full text-left"
+            onClick={() => {
+              setIsDropdownOpen(false);
+              logout(navigate); // Call the logout function
+            }}
+          >
+            Logout
+          </button>
   </div> 
 )}
 

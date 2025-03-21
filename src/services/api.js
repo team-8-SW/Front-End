@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { fetchUser } from "./profile";
 
 const fetchProfilePicture = async (userId, setProfilePicture) => {
 
@@ -194,7 +195,7 @@ export const checkEmail = async (email, password) => {
   }
 };
 
-export const signIn = async (email, password) => {
+export const signIn = async (email, password,setLoggedUser) => {
   try {
     console.log("Logging in with:", email, password);
 
@@ -212,6 +213,10 @@ export const signIn = async (email, password) => {
     const user = users[0];
 
     console.log("Found user:", user);
+    localStorage.setItem("userId", user.id);
+    fetchUser(setLoggedUser);
+   
+    console.log("User ID stored:", localStorage.getItem("userId"));
 
     // Check if the password matches
     if (user.password !== password) {

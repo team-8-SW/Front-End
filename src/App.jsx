@@ -14,50 +14,71 @@ import SignUp from './pages/signup/SignUp';
 import { GoogleLogin } from '@react-oauth/google';
 import SocialLogin from './components/SocialLogin';
 import ResetPassword from "./pages/login/ResetPassword";
+import { useNavigate } from "react-router-dom";
 
-import { fetchUserId } from "./services/profile";
+
 import { fetchUser } from "./services/profile";
+import ProtectedRoute from "./ProtectedRoute";
+
 
 
 function App() {
   const [loggedUser, setLoggedUser] = useState({});
-
+  const navigate = useNavigate();
   useEffect(() => {
-    const getUserData = async () => {
-      const userId = await fetchUserId(); // 1️⃣ Wait for user ID
-  
-      if (userId) {
-        fetchUser(userId, setLoggedUser); // 2️⃣ Fetch user data using the ID
-      }
-    };
-  
-    getUserData(); // 3️⃣ Call the async function
+    
+    const storedUserId = localStorage.getItem("userId");
+    if (!storedUserId) {
+      navigate("/login"); // Redirect to login if no user is found
+    } else {
+      fetchUser(setLoggedUser);
+    }
   }, []);
+
+
 
   return (
     <div className="bg-backGroundColor min-h-screen">
       <Nav />
       <div>
-        <Routes>
-          <Route
-            path="/profile"
-            element={<Profile loggedUser={loggedUser} />}
-          />
-          <Route path="/" element={<Home />} />
-          <Route
-            path="/education"
-            element={<DetailsEducation loggedUser={loggedUser} />}
-          />
-          <Route path="/experience" element={<DetailsExperience  loggedUser={loggedUser}/>} />
-          <Route
-            path="/skills"
-            element={<DetailedSkills loggedUser={loggedUser} />}
-          />
-        
-          <Route path="/login" element={<LoginPage />} /> 
-          <Route path="/signup" element={<SignUp/>} /> 
-          <Route path="/ResetPassword" element={<ResetPassword />} /> 
-        </Routes>
+      <Routes>
+  <Route
+    path="/profile"
+    element={
+      <ProtectedRoute>
+        <Profile loggedUser={loggedUser} />
+      </ProtectedRoute>
+    }
+  />
+  <Route path="/" element={<Home />} />
+  <Route
+    path="/education"
+    element={
+      <ProtectedRoute>
+        <DetailsEducation loggedUser={loggedUser} />
+      </ProtectedRoute>
+    }
+  />
+  <Route
+    path="/experience"
+    element={
+      <ProtectedRoute>
+        <DetailsExperience loggedUser={loggedUser} />
+      </ProtectedRoute>
+    }
+  />
+  <Route
+    path="/skills"
+    element={
+      <ProtectedRoute>
+        <DetailedSkills loggedUser={loggedUser} />
+      </ProtectedRoute>
+    }
+  />
+  <Route path="/login" element={<LoginPage setLoggedUser={setLoggedUser}/>} />
+  <Route path="/signup" element={<SignUp />} />
+  <Route path="/ResetPassword" element={<ResetPassword />} />
+</Routes>
       </div>
     </div>
   );

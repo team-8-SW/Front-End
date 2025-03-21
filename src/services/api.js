@@ -225,3 +225,77 @@ export const signIn = async (email, password) => {
     return "Login failed. Please try again.";
   }
 };
+export const likePost = async (postId, userId) => {
+  try {
+    const response = await axios.get(`http://localhost:3000/posts/${postId}`);
+    const post = response.data;
+    post.likes.push(userId);
+    await axios.put(`http://localhost:3000/posts/${postId}`, post);
+  } catch (error) {
+    console.error("Error liking the post:", error);
+  }
+};
+
+export const unlikePost = async (postId, userId) => {
+  try {
+    const response = await axios.get(`http://localhost:3000/posts/${postId}`);
+    const post = response.data;
+    post.likes = post.likes.filter((id) => id !== userId);
+    await axios.put(`http://localhost:3000/posts/${postId}`, post);
+  } catch (error) {
+    console.error("Error unliking the post:", error);
+  }
+};
+
+const fetchComments = async (postId, setComments) => {
+  try {
+    const response = await axios.get(`http://localhost:3000/comments?postId=${postId}`);
+    setComments(response.data);
+  } catch (error) {
+    console.error("Error fetching comments:", error);
+  }
+};
+
+export const useComments = (postId) => {
+  const [comments, setComments] = useState([]);
+  useEffect(() => {
+    if (postId) {
+      fetchComments(postId, setComments);
+    }
+  }, [postId]);
+
+  return comments;
+};
+
+
+export const handleLikePost = async (postId, userId, liked, setLiked, setLikesCount) => {
+  if (liked) {
+    await unlikePost(postId, userId);
+    setLiked(false);
+    setLikesCount((prev) => prev - 1);
+  } else {
+    await likePost(postId, userId);
+    setLiked(true);
+    setLikesCount((prev) => prev + 1);
+  }
+};
+
+
+export const handleAddNewComment = (newComment, userId,authorName, comments, setComments, setNewComment) => {
+  
+  if (newComment.trim()) {
+    const newCommentObj = {
+      id: comments.length + 1,
+      authorId: userId,
+      authorName: authorName,
+      content: newComment,
+    };
+    setComments([newCommentObj, ...comments]);
+    setNewComment(""); 
+  }
+};
+
+
+export const handleLoadMoreComments = (setVisibleComments) => {
+  setVisibleComments((prev) => prev + 2);
+};

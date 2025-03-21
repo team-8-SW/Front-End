@@ -1,6 +1,6 @@
 {
   "currentUser": {
-      "id": "1"
+    "id": "1"
   },
   "users": [
     {
@@ -208,7 +208,6 @@
       "id": "a371",
       "email": "mt773502@gmail.commmm",
       "password": "345654"
-
     }
   ],
   "posts": [
@@ -220,13 +219,25 @@
       "likes": [
         2,
         3,
-        1
+        "1"
       ],
       "comments": [
         {
           "id": 1,
           "authorId": 2,
           "authorName": "ahmed mohamed",
+          "content": "hello"
+        },
+        {
+          "id": 2,
+          "authorId": 3,
+          "authorName": "Mark Maged",
+          "content": "hello"
+        },
+        {
+          "id": 3,
+          "authorId": 1,
+          "authorName": "youssef mohamed",
           "content": "hello"
         }
       ],
@@ -237,9 +248,7 @@
       "content": "hi",
       "authorId": 2,
       "authorName": "ahmed mohamed",
-      "likes": [
-        1
-      ],
+      "likes": [],
       "comments": [],
       "shares": 0
     },
@@ -248,7 +257,9 @@
       "content": "This is test 4\n",
       "authorId": 1,
       "authorName": "youssef mohamed",
-      "likes": [],
+      "likes": [
+        "1"
+      ],
       "comments": [],
       "shares": 0
     },

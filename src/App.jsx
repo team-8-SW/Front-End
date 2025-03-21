@@ -14,14 +14,11 @@ import SignUp from './pages/signup/SignUp';
 import { GoogleLogin } from '@react-oauth/google';
 import SocialLogin from './components/SocialLogin';
 import ResetPassword from "./pages/login/ResetPassword";
-
-import { fetchUser } from "./services/profile";
-import { fetchUserId } from "./services/profile";
+import { fetchUserId, fetchUser } from "./services/profile";
 
 
 function App() {
   const [loggedUser, setLoggedUser] = useState({});
-  
 
   useEffect(() => {
     const getUserData = async () => {

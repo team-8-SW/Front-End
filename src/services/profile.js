@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 
 
 
+
 export const fetchUserId = async () => {
   try {
     const response = await axios.get("http://localhost:3000/currentUser");
@@ -36,11 +37,6 @@ export const fetchUserId = async () => {
       return null;
     }
   };
-
-
-
-
-
 
 
 

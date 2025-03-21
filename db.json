@@ -8,8 +8,8 @@
     {
       "id": "1",
       "fname": "youssef",
-      "lname": "mansi",
-      "bio": "hii",
+      "lname": "essam",
+      "bio": "hello",
       "location": {
         "city": "cairo",
         "country": "egypt"
@@ -232,6 +232,11 @@
       "email": "youssef.ahmed04@eng-st.cu.edu.eg",
       "password": "123456",
       "id": "xXkSApc"
+    },
+    {
+      "email": "youssef@gmail.com",
+      "password": "123456",
+      "id": "MARTrRK"
     }
   ],
   "posts": [

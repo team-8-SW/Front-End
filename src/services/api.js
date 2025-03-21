@@ -186,7 +186,7 @@ export const checkEmail = async (email, password) => {
     }
 
     // Proceed with user registration
-    const newUser = { email: normalizedEmail, password };
+    const newUser = { email: normalizedEmail, password ,skills:[],education:[],experience:[]};
     await axios.post("http://localhost:3000/users", newUser);
 
     return { success: true, message: "Signup successful! Redirecting to login..." };

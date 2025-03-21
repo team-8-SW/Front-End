@@ -1,9 +1,19 @@
 import { Navigate } from "react-router-dom";
+import React from "react";
 
-const ProtectedRoute = ({ children }) => {
-  const isAuthenticated = localStorage.getItem("userId"); // Check if user is logged in
+const ProtectedRoute = ({ children, ...rest }) => {
+  const storedUserId = localStorage.getItem("userId");
 
-  return isAuthenticated ? children : <Navigate to="/login" replace />; // Redirect to login if not authenticated
+  if (!storedUserId) {
+    return <Navigate to="/login" />;
+  }
+
+  return (
+    <>
+      {children &&
+        React.cloneElement(children, { ...rest }) /* Forward props */}
+    </>
+  );
 };
 
 export default ProtectedRoute;

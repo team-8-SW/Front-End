@@ -78,6 +78,7 @@ function App() {
   <Route path="/login" element={<LoginPage setLoggedUser={setLoggedUser}/>} />
   <Route path="/signup" element={<SignUp />} />
   <Route path="/ResetPassword" element={<ResetPassword />} />
+  {/* <Route path="/*" element={<NotFound />} /> */}
 </Routes>
       </div>
     </div>

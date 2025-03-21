@@ -66,7 +66,7 @@ const ProfileCard = ({ loggedUser }) => {
     try {
       await axios.patch(`http://localhost:3000/users/${loggedUser.id}`, userData);
       setOpen(false);
-      fetchUserData();
+      
     } catch (error) {
       console.error("Error updating profile:", error);
     }

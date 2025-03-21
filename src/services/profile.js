@@ -6,16 +6,41 @@ import { useState, useEffect } from "react";
 
 
 
+export const fetchUserId = async () => {
+  try {
+    const response = await axios.get("http://localhost:3000/currentUser");
+    console.log("User fetched:", response.data);
+    
+    if (response.data.length > 0) {
+      return response.data[0].id; // ✅ Return the first user's ID
+    } else {
+      console.error("No user found in currentUser");
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching user ID:", error);
+    return null;
+  }
+};
 
-export const setLogged = (setLoggedUser)=>{axios
-.get(`http://localhost:3000/users/1`)
-.then((res) => {
-  setLoggedUser(res.data);
-  console.log("User data fetched:", res.data);
-})
-.catch((error) => {
-  console.error("Error fetching user data:", error);
-});}
+   
+
+  export const fetchUser = async (userId, setLoggedUser) => {
+    try {
+      const res = await axios.get(`http://localhost:3000/users/${userId}`);
+      setLoggedUser(res.data);
+      console.log("User data fetched:", res.data);
+      return res.data; // ✅ Return the fetched user
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      return null;
+    }
+  };
+
+
+
+
+
 
 
 

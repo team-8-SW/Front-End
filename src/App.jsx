@@ -14,17 +14,25 @@ import SignUp from './pages/signup/SignUp';
 import { GoogleLogin } from '@react-oauth/google';
 import SocialLogin from './components/SocialLogin';
 import ResetPassword from "./pages/login/ResetPassword";
-import { setLogged } from "./services/profile";
+
+import { fetchUser } from "./services/profile";
+import { fetchUserId } from "./services/profile";
 
 
 function App() {
   const [loggedUser, setLoggedUser] = useState({});
+  
 
   useEffect(() => {
-    
-    
-      setLogged(setLoggedUser);
-  }, [loggedUser]);
+    const getUserData = async () => {
+      const userId = await fetchUserId(); // Wait for the user ID
+      if (userId) {
+        fetchUser(userId, setLoggedUser); // Fetch user data
+      }
+    };
+  
+    getUserData();
+  }, []);
 
   return (
     <div className="bg-backGroundColor min-h-screen">

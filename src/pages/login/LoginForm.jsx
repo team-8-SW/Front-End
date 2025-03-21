@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { signIn } from "../../services/api";
 import SocialLogin from "../../components/SocialLogin";
 
-const LoginForm = () => {
+const LoginForm = ({setLoggedUser}) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
@@ -14,7 +14,7 @@ const LoginForm = () => {
         e.preventDefault();
         setError(""); 
 
-        const response = await signIn(email, password);
+        const response = await signIn(email, password,setLoggedUser);
 
         if (typeof response === "string") {
             setError(response); 

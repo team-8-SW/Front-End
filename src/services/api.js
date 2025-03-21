@@ -99,11 +99,11 @@ const fetchUserData = async (userId, setUser) => {
   try {
     const response = await axios.get(`http://localhost:3000/users/${userId}`);
     setUser(response.data);
+    console.log("User data fetched:", response.data);
   } catch (error) {
     console.error("Error fetching user data:", error);
   }
 };
-
 export const useUserData = (userId) => {
   const [user, setUser] = useState(null);
   useEffect(() => {

@@ -17,6 +17,8 @@ import ResetPassword from "./pages/login/ResetPassword";
 
 import { fetchUserId } from "./services/profile";
 import { fetchUser } from "./services/profile";
+import EmailManagement from "./pages/UpdateEmail/EmailManagement";
+import VerifyEmail from "./pages/UpdateEmail/VerifyEmail";
 
 
 function App() {
@@ -57,6 +59,8 @@ function App() {
           <Route path="/login" element={<LoginPage />} /> 
           <Route path="/signup" element={<SignUp/>} /> 
           <Route path="/ResetPassword" element={<ResetPassword />} /> 
+          <Route path="/EmailManagement" element={<EmailManagement/>}/>
+          <Route path="/VerifyEmail" element={<VerifyEmail/>}/>
         </Routes>
       </div>
     </div>

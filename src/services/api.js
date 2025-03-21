@@ -196,26 +196,32 @@ export const checkEmail = async (email, password) => {
 
 export const signIn = async (email, password) => {
   try {
-    // Fetch the user by email
-    const response = await axios.get(`http://localhost:3000/users?email=${email}`);
+    console.log("Logging in with:", email, password);
 
-    if (response.data.length === 0) {
+    // Fetch all users from db.json
+    const response = await axios.get("http://localhost:3000/users");
+
+    // Filter users by email
+    const users = response.data.filter((user) => user.email === email);
+
+    if (users.length === 0) {
       return "Incorrect email or password";
     }
 
-    const user = response.data[0]; // Assuming only one user with that email
+    // Use the first matched user
+    const user = users[0];
 
-    // Check password manually (This should ideally be handled by the backend)
+    console.log("Found user:", user);
+
+    // Check if the password matches
     if (user.password !== password) {
       return "Incorrect email or password";
     }
 
-    // Return user data and simulate a token
+    // Return user data and a dummy token
     return { token: "dummy-token", user };
   } catch (error) {
-    return error.response?.data?.error || "Login failed. Please try again.";
+    console.error("API Error:", error);
+    return "Login failed. Please try again.";
   }
-  
 };
-
-

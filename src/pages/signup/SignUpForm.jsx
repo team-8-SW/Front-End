@@ -1,74 +1,72 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { checkEmail, sendSignupEmail } from "../../services/api";
 import SocialLogin from "../../components/SocialLogin";
 import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-
-
-import { GoogleLogin } from '@react-oauth/google';
+import { GoogleLogin } from "@react-oauth/google";
 
 const SignUpForm = () => {
-  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [recaptchaValue, setRecaptchaValue] = useState(null);
-  const [recaptchaError, setRecaptchaError] = useState(false);
-  const [emailSent, setEmailSent] = useState(false);
-  const [resendTimer, setResendTimer] = useState(0);
   const [message, setMessage] = useState("");
-const [messageType, setMessageType] = useState(""); // "success" or "error"
+  const [messageType, setMessageType] = useState("");
+  const [resendTimer, setResendTimer] = useState(0);
+  const [emailSent, setEmailSent] = useState(false);
 
+  useEffect(() => {
+    if (resendTimer > 0) {
+      const interval = setInterval(() => {
+        setResendTimer((prev) => {
+          if (prev <= 1) {
+            clearInterval(interval);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [resendTimer]);
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  if (!recaptchaValue) {
-    setMessage("Please complete the reCAPTCHA.");
-    setMessageType("error");
-    return;
-  }
-
-  setRecaptchaError(false);
-
-  try {
-    const response = await checkEmail(email, password);
-
-    if (!response.success) {
-      setMessage(response.message);
+    if (!recaptchaValue) {
+      setMessage("Please complete the reCAPTCHA.");
       setMessageType("error");
       return;
     }
 
-    setMessage(response.message);
-    setMessageType("success");
+    try {
+      const response = await checkEmail(email, password);
 
-    // Redirect after a delay to show success message
-    setTimeout(() => {
-      navigate("/login");
-    }, 2000);
-  } catch (error) {
-    console.error(error);
-    setMessage("Failed to sign up. Please try again.");
-    setMessageType("error");
-  }
-};
+      if (!response.success) {
+        setMessage(response.message);
+        setMessageType("error");
+        return;
+      }
+
+      setMessage("Signup successful! A confirmation email has been sent.");
+      setMessageType("success");
+      setEmailSent(true);
+      sendSignupEmail(email);
+      setResendTimer(30);
+    } catch (error) {
+      setMessage("Failed to sign up. Please try again.");
+      setMessageType("error");
+    }
+  };
 
   const handleRecaptchaChange = (value) => {
     setRecaptchaValue(value);
-    setRecaptchaError(false);
   };
 
-  const startResendTimer = () => {
-    const interval = setInterval(() => {
-      setResendTimer((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
+  const handleResendEmail = () => {
+    if (resendTimer === 0) {
+      sendSignupEmail(email);
+      setResendTimer(30);
+    }
   };
 
   return (
@@ -76,21 +74,19 @@ const handleSubmit = async (e) => {
       <h2 className="text-xl font-semibold text-center mb-6 text-gray-800">
         Make the most of your professional life
       </h2>
-  
-      <div className="bg-white shadow-lg rounded-lg px-8 pt-8 pb-10 w-full max-w-md border border-gray-200 w-full md:max-w-lg"> 
+
+      <div className="bg-white shadow-lg rounded-lg px-8 pt-8 pb-10 w-full max-w-md border border-gray-200">
         {message && (
           <p className={`text-center text-sm font-bold mb-4 ${messageType === "error" ? "text-red-500" : "text-green-500"}`}>
             {message}
           </p>
         )}
-  
+
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2 mt-4" htmlFor="email">
-              Email
-            </label>
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">Email</label>
             <input
-              className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${messageType === "error" ? "border-red-500" : ""}`}
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
               type="email"
               placeholder="Email"
               value={email}
@@ -98,13 +94,11 @@ const handleSubmit = async (e) => {
               required
             />
           </div>
-  
+
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
-              Password
-            </label>
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">Password</label>
             <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
               type="password"
               placeholder="Password"
               value={password}
@@ -112,35 +106,41 @@ const handleSubmit = async (e) => {
               required
             />
           </div>
-  
-          <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition duration-300" type="submit">
+
+          <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg" type="submit">
             Agree & Join
           </button>
         </form>
-  
+
         <div className="mt-4 flex justify-center">
           <ReCAPTCHA sitekey="6Lc-N_QqAAAAAB_NYGBo9DnTKTxSMJlPJ8RXFMy7" onChange={handleRecaptchaChange} />
         </div>
-  
+
+        {emailSent && (
+          <button 
+            className={`mt-4 w-full ${resendTimer === 0 ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-500"} text-white font-medium py-2 rounded-lg`}
+            onClick={handleResendEmail} 
+            disabled={resendTimer > 0}>
+            Resend Confirmation Email {resendTimer > 0 ? `(${resendTimer}s)` : ""}
+          </button>
+        )}
+
         <div className="flex items-center my-4">
           <div className="flex-grow border-t border-gray-300"></div>
           <span className="px-3 text-gray-500 text-sm">or</span>
           <div className="flex-grow border-t border-gray-300"></div>
         </div>
-  
+
         <button className="w-full">
           <SocialLogin />
         </button>
       </div>
-  
+
       <div className="mt-6 text-gray-600">
-        Already on LinkedIn?{" "}
-        <Link className="text-blue-600 hover:underline" to="/login">
-          Sign in
-        </Link>
+        Already on LinkedIn? <Link className="text-blue-600 hover:underline" to="/login">Sign in</Link>
       </div>
     </div>
   );
-};  
+};
 
 export default SignUpForm;

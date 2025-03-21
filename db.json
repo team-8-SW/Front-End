@@ -8,7 +8,7 @@
     {
       "id": "1",
       "fname": "youssef",
-      "lname": "ahmed mansj",
+      "lname": "essam",
       "bio": "hello",
       "location": {
         "city": "cairo",
@@ -27,9 +27,7 @@
           "to": "2019"
         }
       ],
-      "skills": [
-        "html"
-      ],
+      "skills": [],
       "experience": [
         {
           "title": "web developer",
@@ -222,27 +220,6 @@
       "id": "a371",
       "email": "mt773502@gmail.commmm",
       "password": "345654"
-    },
-    {
-<<<<<<< HEAD
-      "id": "f075",
-      "email": "mohamed.abdelkhalek05@eng-st.cu.edu.eg",
-      "password": "4321"
-=======
-      "email": "youssefmansi2@gmail.com",
-      "password": "mansi",
-      "id": "mCc81vU"
-    },
-    {
-      "email": "youssef.ahmed04@eng-st.cu.edu.eg",
-      "password": "123456",
-      "id": "xXkSApc"
-    },
-    {
-      "email": "youssef@gmail.com",
-      "password": "123456",
-      "id": "MARTrRK"
->>>>>>> 9ad4ca7e8207041973430dac7acc46f9dd86ef8a
     }
   ],
   "posts": [

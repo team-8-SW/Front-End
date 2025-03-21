@@ -22,13 +22,14 @@ function App() {
 
   useEffect(() => {
     const getUserData = async () => {
-      const userId = await fetchUserId(); // Wait for the user ID
+      const userId = await fetchUserId(); // 1️⃣ Wait for user ID
+  
       if (userId) {
-        fetchUser(userId, setLoggedUser); // Fetch user data
+        fetchUser(userId, setLoggedUser); // 2️⃣ Fetch user data using the ID
       }
     };
   
-    getUserData();
+    getUserData(); // 3️⃣ Call the async function
   }, []);
 
   return (

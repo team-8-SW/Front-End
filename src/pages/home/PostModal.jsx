@@ -35,7 +35,7 @@ const PostModal = ({ isOpen, toggleModal }) => {
       setError("Post content cannot be empty.");
       return;
     }
-    setError(""); // Clear any previous error
+    setError("");
 
     const newPostId = (parseInt(lastPostId, 10) + 1).toString();
 

@@ -22,6 +22,7 @@ export const fetchUserId = async () => {
     console.error("Error fetching user ID:", error);
     return null;
   }
+  
 };
 
    

@@ -8,7 +8,7 @@
     {
       "id": "1",
       "fname": "youssef",
-      "lname": "ahmed mansj",
+      "lname": "essam",
       "bio": "hello",
       "location": {
         "city": "cairo",
@@ -26,9 +26,7 @@
           "to": "2019"
         }
       ],
-      "skills": [
-        "html"
-      ],
+      "skills": [],
       "experience": [
         {
           "title": "web developer",
@@ -205,7 +203,16 @@
     {
       "id": "eb84",
       "email": "mt773502@gmail.comm",
+<<<<<<< HEAD
       "password": "123"
+=======
+      "password": "43232"
+    },
+    {
+      "id": "a371",
+      "email": "mt773502@gmail.commmm",
+      "password": "345654"
+>>>>>>> 4665b2d0d1105a19f60899d02d1f88a7304d9171
     }
   ],
   "posts": [

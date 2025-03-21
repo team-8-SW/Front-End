@@ -6,15 +6,8 @@ const EmailManagement = ({ primaryEmail }) => {
     const navigate = useNavigate(); 
 
     const handleAddEmail = async () => {
-        try {
-            await addEmailAddress(email);
-            alert('Email added successfully!');
-            setEmail('');
             navigate('/VerifyEmail',{state:{ primaryEmail } });
-        } catch (error) {
-            console.error('Error adding email:', error);
-            alert('Failed to add email.');
-        }
+
     };
 
     return (

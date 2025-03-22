@@ -25,15 +25,21 @@
           "to": "2019"
         }
       ],
-      "skills": [],
+      "skills": [
+        "html"
+      ],
       "experience": [
         {
-          "title": "web developer",
-          "company": "google",
-          "location": "cairo",
-          "from": "2019",
-          "to": "2020",
-          "description": "i was a web developer"
+          "title": "Software Engineer",
+          "company": "Microsoft",
+          "employmentType": "Full-time",
+          "locationType": "On-site",
+          "startDate": "55555",
+          "endDate": "55555",
+          "description": "mdnnd",
+          "location": "New York, USA",
+          "profileHeadline": "emmem",
+          "foundJobSource": "LinkedIn"
         }
       ],
       "industry": [

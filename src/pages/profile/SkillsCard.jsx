@@ -66,7 +66,7 @@ const SkillsCard = ({ loggedUser }) => {
 
                   <div className="mt-2">
                   <Link to="/skills">
-                             <Button variant="outlined" color="blue">add Education</Button>
+                             <Button variant="outlined" color="blue">add skills</Button>
                                   </Link>
                   </div>
                 </div>

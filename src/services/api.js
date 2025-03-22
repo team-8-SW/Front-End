@@ -138,9 +138,6 @@ export const resetPassword = async (email) => {
   } catch (error) {
     return error.response?.data?.error || error.message || "Something went wrong. Please try again.";
   }
-<<<<<<< Updated upstream
-};
-=======
 };
 
 export const sendSignupEmail = async (email) => {
@@ -336,4 +333,11 @@ export const verifyEmailCode = async (pin) => {
   }
 };
 
->>>>>>> Stashed changes
+export const fetchUser = async (setLoggedUser) => {
+  try {
+    const response = await axios.get(`http://localhost:3000/users/${localStorage.getItem("userId")}`);
+    setLoggedUser(response.data);
+  } catch (error) {
+    console.error("Error fetching user:", error);
+  }
+};

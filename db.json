@@ -1,10 +1,6 @@
 {
   "currentUser": {
-<<<<<<< Updated upstream
     "id": 1
-=======
-    "id": "1"
->>>>>>> Stashed changes
   },
   "users": [
     {
@@ -155,38 +151,7 @@
       "authorName": "youssef mohamed",
       "likes": [],
       "comments": [],
-<<<<<<< Updated upstream
-      "shares": 0
-    },
-    {
-      "id": "5",
-      "content": "s",
-      "authorId": 1,
-      "authorName": "youssef mohamed",
-      "likes": [],
-      "comments": [],
-      "shares": 0
-    },
-    {
-      "id": "6",
-      "content": "Test",
-      "authorId": 1,
-      "authorName": "youssef mohamed",
-      "likes": [],
-      "comments": [],
-      "shares": 0
-    },
-    {
-      "id": "7",
-      "content": "g\n",
-      "authorId": 1,
-      "authorName": "youssef mohamed",
-      "likes": [],
-      "comments": [],
-      "shares": 0
-=======
       "shares": []
->>>>>>> Stashed changes
     }
   ]
 }

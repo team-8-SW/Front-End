@@ -1,6 +1,10 @@
 {
   "currentUser": {
+<<<<<<< Updated upstream
     "id": 1
+=======
+    "id": "1"
+>>>>>>> Stashed changes
   },
   "users": [
     {
@@ -110,20 +114,30 @@
           "authorId": 2,
           "authorName": "ahmed mohamed",
           "content": "hello"
+        },
+        {
+          "id": 2,
+          "authorId": "1",
+          "authorName": "yousssef essam mansy",
+          "content": "hi"
+        },
+        {
+          "id": 3,
+          "authorId": "1",
+          "authorName": "yousssef essam mansy",
+          "content": "bye"
         }
       ],
-      "shares": 39
+      "shares": []
     },
     {
       "id": "2",
       "content": "hi",
       "authorId": 2,
       "authorName": "ahmed mohamed",
-      "likes": [
-        1
-      ],
+      "likes": [],
       "comments": [],
-      "shares": 0
+      "shares": []
     },
     {
       "id": "3",
@@ -132,7 +146,7 @@
       "authorName": "youssef mohamed",
       "likes": [],
       "comments": [],
-      "shares": 0
+      "shares": []
     },
     {
       "id": "4",
@@ -141,6 +155,7 @@
       "authorName": "youssef mohamed",
       "likes": [],
       "comments": [],
+<<<<<<< Updated upstream
       "shares": 0
     },
     {
@@ -169,6 +184,9 @@
       "likes": [],
       "comments": [],
       "shares": 0
+=======
+      "shares": []
+>>>>>>> Stashed changes
     }
   ]
 }

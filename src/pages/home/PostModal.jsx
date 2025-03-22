@@ -4,14 +4,14 @@ import { useUserId, useName } from "../../services/api";
 import axios from "axios";
 
 const PostModal = ({ isOpen, toggleModal }) => {
-  if (!isOpen) return null;
+  
 
   const [postContent, setPostContent] = useState("");
   const [error, setError] = useState("");
   const [lastPostId, setLastPostId] = useState(null);
   const userId = useUserId();
   const name = useName(userId);
-
+  if (!isOpen) return null;
   useEffect(() => {
     const fetchLastPostId = async () => {
       try {
@@ -47,7 +47,7 @@ const PostModal = ({ isOpen, toggleModal }) => {
         authorName: name,
         likes: [],
         comments: [],
-        shares: 0,
+        shares: [],
       });
       console.log("Post successful");
       toggleModal();

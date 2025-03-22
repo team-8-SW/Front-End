@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { fetchUser } from "./profile";
-
 const fetchProfilePicture = async (userId, setProfilePicture) => {
 
   axios
-    .get(`http://localhost:3000/users/${userId}`)
+    .get(`http://localhost:3000/users/1`)
     .then((response) => {
       setProfilePicture(response.data.profilePicture);
     })
@@ -100,11 +99,11 @@ const fetchUserData = async (userId, setUser) => {
   try {
     const response = await axios.get(`http://localhost:3000/users/${userId}`);
     setUser(response.data);
-    console.log("User data fetched:", response.data);
   } catch (error) {
     console.error("Error fetching user data:", error);
   }
 };
+
 export const useUserData = (userId) => {
   const [user, setUser] = useState(null);
   useEffect(() => {
@@ -127,34 +126,15 @@ export const fetchPosts = async (page) => {
     throw new Error("Network response was not ok");
   }
 };
-
-
 export const resetPassword = async (email) => {
   try {
-    // Check if email exists in the database
     const response = await axios.get(`http://localhost:3000/users?email=${email}`);
-
+    
     if (response.data.length === 0) {
       throw new Error("Email not found.");
     }
 
-    const user = response.data[0]; // Get user data
-
-    // Generate a fake reset token (In a real app, this would be securely created)
-    const resetToken = Math.random().toString(36).substring(2, 15); 
-
-    // Save token in the database (mocking this in JSON server)
-    await axios.patch(`http://localhost:3000/users/${user.id}`, {
-      resetToken
-    });
-
-    // Create the reset link
-    const resetLink = `http://localhost:5173/reset-password/${resetToken}`;
-
-    // Simulate sending an email (Replace this with an actual email service)
-    console.log(`Reset link sent: ${resetLink}`);
-
-    return "Password reset link sent! Check your email.";
+    return "Password reset link sent!";
   } catch (error) {
     return error.response?.data?.error || error.message || "Something went wrong. Please try again.";
   }
@@ -230,7 +210,7 @@ export const signIn = async (email, password,setLoggedUser) => {
     return "Login failed. Please try again.";
   }
 };
-export const likePost = async (postId, userId) => {
+const likePost = async (postId, userId) => {
   try {
     const response = await axios.get(`http://localhost:3000/posts/${postId}`);
     const post = response.data;
@@ -241,7 +221,7 @@ export const likePost = async (postId, userId) => {
   }
 };
 
-export const unlikePost = async (postId, userId) => {
+const unlikePost = async (postId, userId) => {
   try {
     const response = await axios.get(`http://localhost:3000/posts/${postId}`);
     const post = response.data;
@@ -250,26 +230,6 @@ export const unlikePost = async (postId, userId) => {
   } catch (error) {
     console.error("Error unliking the post:", error);
   }
-};
-
-const fetchComments = async (postId, setComments) => {
-  try {
-    const response = await axios.get(`http://localhost:3000/comments?postId=${postId}`);
-    setComments(response.data);
-  } catch (error) {
-    console.error("Error fetching comments:", error);
-  }
-};
-
-export const useComments = (postId) => {
-  const [comments, setComments] = useState([]);
-  useEffect(() => {
-    if (postId) {
-      fetchComments(postId, setComments);
-    }
-  }, [postId]);
-
-  return comments;
 };
 
 
@@ -285,19 +245,63 @@ export const handleLikePost = async (postId, userId, liked, setLiked, setLikesCo
   }
 };
 
-
-export const handleAddNewComment = (newComment, userId,authorName, comments, setComments, setNewComment) => {
-  
-  if (newComment.trim()) {
-    const newCommentObj = {
-      id: comments.length + 1,
-      authorId: userId,
-      authorName: authorName,
-      content: newComment,
-    };
-    setComments([newCommentObj, ...comments]);
-    setNewComment(""); 
+const sharePost = async (postId, userId) => {
+  try {
+    const response = await axios.get(`http://localhost:3000/posts/${postId}`);
+    const post = response.data;
+    post.shares.push(userId);
+    await axios.put(`http://localhost:3000/posts/${postId}`, post);
+  } catch (error) {
+    console.error("Error sharing the post:", error);
   }
+};
+
+const unsharePost = async (postId, userId) => {
+  try {
+    const response = await axios.get(`http://localhost:3000/posts/${postId}`);
+    const post = response.data;
+    post.shares = post.shares.filter((id) => id !== userId);
+    await axios.put(`http://localhost:3000/posts/${postId}`, post);
+  } catch (error) {
+    console.error("Error unsharing the post:", error);
+  }
+};
+export const handleSharePost = async (postId, userId, shared, setShared, setSharesCount) => {
+  if (shared) {
+    await unsharePost(postId, userId);
+    setShared(false);
+    setSharesCount((prev) => prev - 1);
+  } else {
+    await sharePost(postId, userId);
+    setShared(true);
+    setSharesCount((prev) => prev + 1);
+  }
+}
+async function postComment(postId, comment) {
+  try {
+    const response = await axios.get(`http://localhost:3000/posts/${postId}`);
+    const post = response.data;
+    post.comments.push(comment);
+    await axios.put(`http://localhost:3000/posts/${postId}`, post);
+  } catch (error) {
+    console.error("Error posting the comment:", error);
+  }
+}
+export const handleAddNewComment = (postId,newComment, userId,authorName, comments, setComments, setNewComment) => {
+  if (newComment.trim() === "") {
+    return;
+  }
+  const lastId = comments.length > 0 ? comments[comments.length - 1].id : 0;
+  const comment = {
+    id: lastId+1,
+    authorId: userId,
+    authorName: authorName,
+    content: newComment,
+  };
+
+  postComment(postId, comment);
+  setComments((prev) => [...prev, comment]);
+  setNewComment("");
 };
 
 
@@ -328,3 +332,4 @@ export const verifyEmailCode = async (pin) => {
       throw new Error('Error verifying email: ' + error.message);
   }
 };
+

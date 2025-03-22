@@ -1,11 +1,14 @@
 import React from "react";
 import { GoogleLogin } from "@react-oauth/google";
+import { useNavigate } from "react-router-dom";
+
+
 
 const SocialLogin = () => {
+  const navigate = useNavigate();
   const handleLoginSuccess = (credentialResponse) => {
+    navigate("/Home");
     console.log("Google Login Success:", credentialResponse);
-
-    
     const { credential } = credentialResponse; 
 
     

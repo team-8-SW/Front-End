@@ -102,7 +102,8 @@
       "content": "hello",
       "likes": [
         2,
-        3
+        3,
+        1
       ],
       "comments": [
         {
@@ -122,6 +123,18 @@
           "authorId": "1",
           "authorName": "yousssef essam mansy",
           "content": "bye"
+        },
+        {
+          "id": 4,
+          "authorId": 1,
+          "authorName": "youssef mohamed",
+          "content": "hi"
+        },
+        {
+          "id": 5,
+          "authorId": 1,
+          "authorName": "youssef mohamed",
+          "content": "test"
         }
       ],
       "shares": []
@@ -133,7 +146,9 @@
       "authorName": "ahmed mohamed",
       "likes": [],
       "comments": [],
-      "shares": []
+      "shares": [
+        1
+      ]
     },
     {
       "id": "3",

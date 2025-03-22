@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Button, Input, Typography } from "@material-tailwind/react";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
+import { Link } from "react-router-dom";
 
 const ContactInfo = ({ userData, setOpenContact }) => {
   const [contact, setContact] = useState({
@@ -34,15 +35,16 @@ const ContactInfo = ({ userData, setOpenContact }) => {
         <Typography variant="small" className="text-gray-600">
           Email
         </Typography>
-        <a
-          href={`mailto:${contact.email}`}
+        <Link
+          // href={`mailto:${contact.email}`}
+          to="/EmailManagement"
           className="text-blue-600 flex items-center gap-1 hover:underline"
-          target="_blank"
-          rel="noopener noreferrer"
+          // target="_blank"
+          // rel="noopener noreferrer"
         >
           {contact.email}
           <ArrowTopRightOnSquareIcon className="w-4 h-4" />
-        </a>
+        </Link>
       </div>
 
       {/* Phone Number */}

@@ -83,24 +83,12 @@ function App() {
   {/* <Route path="/*" element={<NotFound />} /> */}
 </Routes>
         <Routes>
-          <Route
-            path="/profile"
-            element={<Profile loggedUser={loggedUser} />}
-          />
-          <Route path="/" element={<Home />} />
-          <Route
-            path="/education"
-            element={<DetailsEducation loggedUser={loggedUser} />}
-          />
-          <Route path="/experience" element={<DetailsExperience  loggedUser={loggedUser}/>} />
-          <Route
-            path="/skills"
-            element={<DetailedSkills loggedUser={loggedUser} />}
-          />
+         
+         
+       
+          
         
-          <Route path="/login" element={<LoginPage />} /> 
-          <Route path="/signup" element={<SignUp/>} /> 
-          <Route path="/ResetPassword" element={<ResetPassword />} /> 
+         
           <Route path="/EmailManagement" element={<EmailManagement/>}/>
           <Route path="/VerifyEmail" element={<VerifyEmail/>}/>
         </Routes>

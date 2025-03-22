@@ -34,6 +34,7 @@ function App() {
       navigate("/login"); // Redirect to login if no user is found
     } else {
       fetchUser(setLoggedUser);
+      navigate("/");
     }
   }, []);
 

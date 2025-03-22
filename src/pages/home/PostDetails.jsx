@@ -3,6 +3,7 @@ import {
   useProfilePicture,
   useUserId,
   useName,
+  handleSharePost,
   handleLikePost,
   handleAddNewComment,
   handleLoadMoreComments,
@@ -11,9 +12,12 @@ import { Button, Input } from "@material-tailwind/react";
 import {
   HandThumbUpIcon as OutlineThumbUpIcon,
   ChatBubbleOvalLeftEllipsisIcon,
-  ShareIcon,
+  ShareIcon as OutlineShareIcon,
 } from "@heroicons/react/24/outline";
-import { HandThumbUpIcon as SolidThumbUpIcon } from "@heroicons/react/24/solid";
+import { 
+  HandThumbUpIcon as SolidThumbUpIcon,
+  ShareIcon as SolidShareIcon
+} from "@heroicons/react/24/solid";
 
 const PostDetails = ({ post }) => {
   const posterProfilePicture = useProfilePicture(post.authorId);
@@ -21,17 +25,24 @@ const PostDetails = ({ post }) => {
   const [likesCount, setLikesCount] = useState(post.likes?.length || 0);
   const userId = useUserId();
   const commenterName = useName(userId);
-
   const [visibleComments, setVisibleComments] = useState(2);
   const [newComment, setNewComment] = useState("");
   const [comments, setComments] = useState(post.comments || []);
   const [showComments, setShowComments] = useState(false);
+  const [shared, setShared] = useState(false);
+  const [sharesCount, setSharesCount] = useState(post.shares?.length || 0);
 
   useEffect(() => {
     if (Array.isArray(post.likes) && post.likes.includes(userId)) {
       setLiked(true);
     }
   }, [post.likes, userId]);
+
+  useEffect(() => {
+    if (Array.isArray(post.shares) && post.shares.includes(userId)) {
+      setShared(true);
+    }
+  }, [post.shares, userId]);
 
   return (
     <div className="bg-white border border-gray-300 rounded-lg shadow-sm p-4 mb-4">
@@ -46,9 +57,7 @@ const PostDetails = ({ post }) => {
         </div>
         <div className="ml-3">
           <h2 className="font-semibold text-gray-900">{post.authorName}</h2>
-          <p className="text-sm text-gray-500">
-            {post.timestamp || "Just now"}
-          </p>
+          <p className="text-sm text-gray-500">{post.timestamp || "Just now"}</p>
         </div>
       </div>
 
@@ -81,7 +90,7 @@ const PostDetails = ({ post }) => {
           variant="text"
           color="blue"
           className="flex items-center gap-1 hover:text-blue-600"
-          onClick={() => setShowComments((prev) => !prev)} // Toggle comments visibility
+          onClick={() => setShowComments((prev) => !prev)}
         >
           <ChatBubbleOvalLeftEllipsisIcon className="h-5 w-5" />
           Comment {comments.length}
@@ -92,14 +101,21 @@ const PostDetails = ({ post }) => {
           variant="text"
           color="blue"
           className="flex items-center gap-1 hover:text-blue-600"
+          onClick={() =>
+            handleSharePost(post.id, userId, shared, setShared, setSharesCount)
+          }
         >
-          <ShareIcon className="h-5 w-5" />
-          Share {post.shares || 0}
+          {shared ? (
+            <SolidShareIcon className="h-5 w-5 text-blue-600" />
+          ) : (
+            <OutlineShareIcon className="h-5 w-5" />
+          )}
+          Share {sharesCount}
         </Button>
       </div>
 
       {/* Comments Section */}
-      {showComments && ( // Show comments only if showComments is true
+      {showComments && (
         <div className="mt-4">
           {/* Input for New Comment */}
           <div className="flex items-center gap-2 mb-4">
@@ -115,6 +131,7 @@ const PostDetails = ({ post }) => {
               color="blue"
               onClick={() =>
                 handleAddNewComment(
+                  post.id,
                   newComment,
                   userId,
                   commenterName,
@@ -131,11 +148,10 @@ const PostDetails = ({ post }) => {
 
           {/* Display Comments */}
           {comments.slice(0, visibleComments).map((comment) => (
-            <div
-              key={comment.id}
-              className="border-t border-gray-200 pt-2 mt-2 text-sm"
-            >
-              <p className="font-semibold">{comment.commenterName}</p>
+            <div key={comment.id} className="border-t border-gray-200 pt-2 mt-2 text-sm">
+              <div className="flex items-center gap-2">
+                <p className="text-gray-800 font-semibold">{comment.authorName}</p>
+              </div>
               <p>{comment.content}</p>
             </div>
           ))}

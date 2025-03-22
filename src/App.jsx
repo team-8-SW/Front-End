@@ -41,7 +41,7 @@ function App() {
 
   return (
     <div className="bg-backGroundColor min-h-screen">
-      <Nav />
+      {/* <Nav /> */}
       <div>
       <Routes>
   <Route

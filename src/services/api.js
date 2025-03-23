@@ -245,36 +245,36 @@ export const handleLikePost = async (postId, userId, liked, setLiked, setLikesCo
   }
 };
 
-const sharePost = async (postId, userId) => {
+const repostPost = async (postId, userId) => {
   try {
     const response = await axios.get(`http://localhost:3000/posts/${postId}`);
     const post = response.data;
-    post.shares.push(userId);
+    post.reposts.push(userId);
     await axios.put(`http://localhost:3000/posts/${postId}`, post);
   } catch (error) {
     console.error("Error sharing the post:", error);
   }
 };
 
-const unsharePost = async (postId, userId) => {
+const unrepostPost = async (postId, userId) => {
   try {
     const response = await axios.get(`http://localhost:3000/posts/${postId}`);
     const post = response.data;
-    post.shares = post.shares.filter((id) => id !== userId);
+    post.reposts = post.reposts.filter((id) => id !== userId);
     await axios.put(`http://localhost:3000/posts/${postId}`, post);
   } catch (error) {
     console.error("Error unsharing the post:", error);
   }
 };
-export const handleSharePost = async (postId, userId, shared, setShared, setSharesCount) => {
-  if (shared) {
-    await unsharePost(postId, userId);
-    setShared(false);
-    setSharesCount((prev) => prev - 1);
+export const handlerepostPost = async (postId, userId, reposted, setreposted, setrepostsCount) => {
+  if (reposted) {
+    await unrepostPost(postId, userId);
+    setreposted(false);
+    setrepostsCount((prev) => prev - 1);
   } else {
-    await sharePost(postId, userId);
-    setShared(true);
-    setSharesCount((prev) => prev + 1);
+    await repostPost(postId, userId);
+    setreposted(true);
+    setrepostsCount((prev) => prev + 1);
   }
 }
 async function postComment(postId, comment) {

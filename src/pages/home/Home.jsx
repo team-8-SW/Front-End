@@ -6,7 +6,6 @@ import Nav from "../../components/Nav";
 
 const Home = () => {
   return (<div>
-    <Nav />
     <div className="flex justify-center space-x-12 mr-4">
       <div className="w-1/5 ml-4 mt-4">
         <HomeProfileCard />

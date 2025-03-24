@@ -66,6 +66,7 @@ const PostModal = ({ isOpen, toggleModal }) => {
 
   return (
     <div
+      data-testid="modal-overlay"
       className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
       onClick={handleOverlayClick}
     >

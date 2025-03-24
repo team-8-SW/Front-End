@@ -78,6 +78,7 @@ const PostDetails = ({ post }) => {
           onClick={() =>
             handleLikePost(post.id, userId, liked, setLiked, setLikesCount)
           }
+          data-testid="like-icon"
         >
           {liked ? (
             <SolidThumbUpIcon className="h-5 w-5 text-blue-600" />
@@ -93,6 +94,7 @@ const PostDetails = ({ post }) => {
           color="blue"
           className="flex items-center gap-1 hover:text-blue-600"
           onClick={() => setShowComments((prev) => !prev)}
+          data-testid="comment-icon"
         >
           <ChatBubbleOvalLeftEllipsisIcon className="h-5 w-5" />
           Comment {comments.length}
@@ -106,6 +108,7 @@ const PostDetails = ({ post }) => {
           onClick={() =>
             handlerepostPost(post.id, userId, reposted, setreposted, setrepostsCount)
           }
+          data-testid="repost-icon"
         >
           {reposted ? (
             <SolidrepostIcon className="h-5 w-5 text-blue-600" />
@@ -120,6 +123,7 @@ const PostDetails = ({ post }) => {
           variant="text"
           color="blue"
           className="flex items-center gap-1 hover:text-blue-600"
+          data-testid="share-icon"
         >
           <ShareIcon className="h-5 w-5" />
           Share 
@@ -158,6 +162,7 @@ const PostDetails = ({ post }) => {
                 )
               }
               className="flex-shrink-0"
+              data-testid="post-comment-btn"
             >
               Post
             </Button>
@@ -180,6 +185,7 @@ const PostDetails = ({ post }) => {
               color="blue"
               onClick={() => handleLoadMoreComments(setVisibleComments)}
               className="mt-2"
+              data-testid="load-more-comments-btn"
             >
               Load More Comments
             </Button>

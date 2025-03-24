@@ -1,9 +1,9 @@
 import React from "react";
+import { render, screen, fireEvent } from "@testing-library/react";
+import "@testing-library/jest-dom";
 import { ThemeProvider } from "@material-tailwind/react";
 import PostBar from "../PostBar";
-import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, expect, test, vi } from "vitest";
-import "@testing-library/jest-dom/vitest"; // Ensure matchers like toBeInTheDocument() work
+import{describe, test, expect,jest} from "@jest/globals";
 
 describe("PostBar Component", () => {
   const mockPhoto = "https://example.com/photo.jpg";
@@ -15,32 +15,22 @@ describe("PostBar Component", () => {
       </ThemeProvider>
     );
 
-    // Use getAllByRole and pick the correct button
-    const startPostButtons = screen.getAllByRole("button", { name: /start a post/i });
-    expect(startPostButtons[0]).toBeInTheDocument();
+    const startPostButton = screen.getByTestId("start-post-btn");
+    expect(startPostButton).toBeInTheDocument();
   });
 
   test("calls toggleModal when the start a post button is clicked", () => {
-    const mockToggleModal = vi.fn(() => {
-      console.log("toggleModal called"); // Debugging line
-    });
-  
+    const mockToggleModal = jest.fn();
+
     render(
       <ThemeProvider>
         <PostBar photo={mockPhoto} toggleModal={mockToggleModal} />
       </ThemeProvider>
     );
-  
-    // Debugging: Log the rendered component
-    console.log(screen.debug());
-  
-    // Use getAllByTestId and select the first button
-    const startPostButtons = screen.getAllByTestId("start-post-btn");
-    console.log(startPostButtons); // Debugging line
-  
-    // Manually trigger the onClick handler
-    startPostButtons[0].onClick();
-  
+
+    const startPostButton = screen.getByTestId("start-post-btn");
+    fireEvent.click(startPostButton);
+
     expect(mockToggleModal).toHaveBeenCalledTimes(1);
   });
 
@@ -51,13 +41,8 @@ describe("PostBar Component", () => {
       </ThemeProvider>
     );
 
-    // Select buttons using getAllByRole and choose specific ones
-    const mediaButtons = screen.getAllByRole("button", { name: /media/i });
-    const eventButtons = screen.getAllByRole("button", { name: /event/i });
-    const writeArticleButtons = screen.getAllByRole("button", { name: /write article/i });
-
-    expect(mediaButtons[0]).toBeInTheDocument();
-    expect(eventButtons[0]).toBeInTheDocument();
-    expect(writeArticleButtons[0]).toBeInTheDocument();
+    expect(screen.getByText("Media")).toBeInTheDocument();
+    expect(screen.getByText("Event")).toBeInTheDocument();
+    expect(screen.getByText("Write article")).toBeInTheDocument();
   });
 });

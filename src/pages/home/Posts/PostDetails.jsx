@@ -14,6 +14,7 @@ import {
   ChatBubbleOvalLeftEllipsisIcon,
   ArrowPathRoundedSquareIcon as OutlinerepostIcon,
   PaperAirplaneIcon as ShareIcon,
+  PencilIcon, // Import the pencil icon
 } from "@heroicons/react/24/outline";
 import { 
   HandThumbUpIcon as SolidThumbUpIcon,
@@ -24,7 +25,7 @@ const PostDetails = ({ post }) => {
   const posterProfilePicture = useProfilePicture(post.authorId);
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(post.likes?.length || 0);
-  const userId = useUserId();
+  const userId = useUserId(); // Current user ID
   const commenterName = useName(userId);
   const commenterProfilePicture = useProfilePicture(userId);
   const [visibleComments, setVisibleComments] = useState(2);
@@ -47,7 +48,18 @@ const PostDetails = ({ post }) => {
   }, [post.reposts, userId]);
 
   return (
-    <div className="bg-white border border-gray-300 rounded-lg shadow-sm p-4 mb-4">
+    <div className="bg-white border border-gray-300 rounded-lg shadow-sm p-4 mb-4 relative">
+      {/* Edit Button (only visible to the author) */}
+      {userId === post.authorId && (
+        <button
+          className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+          onClick={() => console.log("Edit post clicked")} // Replace with your edit logic
+          data-testid="edit-post-btn"
+        >
+          <PencilIcon className="h-5 w-5" />
+        </button>
+      )}
+
       {/* Header Section */}
       <div className="flex items-center mb-4">
         <div className="w-10 h-10 rounded-full bg-gray-200 flex-shrink-0">

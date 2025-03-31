@@ -1,7 +1,7 @@
 import React from "react";
-import CreatePost from "./CreatePost";
+import CreatePost from "./Posts/CreatePost";
 import HomeProfileCard from "./HomeProfileCard";
-import Posts from "./Posts";
+import Posts from "./Posts/Posts";
 
 const Home = () => {
   return (

@@ -7,7 +7,7 @@ import {
   handleLikePost,
   handleAddNewComment,
   handleLoadMoreComments,
-} from "../../services/api";
+} from "../../../services/api";
 import { Button, Input } from "@material-tailwind/react";
 import {
   HandThumbUpIcon as OutlineThumbUpIcon,

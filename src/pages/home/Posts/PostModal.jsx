@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@material-tailwind/react";
-import { useUserId, useName } from "../../services/api";
+import { useUserId, useName } from "../../../services/api";
 import axios from "axios";
 
 const PostModal = ({ isOpen, toggleModal }) => {

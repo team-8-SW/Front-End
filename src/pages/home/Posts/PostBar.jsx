@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "@material-tailwind/react";
 import { CameraIcon, CalendarIcon, DocumentTextIcon } from "@heroicons/react/24/outline";
-import ProfilePicture from "./ProfilePicture";
+import ProfilePicture from "../ProfilePicture";
 
 const PostBar = ({ photo, toggleModal }) => {
   return (

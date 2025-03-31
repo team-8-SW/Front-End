@@ -22,7 +22,7 @@ const HomeProfileCard = () => {
   const coverPhoto = useCoverPhoto(userId);
   const name = useName(userId);
   const userData = useUserData(userId);
-
+  
   return (
     <Link to={`/profile`}>
       <Card className="w-full max-w-xs mx-auto cursor-pointer p-4 mt-4">

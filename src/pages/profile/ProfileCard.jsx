@@ -12,28 +12,16 @@ import {
 } from "@material-tailwind/react";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
+import ContactInfo from "./ContactInfo"; // Import ContactInfo Component
 
 const ProfileCard = ({ loggedUser }) => {
   const [open, setOpen] = useState(false);
+  const [openContact, setOpenContact] = useState(false); // State for Contact Info modal
   const [userData, setUserData] = useState(null);
 
-  // Default placeholder images
-  const defaultProfile = "";
-  const defaultCover = "";
-
-  // Fetch updated user data from JSON Server
-  const fetchUserData = async () => {
-    try {
-      const res = await axios.get(`http://localhost:3000/users/${loggedUser.id}`);
-      setUserData(res.data);
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-    }
-  };
-
   useEffect(() => {
-    if (loggedUser?.id) {
-      fetchUserData();
+    if (loggedUser) {
+      setUserData(loggedUser);
     }
   }, [loggedUser]);
 
@@ -58,12 +46,12 @@ const ProfileCard = ({ loggedUser }) => {
 
   // Remove profile picture
   const removeProfilePicture = () => {
-    setUserData({ ...userData, profilePicture: defaultProfile });
+    setUserData({ ...userData, profilePicture: "" });
   };
 
   // Remove cover photo
   const removeCoverPhoto = () => {
-    setUserData({ ...userData, coverPhoto: defaultCover });
+    setUserData({ ...userData, coverPhoto: "" });
   };
 
   // Handle form submission
@@ -72,7 +60,6 @@ const ProfileCard = ({ loggedUser }) => {
     try {
       await axios.patch(`http://localhost:3000/users/${loggedUser.id}`, userData);
       setOpen(false);
-      fetchUserData();
     } catch (error) {
       console.error("Error updating profile:", error);
     }
@@ -83,7 +70,7 @@ const ProfileCard = ({ loggedUser }) => {
       {/* Cover Image */}
       <CardHeader floated={false} shadow={false} className="relative h-40">
         <img
-          src={userData.coverPhoto || defaultCover}
+          src={userData.coverPhoto || ""}
           alt="cover-image"
           className="w-full h-full object-cover p-0"
         />
@@ -92,7 +79,7 @@ const ProfileCard = ({ loggedUser }) => {
       {/* Profile Image */}
       <div className="absolute top-28 left-[20%] transform -translate-x-1/2">
         <Avatar
-          src={userData.profilePicture || defaultProfile}
+          src={userData.profilePicture || ""}
           size="xxl"
           className="border-4 border-white shadow-lg"
         />
@@ -116,9 +103,13 @@ const ProfileCard = ({ loggedUser }) => {
             <Typography variant="small" className="text-gray-500">
               {userData.locationCity}, {userData.locationCountry}
             </Typography>
-            <Typography variant="small" className="text-blue-500 cursor-pointer">
-              Contact Info
-            </Typography>
+            {/* Contact Info Button */}
+            <button
+              onClick={() => setOpenContact(true)}
+              className="text-blue-500 cursor-pointer flex items-center gap-1"
+            >
+              Contact Info <PencilIcon className="w-4 h-4" />
+            </button>
           </div>
         </div>
       </CardBody>
@@ -145,11 +136,7 @@ const ProfileCard = ({ loggedUser }) => {
           <div className="flex items-center gap-2">
             <label className="block text-sm font-medium text-gray-700">Profile Picture</label>
             <input type="file" name="profilePicture" accept="image/*" onChange={handleFileChange} />
-            <button
-              type="button"
-              onClick={removeProfilePicture}
-              className="bg-red-500 text-white px-2 py-1 rounded flex items-center gap-1"
-            >
+            <button type="button" onClick={removeProfilePicture} className="bg-red-500 text-white px-2 py-1 rounded">
               <TrashIcon className="w-4 h-4" /> Remove
             </button>
           </div>
@@ -158,11 +145,7 @@ const ProfileCard = ({ loggedUser }) => {
           <div className="flex items-center gap-2">
             <label className="block text-sm font-medium text-gray-700">Cover Photo</label>
             <input type="file" name="coverPhoto" accept="image/*" onChange={handleFileChange} />
-            <button
-              type="button"
-              onClick={removeCoverPhoto}
-              className="bg-red-500 text-white px-2 py-1 rounded flex items-center gap-1"
-            >
+            <button type="button" onClick={removeCoverPhoto} className="bg-red-500 text-white px-2 py-1 rounded">
               <TrashIcon className="w-4 h-4" /> Remove
             </button>
           </div>
@@ -172,6 +155,11 @@ const ProfileCard = ({ loggedUser }) => {
             <Button type="submit" color="blue">Save</Button>
           </div>
         </form>
+      </Dialog>
+
+      {/* Contact Info Modal */}
+      <Dialog open={openContact} handler={() => setOpenContact(false)}>
+        <ContactInfo userData={userData} setOpenContact={setOpenContact} />
       </Dialog>
     </Card>
   );

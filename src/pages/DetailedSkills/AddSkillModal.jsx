@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Dialog, Button, Typography } from "@material-tailwind/react";
 import axios from "axios";
+import { handleAddSkills } from "../../services/profile";
+
 
 const AddSkillModal = ({ open, onClose, userId, onSkillAdded }) => {
   const [newSkill, setNewSkill] = useState("");
@@ -15,23 +17,7 @@ const AddSkillModal = ({ open, onClose, userId, onSkillAdded }) => {
     }
     setError(false);
 
-    axios.get(`http://localhost:3000/users/${userId}`)
-      .then(response => {
-        const n=[...response.data.skills]
-        
-        const updatedSkills = [...n, newSkill];
-
-        return axios.patch(`http://localhost:3000/users/${userId}`, {
-          skills: updatedSkills
-        });
-      })
-      .then(response => {
-        console.log("Skill added successfully!", response.data);
-        onSkillAdded(newSkill); // Update parent component
-        setNewSkill(""); // Clear input
-        onClose(); // Close modal
-      })
-      .catch(error => console.error("Error adding skill:", error));
+   handleAddSkills(newSkill, userId, onSkillAdded, setNewSkill,onClose);
   };
 
   return (

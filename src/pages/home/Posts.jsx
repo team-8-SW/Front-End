@@ -44,10 +44,10 @@ const Posts = () => {
     <div>
       {posts.map((post, index) => (
         <div
-          key={post.id}
+         
           ref={index === posts.length - 1 ? lastPostElementRef : null}
         >
-          <PostDetails post={post} />
+          <PostDetails post={post}  key={post.id}/>
         </div>
       ))}
     </div>

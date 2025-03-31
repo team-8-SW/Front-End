@@ -1,24 +1,15 @@
 import { Typography } from '@material-tailwind/react';
-import React from 'react';
+import React,{useEffect} from 'react';
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { PiBagSimpleBold } from "react-icons/pi";
+import{handleDeleteExp} from "../../services/profile";
 
 const ExpData = ({ experiences, userId, onDelete }) => {
-  const handleDelete = () => {
-    axios
-      .get(`http://localhost:3000/users/${userId}`)
-      .then((res) => {
-        const updatedExperience = res.data.experience.filter((exp) => !(exp.title == experiences.title&&exp.company==experiences.company&&exp.employmentType==experiences.employmentType&&exp.startDate==experiences.startDate&&exp.endDate==experiences.endDate&&exp.description==experiences.description&&exp.location==experiences.location&&exp.locationType==experiences.locationType));
-        return axios.patch(`http://localhost:3000/users/${userId}`, {
-          experience: updatedExperience,
-        });
-      })
-      .then(() => {
-        onDelete(experiences); // Update the UI in React
-      })
-      .catch((err) => console.error("Error deleting experience:", err));
-  };
+const handleDelete = () => {
+  handleDeleteExp(experiences,userId,onDelete);
+};
+
 
   return (
     <div className="flex justify-between mt-3">

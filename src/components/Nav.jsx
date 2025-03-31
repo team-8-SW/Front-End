@@ -14,6 +14,7 @@ import { MdWork } from "react-icons/md";
 import { MdPeople } from "react-icons/md";
 import { AiFillMessage } from "react-icons/ai";
 import { FaBell } from "react-icons/fa";
+import { logout } from "../services/profile"; // Import the logout function
 
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 const Nav = () => {
@@ -31,7 +32,7 @@ const Nav = () => {
         
         {/* Left - Logo (Links to "/") and Search */}
         <div className="flex items-center gap-0">
-          <Link to="/profile">
+          <Link to="">
             <Typography as="div" className="p-1 cursor-pointer">
               <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="41px" height="41px" viewBox="0 0 48 48">
                 <path fill="#0288D1" d="M42,37c0,2.762-2.238,5-5,5H11c-2.761,0-5-2.238-5-5V11c0-2.762,2.239-5,5-5h26c2.762,0,5,2.238,5,5V37z"></path>
@@ -93,11 +94,15 @@ const Nav = () => {
     >
       Settings
     </Link>
-    <button className="block px-4 py-2 text-gray-700 hover:bg-gray-100 w-full text-left"
-      onClick={() => setIsDropdownOpen(false)}
-    >
-      Logout
-    </button>
+    <button
+            className="block px-4 py-2 text-gray-700 hover:bg-gray-100 w-full text-left"
+            onClick={() => {
+              setIsDropdownOpen(false);
+              logout(navigate); // Call the logout function
+            }}
+          >
+            Logout
+          </button>
   </div> 
 )}
 

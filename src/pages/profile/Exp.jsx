@@ -74,9 +74,9 @@ const Exp = ({loggedUser}) => {
               Experience
             </Typography>
             <div className="flex items-center space-x-3">
-              <button className="text-gray-600 hover:text-gray-800">
-                <PlusIcon className="w-5 h-5" />
-              </button>
+            <button onClick={() => setIsModalOpen(true)} className="text-gray-600 hover:text-gray-800">
+                             <PlusIcon className="w-5 h-5" />
+                             </button>
               
               <Link to="/experience">
                   <button className="text-gray-600 hover:text-gray-800">
@@ -105,7 +105,9 @@ const Exp = ({loggedUser}) => {
             </div>
           </div>
            <div className="mt-3">
+            <Link to="/experience">
                      <Button variant="outlined" color="blue">add Experience</Button>
+            </Link>
                   </div>
         </Card>
       </div>)}

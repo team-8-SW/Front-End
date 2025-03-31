@@ -10,7 +10,7 @@ const ResumeManager = ({ userId, onResumesUpdated }) => {
       .then(response => {
         setResumes(response.data.resume || []);
       })
-      .catch(error => console.error("Error fetching resumes:", error));
+      
   }, [userId]);
 
   const handleUpload = (event) => {

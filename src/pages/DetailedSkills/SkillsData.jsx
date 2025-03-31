@@ -2,22 +2,13 @@ import { Typography } from "@material-tailwind/react";
 import React from "react";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
+import { handleDeleteSkill } from "../../services/profile";
 
 const SkillsData = ({ skill, userId, onDelete }) => {
   const handleDelete = () => {
-    axios
-      .get(`http://localhost:3000/users/${userId}`)
-      .then((res) => {
-        const updatedSkills = res.data.skills.filter((s) => s !== skill);
-  
-        return axios.patch(`http://localhost:3000/users/${userId}`, {
-          skills: updatedSkills, // Update only the skills array
-        });
-      })
-      .then(() => {
-        onDelete(skill); // Update the UI in React
-      })
-      .catch((err) => console.error("Error deleting skill:", err));
+    handleDeleteSkill(skill, userId, onDelete);
+
+   
   };
 
   return (

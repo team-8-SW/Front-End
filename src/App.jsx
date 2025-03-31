@@ -42,7 +42,7 @@ function App() {
 
   return (
     <div className="bg-backGroundColor min-h-screen">
-      {/* <Nav /> */}
+      <Nav />
       <div>
       <Routes>
   <Route
@@ -84,12 +84,6 @@ function App() {
   {/* <Route path="/*" element={<NotFound />} /> */}
 </Routes>
         <Routes>
-         
-         
-       
-          
-        
-         
           <Route path="/EmailManagement" element={<EmailManagement/>}/>
           <Route path="/VerifyEmail" element={<VerifyEmail/>}/>
         </Routes>

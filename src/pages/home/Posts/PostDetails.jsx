@@ -3,20 +3,21 @@ import {
   useProfilePicture,
   useUserId,
   useName,
-  handleSharePost,
+  handlerepostPost,
   handleLikePost,
   handleAddNewComment,
   handleLoadMoreComments,
-} from "../../services/api";
+} from "../../../services/api";
 import { Button, Input } from "@material-tailwind/react";
 import {
   HandThumbUpIcon as OutlineThumbUpIcon,
   ChatBubbleOvalLeftEllipsisIcon,
-  ShareIcon as OutlineShareIcon,
+  ArrowPathRoundedSquareIcon as OutlinerepostIcon,
+  PaperAirplaneIcon as ShareIcon,
 } from "@heroicons/react/24/outline";
 import { 
   HandThumbUpIcon as SolidThumbUpIcon,
-  ShareIcon as SolidShareIcon
+  ArrowPathRoundedSquareIcon as SolidrepostIcon
 } from "@heroicons/react/24/solid";
 
 const PostDetails = ({ post }) => {
@@ -25,12 +26,13 @@ const PostDetails = ({ post }) => {
   const [likesCount, setLikesCount] = useState(post.likes?.length || 0);
   const userId = useUserId();
   const commenterName = useName(userId);
+  const commenterProfilePicture = useProfilePicture(userId);
   const [visibleComments, setVisibleComments] = useState(2);
   const [newComment, setNewComment] = useState("");
   const [comments, setComments] = useState(post.comments || []);
   const [showComments, setShowComments] = useState(false);
-  const [shared, setShared] = useState(false);
-  const [sharesCount, setSharesCount] = useState(post.shares?.length || 0);
+  const [reposted, setreposted] = useState(false);
+  const [repostsCount, setrepostsCount] = useState(post.reposts?.length || 0);
 
   useEffect(() => {
     if (Array.isArray(post.likes) && post.likes.includes(userId)) {
@@ -39,10 +41,10 @@ const PostDetails = ({ post }) => {
   }, [post.likes, userId]);
 
   useEffect(() => {
-    if (Array.isArray(post.shares) && post.shares.includes(userId)) {
-      setShared(true);
+    if (Array.isArray(post.reposts) && post.reposts.includes(userId)) {
+      setreposted(true);
     }
-  }, [post.shares, userId]);
+  }, [post.reposts, userId]);
 
   return (
     <div className="bg-white border border-gray-300 rounded-lg shadow-sm p-4 mb-4">
@@ -51,7 +53,7 @@ const PostDetails = ({ post }) => {
         <div className="w-10 h-10 rounded-full bg-gray-200 flex-shrink-0">
           <img
             src={posterProfilePicture}
-            alt={`${post.author}'s profile`}
+            alt={`${post.authorName}'s profile`}
             className="w-full h-full rounded-full object-cover"
           />
         </div>
@@ -67,7 +69,7 @@ const PostDetails = ({ post }) => {
       </div>
 
       {/* Footer Section */}
-      <div className="flex justify-between text-gray-600 text-sm">
+      <div className="flex items-center justify-start space-x-4 text-gray-600 text-sm">
         {/* Like Button */}
         <Button
           variant="text"
@@ -76,6 +78,7 @@ const PostDetails = ({ post }) => {
           onClick={() =>
             handleLikePost(post.id, userId, liked, setLiked, setLikesCount)
           }
+          data-testid="like-icon"
         >
           {liked ? (
             <SolidThumbUpIcon className="h-5 w-5 text-blue-600" />
@@ -91,9 +94,28 @@ const PostDetails = ({ post }) => {
           color="blue"
           className="flex items-center gap-1 hover:text-blue-600"
           onClick={() => setShowComments((prev) => !prev)}
+          data-testid="comment-icon"
         >
           <ChatBubbleOvalLeftEllipsisIcon className="h-5 w-5" />
           Comment {comments.length}
+        </Button>
+
+        {/* Repost Button */}
+        <Button
+          variant="text"
+          color="blue"
+          className="flex items-center gap-1 hover:text-blue-600"
+          onClick={() =>
+            handlerepostPost(post.id, userId, reposted, setreposted, setrepostsCount)
+          }
+          data-testid="repost-icon"
+        >
+          {reposted ? (
+            <SolidrepostIcon className="h-5 w-5 text-blue-600" />
+          ) : (
+            <OutlinerepostIcon className="h-5 w-5" />
+          )}
+          Repost {repostsCount}
         </Button>
 
         {/* Share Button */}
@@ -101,16 +123,10 @@ const PostDetails = ({ post }) => {
           variant="text"
           color="blue"
           className="flex items-center gap-1 hover:text-blue-600"
-          onClick={() =>
-            handleSharePost(post.id, userId, shared, setShared, setSharesCount)
-          }
+          data-testid="share-icon"
         >
-          {shared ? (
-            <SolidShareIcon className="h-5 w-5 text-blue-600" />
-          ) : (
-            <OutlineShareIcon className="h-5 w-5" />
-          )}
-          Share {sharesCount}
+          <ShareIcon className="h-5 w-5" />
+          Share 
         </Button>
       </div>
 
@@ -119,6 +135,11 @@ const PostDetails = ({ post }) => {
         <div className="mt-4">
           {/* Input for New Comment */}
           <div className="flex items-center gap-2 mb-4">
+            <img
+              src={commenterProfilePicture}
+              alt={`${commenterName}'s profile`}
+              className="w-8 h-8 rounded-full object-cover"
+            />
             <Input
               type="text"
               placeholder="Write a comment..."
@@ -141,6 +162,7 @@ const PostDetails = ({ post }) => {
                 )
               }
               className="flex-shrink-0"
+              data-testid="post-comment-btn"
             >
               Post
             </Button>
@@ -163,6 +185,7 @@ const PostDetails = ({ post }) => {
               color="blue"
               onClick={() => handleLoadMoreComments(setVisibleComments)}
               className="mt-2"
+              data-testid="load-more-comments-btn"
             >
               Load More Comments
             </Button>

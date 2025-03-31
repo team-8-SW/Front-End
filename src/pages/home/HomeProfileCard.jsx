@@ -34,7 +34,7 @@ const HomeProfileCard = () => {
           />
         </CardHeader>
         
-        <CardBody className="text-center px-4 pb-2">
+        <CardBody className="text-left px-4 pb-2">
           <Avatar
             src={profilePicture}
             alt="profile-picture"
@@ -50,13 +50,11 @@ const HomeProfileCard = () => {
             {userData?.location?.city || " "},{" "}
             {userData?.location?.country || ""}
           </Typography>
-        </CardBody>
         
-        <CardFooter className="p-4 text-center">
-          <Typography className="text-black font-small">
+          <Typography className="text-black text-sm font-small">
             {userData?.education?.[0]?.school||" "}
           </Typography>
-        </CardFooter>
+        </CardBody>
       </Card>
     </Link>
   );

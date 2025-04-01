@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import PostDetails from "./PostDetails";
-import { fetchPosts } from "../../services/api";
+import { fetchPosts } from "../../../services/api";
 
 const Posts = () => {
   const [posts, setPosts] = useState([]);

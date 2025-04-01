@@ -25,34 +25,36 @@ const HomeProfileCard = () => {
   
   return (
     <Link to={`/profile`}>
-      <Card className="w-full max-w-xs mx-auto cursor-pointer p-4 mt-4">
-        <CardHeader floated={false} shadow={false} className="relative h-24 ">
+      <Card className="w-full max-w-xs mx-auto cursor-pointer shadow-none border border-gray-200 rounded-lg overflow-hidden">
+        <CardHeader floated={false} shadow={false} className="relative h-16">
           <img
             src={coverPhoto}
             alt="cover-photo"
             className="w-full h-full object-cover"
           />
         </CardHeader>
-        <CardBody className="text-center">
+        
+        <CardBody className="text-left px-4 pb-2">
           <Avatar
             src={profilePicture}
             alt="profile-picture"
             className="w-20 h-20 rounded-full mx-auto -mt-10 border-4 border-white"
           />
-          <Typography variant="h5" className="mt-4">
+          <Typography variant="h5" className="text-black mt-4 font-bold">
             {name}
           </Typography>
-          <Typography className="text-gray-600">
-            {userData?.education?.[0]?.school || "No education data available"}
+          <Typography className="text-black mt-2">
+            {userData?.bio || " "}
           </Typography>
-          <Typography className="text-gray-600">
-            {userData?.location?.city || "No location data available"},{" "}
+          <Typography className="text-gray-600 text-sm">
+            {userData?.location?.city || " "},{" "}
             {userData?.location?.country || ""}
           </Typography>
+        
+          <Typography className="text-black text-sm font-small">
+            {userData?.education?.[0]?.school||" "}
+          </Typography>
         </CardBody>
-        <CardFooter className="flex justify-center">
-          {userData?.education?.[0]?.degree || "No degree data available"}
-        </CardFooter>
       </Card>
     </Link>
   );

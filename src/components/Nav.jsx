@@ -1,36 +1,28 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Typography } from "@material-tailwind/react";
-import {
-  HomeIcon,
-  BriefcaseIcon,
-  UsersIcon,
-  BellIcon,
-  ChatBubbleLeftEllipsisIcon,
-  UserCircleIcon,
-} from "@heroicons/react/24/outline";
-import { IoHomeSharp  } from "react-icons/io5";
-import { MdWork } from "react-icons/md";
-import { MdPeople } from "react-icons/md";
+import { PiDotsNine } from "react-icons/pi";
+import { UserCircleIcon } from "@heroicons/react/24/outline";
+import { IoHomeSharp } from "react-icons/io5";
+import { MdWork, MdPeople } from "react-icons/md";
 import { AiFillMessage } from "react-icons/ai";
 import { FaBell } from "react-icons/fa";
-import { logout } from "../services/profile"; // Import the logout function
+import { PlusIcon } from "@heroicons/react/24/outline";
 
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { logout } from "../services/profile";
+import { useNavigate } from "react-router-dom";
+
 const Nav = () => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const location = useLocation(); // Get current route
-  const navigate = useNavigate(); // Create navigate function
+  const [isAppsDropdownOpen, setIsAppsDropdownOpen] = useState(false);
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
 
-  // Function to check if a link is active
   const isActive = (path) => location.pathname === path;
-
 
   return (
     <div className="sticky top-0 left-0 w-full bg-white shadow-md z-50 h-[52px]">
       <div className="flex gap-40 items-center px-3 max-w-screen-xl mx-auto py-[5px]">
-        
-        {/* Left - Logo (Links to "/") and Search */}
         <div className="flex items-center gap-0">
           <Link to="">
             <Typography as="div" className="p-1 cursor-pointer">
@@ -40,79 +32,59 @@ const Nav = () => {
               </svg>
             </Typography>
           </Link>
-
           <input
             type="text"
             placeholder="Search"
             className="h-[34px] hidden sm:block sm:w-40 lg:w-60 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
-
-        {/* Center - Navigation Icons with Labels */}
         <div className="flex gap-6 text-gray-600">
           {[
-            { to: "/", icon:  IoHomeSharp, label: "Home" },
+            { to: "/", icon: IoHomeSharp, label: "Home" },
             { to: "/network", icon: MdPeople, label: "Network" },
-            { to: "/jobs", icon: MdWork , label: "Jobs" },
+            { to: "jobs", icon: MdWork, label: "Jobs" },
             { to: "/messaging", icon: AiFillMessage, label: "Messaging" },
             { to: "/notifications", icon: FaBell, label: "Notifications" },
           ].map(({ to, icon: Icon, label }) => (
             <Link key={to} to={to} className="flex flex-col items-center group ">
-              <Icon
-                className={`h-6 w-6 ${
-                  isActive(to) ? "text-blue-700" : "text-gray-900 group-hover:text-blue-700"
-                }`}
-              />
-              <span
-                className={`text-xs mt-1 ${
-                  isActive(to) ? "text-blue-700 font-semibold" : "text-gray-500 group-hover:text-blue-700"
-                }`}
-              >
-                {label}
-              </span>
+              <Icon className={`h-6 w-6 ${isActive(to) ? "text-blue-700" : "text-gray-900 group-hover:text-blue-700"}`} />
+              <span className={`text-xs mt-1 ${isActive(to) ? "text-blue-700 font-semibold" : "text-gray-500 group-hover:text-blue-700"}`}>{label}</span>
               {isActive(to) && <div className="w-6 h-1 bg-blue-700 rounded-full mt-1"></div>}
             </Link>
-          ))}
-           <div className="relative">
-          <button
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex flex-col items-center text-gray-500 hover:text-blue-700 focus:outline-none"
-          >
-            <UserCircleIcon className="h-8 w-8" />
-            <span className="text-xs mt-0">Me</span>
-          </button>
-
-          {isDropdownOpen && (
-  <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-md shadow-lg py-2 z-50">
-    <Link to="/profile" className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-      onClick={() => setIsDropdownOpen(false)}
-    >
-      View Profile
-    </Link>
-    <Link to="/settings" className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-      onClick={() => setIsDropdownOpen(false)}
-    >
-      Settings
-    </Link>
-    <button
-            className="block px-4 py-2 text-gray-700 hover:bg-gray-100 w-full text-left"
-            onClick={() => {
-              setIsDropdownOpen(false);
-              logout(navigate); // Call the logout function
-            }}
-          >
-            Logout
-          </button>
-  </div> 
-)}
-
+          ))} 
+          <div className="relative">
+            <button onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)} className="flex flex-col items-center text-gray-500 hover:text-blue-700 focus:outline-none">
+              <UserCircleIcon className="h-6 w-6" />
+              <span className="text-xs mt-0">Me</span>
+            </button>
+            {isProfileDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-md shadow-lg py-2 z-50">
+                <Link to="/profile" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">View Profile</Link>
+                <Link to="/settings" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">Settings</Link>
+                <button onClick={() => { setIsProfileDropdownOpen(false); logout(navigate); }} className="block px-4 py-2 text-gray-700 hover:bg-gray-100 w-full text-left">Logout</button>
+              </div>
+            )}
+          </div>
+          <div className="relative">
+            <button onClick={() => setIsAppsDropdownOpen(!isAppsDropdownOpen)} className="flex flex-col items-center text-gray-500 hover:text-blue-700 focus:outline-none">
+              <PiDotsNine className="h-6 w-6" />
+              <span className="text-xs mt-0">Apps</span>
+            </button>
+            {isAppsDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-md shadow-lg py-2 z-50">
+                <Link to="/companyform" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                <div className="flex items-center gap-2">
+<Typography className="text-gray-700 text-[15px]">Create a Company Page 
+</Typography>
+                  <PlusIcon className="h-6 w-6" />
+                </div>
+                </Link>
+                <Link to="/business" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">Business Tools</Link>
+              </div>
+            )}
+          </div>
         </div>
-
       </div>
-        </div>
-
-        {/* Right - Profile Dropdown */}
-       
     </div>
   );
 };

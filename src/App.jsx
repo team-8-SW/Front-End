@@ -22,6 +22,8 @@ import ProtectedRoute from "./ProtectedRoute";
 
 import EmailManagement from "./pages/UpdateEmail/EmailManagement";
 import VerifyEmail from "./pages/UpdateEmail/VerifyEmail";
+import CreateCompanyForm from "./pages/company/CreateCompanyForm";
+import Company from "./pages/company/Company";
 
 
 function App() {
@@ -78,6 +80,14 @@ function App() {
       </ProtectedRoute>
     }
   />
+  <Route
+    path="/company/*"
+    element={
+      <ProtectedRoute>
+        <Company loggedUser={loggedUser} />
+      </ProtectedRoute>
+    }
+  />
   <Route path="/login" element={<LoginPage setLoggedUser={setLoggedUser}/>} />
   <Route path="/signup" element={<SignUp />} />
   <Route path="/ResetPassword" element={<ResetPassword />} />
@@ -92,7 +102,8 @@ function App() {
          
           <Route path="/EmailManagement" element={<EmailManagement/>}/>
           <Route path="/VerifyEmail" element={<VerifyEmail/>}/>
-        </Routes>
+          <Route path="/companyform" element={< CreateCompanyForm loggedUser={loggedUser}/>}/>
+        </Routes> 
       </div>
     </div>
   );

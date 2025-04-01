@@ -55,7 +55,7 @@ const ProfileCard = ({ loggedUser }) => {
   };
 
   // Handle form submission
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => { 
     e.preventDefault();
     try {
       await axios.patch(`http://localhost:3000/users/${loggedUser.id}`, userData);

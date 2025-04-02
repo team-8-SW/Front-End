@@ -5,13 +5,12 @@ import axios from "axios";
 
 const PostModal = ({ isOpen, toggleModal }) => {
   
-
+  if (!isOpen) return null;
   const [postContent, setPostContent] = useState("");
   const [error, setError] = useState("");
   const [lastPostId, setLastPostId] = useState(null);
   const userId = useUserId();
   const name = useName(userId);
-  if (!isOpen) return null;
   useEffect(() => {
     const fetchLastPostId = async () => {
       try {
@@ -26,6 +25,8 @@ const PostModal = ({ isOpen, toggleModal }) => {
         console.error("Error fetching posts:", error);
       }
     };
+  
+  
 
     fetchLastPostId();
   }, []);
@@ -67,7 +68,7 @@ const PostModal = ({ isOpen, toggleModal }) => {
   return (
     <div
       data-testid="modal-overlay"
-      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
+      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
       onClick={handleOverlayClick}
     >
       <div

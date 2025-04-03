@@ -238,33 +238,6 @@
       "likes": [],
       "comments": [],
       "reposts": []
-    },
-    {
-      "id": "5",
-      "content": "test",
-      "authorId": 1,
-      "authorName": "youssef mansi",
-      "likes": [],
-      "comments": [],
-      "shares": 0
-    },
-    {
-      "id": "6",
-      "content": "Hi",
-      "authorId": 1,
-      "authorName": "youssef mansi",
-      "likes": [],
-      "comments": [],
-      "shares": 0
-    },
-    {
-      "id": "7",
-      "content": "Testing 123",
-      "authorId": 3,
-      "authorName": "Mark Maged",
-      "likes": [],
-      "comments": [],
-      "shares": []
     }
   ]
 }

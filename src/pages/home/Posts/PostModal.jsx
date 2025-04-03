@@ -48,7 +48,7 @@ const PostModal = ({ isOpen, toggleModal }) => {
         authorName: name,
         likes: [],
         comments: [],
-        shares: [],
+        reposts: [],
       });
       console.log("Post successful");
       toggleModal();

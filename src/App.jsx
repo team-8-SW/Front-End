@@ -5,6 +5,7 @@ import { Routes, Route } from "react-router-dom";
 import Nav from "./components/Nav";
 import Profile from "./pages/profile/Profile";
 import Home from "./pages/home/Home";
+import Notifications from "./pages/notifications/notifications";
 import DetailsEducation from "./pages/DetailedEducation/DetailsEducation";
 import DetailsExperience from "./pages/Detailedexperience/DetailsExperience";
 import DetailedSkills from "./pages/DetailedSkills/DetailedSkills";
@@ -91,7 +92,7 @@ function App() {
   <Route path="/login" element={<LoginPage setLoggedUser={setLoggedUser}/>} />
   <Route path="/signup" element={<SignUp />} />
   <Route path="/ResetPassword" element={<ResetPassword />} />
-  {/* <Route path="/*" element={<NotFound />} /> */}
+  <Route path="/notifications" element={<Notifications />} />
 </Routes>
         <Routes>
           <Route path="/EmailManagement" element={<EmailManagement/>}/>

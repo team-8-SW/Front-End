@@ -122,7 +122,7 @@ const CreateCompanyForm = ({ loggedUser }) => {
 
             <Button color="blue" type="submit" onClick={() => navigate("/company")}>
               
-              Create Page
+              Create or update
             </Button>
 
           </div>

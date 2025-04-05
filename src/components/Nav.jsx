@@ -42,16 +42,32 @@ const Nav = () => {
           {[
             { to: "/", icon: IoHomeSharp, label: "Home" },
             { to: "/network", icon: MdPeople, label: "Network" },
-            { to: "jobs", icon: MdWork, label: "Jobs" },
+            { to: "/jobs", icon: MdWork, label: "Jobs" },
             { to: "/messaging", icon: AiFillMessage, label: "Messaging" },
             { to: "/notifications", icon: FaBell, label: "Notifications" },
           ].map(({ to, icon: Icon, label }) => (
-            <Link key={to} to={to} className="flex flex-col items-center group ">
-              <Icon className={`h-6 w-6 ${isActive(to) ? "text-blue-700" : "text-gray-900 group-hover:text-blue-700"}`} />
-              <span className={`text-xs mt-1 ${isActive(to) ? "text-blue-700 font-semibold" : "text-gray-500 group-hover:text-blue-700"}`}>{label}</span>
+            <Link
+              key={to}
+              to={to}
+              className="flex flex-col items-center group"
+            >
+              <Icon
+                className={`h-6 w-6 ${
+                  isActive(to) ? "text-blue-700" : "text-gray-900 group-hover:text-blue-700"
+                }`}
+              />
+              <span
+                className={`text-xs mt-1 ${
+                  isActive(to)
+                    ? "text-blue-700 font-semibold"
+                    : "text-gray-500 group-hover:text-blue-700"
+                }`}
+              >
+                {label}
+              </span>
               {isActive(to) && <div className="w-6 h-1 bg-blue-700 rounded-full mt-1"></div>}
             </Link>
-          ))} 
+          ))}
           <div className="relative">
             <button onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)} className="flex flex-col items-center text-gray-500 hover:text-blue-700 focus:outline-none">
               <UserCircleIcon className="h-6 w-6" />

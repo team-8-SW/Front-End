@@ -1,34 +1,10 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { fetchUser } from "./profile";
-const fetchProfilePicture = async (userId, setProfilePicture) => {
-
-  axios
-    .get(`http://localhost:3000/users/1`)
-    .then((response) => {
-      setProfilePicture(response.data.profilePicture);
-    })
-    .catch((error) => {
-      console.error("Error fetching profile picture:", error);
-    });
-
-  try {
-    const response = await axios.get(`http://localhost:3000/users/${userId}`);
-    setProfilePicture(response.data.profilePicture);
-  } catch (error) {
-    console.error("Error fetching profile picture:", error);
-  }
-};
 
 export const useProfilePicture = (userId) => {
-  const [profilePicture, setProfilePicture] = useState("");
-
-  useEffect(() => {
-    if (userId) {
-      fetchProfilePicture(userId, setProfilePicture);
-    }
-  }, [userId]);
-
+  const userData=useUserData(userId);
+  const profilePicture=userData?.profilePicture;
   if (profilePicture === "") {
     return "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3bHGb_Zk4zWeD4jw9ew8HboAT2zQIUZhYNA&s";
   } else return profilePicture;
@@ -51,47 +27,20 @@ export const useUserId = () => {
   return userId;
 };
 
-const fetchCoverPhoto = async (userId, setCoverPhoto) => {
-  try {
-    const response = await axios.get(`http://localhost:3000/users/${userId}`);
-    setCoverPhoto(response.data.coverPhoto);
-  } catch (error) {
-    console.error("Error fetching cover photo:", error);
-  }
-};
 
 export const useCoverPhoto = (userId) => {
-  const [coverPhoto, setCoverPhoto] = useState("");
-
-  useEffect(() => {
-    if (userId) {
-      fetchCoverPhoto(userId, setCoverPhoto);
-    }
-  }, [userId]);
-
+  const userData=useUserData(userId);
+  const coverPhoto=userData?.coverPhoto;
   if (coverPhoto === "") {
     return "https://thingscareerrelated.com/wp-content/uploads/2021/10/default-background-image.png?w=862";
   } else return coverPhoto;
 };
 
-const fetchName = async (userId, setName) => {
-  try {
-    const response = await axios.get(`http://localhost:3000/users/${userId}`);
-    const fullName = `${response.data.fname} ${response.data.lname}`;
-    setName(fullName);
-  } catch (error) {
-    console.error("Error fetching name:", error);
-  }
-};
+
 
 export const useName = (userId) => {
-  const [name, setName] = useState("");
-  useEffect(() => {
-    if (userId) {
-      fetchName(userId, setName);
-    }
-  }, [userId]);
-
+  const userData=useUserData(userId);
+  const name=`${userData?.fname} ${userData?.lname}`;
   return name;
 };
 

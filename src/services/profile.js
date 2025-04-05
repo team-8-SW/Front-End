@@ -102,6 +102,20 @@ export const handleAddEdu = (education, userId, onSave,onClose) => {
   .catch((error) => {
     console.error("Error updating education:", error);
   });}
+
+
+  // export const handleAddJob = (jobData, userId) => {
+  //   axios
+  //   .get(`http://localhost:3000/users/${userId}`)
+  //   .then((response) => {
+  //     const updatedJob = [...response.data.company.jobs, jobData];
+  //     return axios.patch(`http://localhost:3000/users/${userId}`, { company.jobs : updatedEducation });
+  //   })
+    
+  //   .catch((error) => {
+  //     console.error("Error updating education:", error);
+  //   });}
+
 export const handleAddExperience = (newExp, userId, onExpAdded,onClose,setNewExp) => {
   axios
   .get(`http://localhost:3000/users/${userId}`)

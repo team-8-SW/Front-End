@@ -22,15 +22,15 @@ const Leftside = ({ loggedUser }) => {
   }, [loggedUser]);
 
   const navItems = [
-    { label: "Dashboard", to: "/dashboard" },
+    { label: "Dashboard", to: "/company/dashboard" },
     { label: "Page posts", to: "/company/companyposts" },
-    { label: "Analytics", to: "/analytics" },
+    { label: "Analytics", to: "/company/analytics" },
     { label: "Feed", to: "/feed" },
     { label: "Activity", to: "/activity" },
     { label: "Inbox", to: "/inbox" },
     { label: "Edit page", to: "/companyform" },
     { type: "divider" },
-    { label: "Jobs", to: "/jobs" },
+    { label: "Jobs", to: "/company/job" },
     { type: "divider" },
   ];
 

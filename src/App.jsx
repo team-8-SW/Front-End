@@ -24,6 +24,9 @@ import EmailManagement from "./pages/UpdateEmail/EmailManagement";
 import VerifyEmail from "./pages/UpdateEmail/VerifyEmail";
 import CreateCompanyForm from "./pages/company/CreateCompanyForm";
 import Company from "./pages/company/Company";
+import JobTitle from "./pages/company/JobTitle";
+import JobDetailsForm from "./pages/company/JobDetailsForm";
+import View from "./pages/ViewProfile/View";
 
 
 function App() {
@@ -44,7 +47,7 @@ function App() {
 
   return (
     <div className="bg-backGroundColor min-h-screen">
-      <Nav />
+      {/* <Nav /> */}
       <div>
       <Routes>
   <Route
@@ -52,6 +55,15 @@ function App() {
     element={
       <ProtectedRoute>
         <Profile loggedUser={loggedUser} />
+      </ProtectedRoute>
+    }
+  />
+  <Route
+    // path="/view/:id"
+     path="/view"
+    element={
+      <ProtectedRoute>
+        <View loggedUser={loggedUser} />  
       </ProtectedRoute>
     }
   />
@@ -91,12 +103,16 @@ function App() {
   <Route path="/login" element={<LoginPage setLoggedUser={setLoggedUser}/>} />
   <Route path="/signup" element={<SignUp />} />
   <Route path="/ResetPassword" element={<ResetPassword />} />
+  <Route path="/jobtitle" element={<JobTitle loggedUser={loggedUser} />} />
+  <Route path="/jobdetails" element={<JobDetailsForm loggedUser={loggedUser} />} />
   {/* <Route path="/*" element={<NotFound />} /> */}
 </Routes>
         <Routes>
           <Route path="/EmailManagement" element={<EmailManagement/>}/>
           <Route path="/VerifyEmail" element={<VerifyEmail/>}/>
           <Route path="/companyform" element={< CreateCompanyForm loggedUser={loggedUser}/>}/>
+          
+
         </Routes> 
       </div>
     </div>

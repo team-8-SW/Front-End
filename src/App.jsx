@@ -25,15 +25,7 @@ import EmailManagement from "./pages/UpdateEmail/EmailManagement";
 import VerifyEmail from "./pages/UpdateEmail/VerifyEmail";
 import NetworkPage from "./pages/network/NetworkPage";
 
-import ResetPassword from "./pages/login/ResetPassword";
-import { useNavigate } from "react-router-dom";
 
-
-import { fetchUser } from "./services/profile";
-import ProtectedRoute from "./ProtectedRoute";
-
-import EmailManagement from "./pages/UpdateEmail/EmailManagement";
-import VerifyEmail from "./pages/UpdateEmail/VerifyEmail";
 import CreateCompanyForm from "./pages/company/CreateCompanyForm";
 import Company from "./pages/company/Company";
 import JobTitle from "./pages/company/JobTitle";
@@ -107,45 +99,13 @@ function App() {
         </Routes>
        
       <Routes>
-  <Route
-    path="/profile"
-    element={
-      <ProtectedRoute>
-        <Profile loggedUser={loggedUser} />
-      </ProtectedRoute>
-    }
-  />
+ 
   <Route
     // path="/view/:id"
      path="/view"
     element={
       <ProtectedRoute>
         <View loggedUser={loggedUser} />  
-      </ProtectedRoute>
-    }
-  />
-  <Route path="/" element={<Home loggedUser={loggedUser}/>} />
-  <Route
-    path="/education"
-    element={
-      <ProtectedRoute>
-        <DetailsEducation loggedUser={loggedUser} />
-      </ProtectedRoute>
-    }
-  />
-  <Route
-    path="/experience"
-    element={
-      <ProtectedRoute>
-        <DetailsExperience loggedUser={loggedUser} />
-      </ProtectedRoute>
-    }
-  />
-  <Route
-    path="/skills"
-    element={
-      <ProtectedRoute>
-        <DetailedSkills loggedUser={loggedUser} />
       </ProtectedRoute>
     }
   />
@@ -157,17 +117,12 @@ function App() {
       </ProtectedRoute>
     }
   />
-  <Route path="/login" element={<LoginPage setLoggedUser={setLoggedUser}/>} />
-  <Route path="/signup" element={<SignUp />} />
-  <Route path="/ResetPassword" element={<ResetPassword />} />
-  <Route path="/jobtitle" element={<JobTitle loggedUser={loggedUser} />} />
+
   <Route path="/jobdetails" element={<JobDetailsForm loggedUser={loggedUser} />} />
   {/* <Route path="/*" element={<NotFound />} /> */}
   <Route path="/notifications" element={<NotificationsPage loggedUser={loggedUser} />} />
 </Routes>
         <Routes>
-          <Route path="/EmailManagement" element={<EmailManagement/>}/>
-          <Route path="/VerifyEmail" element={<VerifyEmail/>}/>
           <Route path="/companyform" element={< CreateCompanyForm loggedUser={loggedUser}/>}/>
           
 

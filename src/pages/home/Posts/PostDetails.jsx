@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
   useProfilePicture,
-  useUserId,
   useName,
   handlerepostPost,
   handleLikePost,
@@ -20,34 +19,33 @@ import {
 } from "@heroicons/react/24/solid";
 import CommentsSection from "./CommentsSection"; // Import the new CommentsSection component
 
-const PostDetails = ({ post }) => {
+const PostDetails = ({ post, loggedUser }) => {
   const posterProfilePicture = useProfilePicture(post.authorId);
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(post.likes?.length || 0);
-  const userId = useUserId();
-  const commenterName = useName(userId);
-  const commenterProfilePicture = useProfilePicture(userId);
+  const commenterName = useName(loggedUser.id);
+  const commenterProfilePicture = useProfilePicture(loggedUser.id);
   const [comments, setComments] = useState(post.comments || []);
   const [showComments, setShowComments] = useState(false);
   const [reposted, setreposted] = useState(false);
   const [repostsCount, setrepostsCount] = useState(post.reposts?.length || 0);
 
   useEffect(() => {
-    if (Array.isArray(post.likes) && post.likes.includes(userId)) {
+    if (Array.isArray(post.likes) && post.likes.includes(loggedUser.id)) {
       setLiked(true);
     }
-  }, [post.likes, userId]);
+  }, [post.likes, loggedUser.id]);
 
   useEffect(() => {
-    if (Array.isArray(post.reposts) && post.reposts.includes(userId)) {
+    if (Array.isArray(post.reposts) && post.reposts.includes(loggedUser.id)) {
       setreposted(true);
     }
-  }, [post.reposts, userId]);
+  }, [post.reposts, loggedUser.id]);
 
   return (
     <div className="bg-white border border-gray-300 rounded-lg shadow-sm p-4 mb-4 relative">
       {/* Edit Button (only visible to the author) */}
-      {userId === post.authorId && (
+      {loggedUser.id === post.authorId && (
         <button
           className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
           onClick={() => console.log("Edit post clicked")}
@@ -85,7 +83,7 @@ const PostDetails = ({ post }) => {
           color="blue"
           className="flex items-center gap-1 hover:text-blue-600"
           onClick={() =>
-            handleLikePost(post.id, userId, liked, setLiked, setLikesCount)
+            handleLikePost(post.id, loggedUser.id, liked, setLiked, setLikesCount)
           }
           data-testid="like-icon"
         >
@@ -115,7 +113,7 @@ const PostDetails = ({ post }) => {
           color="blue"
           className="flex items-center gap-1 hover:text-blue-600"
           onClick={() =>
-            handlerepostPost(post.id, userId, reposted, setreposted, setrepostsCount)
+            handlerepostPost(post.id, loggedUser.id, reposted, setreposted, setrepostsCount)
           }
           data-testid="repost-icon"
         >
@@ -143,7 +141,7 @@ const PostDetails = ({ post }) => {
       {showComments && (
         <CommentsSection
           postId={post.id}
-          userId={userId}
+          loggedUser={loggedUser}
           commenterName={commenterName}
           commenterProfilePicture={commenterProfilePicture}
           comments={comments}

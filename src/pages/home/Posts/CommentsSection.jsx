@@ -3,7 +3,7 @@ import { Button, Input } from "@material-tailwind/react";
 import { handleAddNewComment } from "../../../services/api";
 const CommentsSection = ({
   postId,
-  userId,
+  loggedUser,
   commenterName,
   commenterProfilePicture,
   comments,
@@ -37,7 +37,7 @@ const CommentsSection = ({
                           handleAddNewComment(
                             postId,
                             newComment,
-                            userId,
+                            loggedUser.id,
                             commenterName,
                             comments,
                             setComments,

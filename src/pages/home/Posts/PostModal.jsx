@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@material-tailwind/react";
-import { useUserId, useName } from "../../../services/api";
+import { useName } from "../../../services/api";
 import axios from "axios";
 
-const PostModal = ({ isOpen, toggleModal }) => {
-  
-  if (!isOpen) return null;
-  const [postContent, setPostContent] = useState("");
+const PostModal = ({ isOpen, toggleModal,loggedUser }) => {
+   const [postContent, setPostContent] = useState("");
   const [error, setError] = useState("");
   const [lastPostId, setLastPostId] = useState(null);
-  const userId = useUserId();
-  const name = useName(userId);
+  const name = useName(loggedUser.id);
   useEffect(() => {
     const fetchLastPostId = async () => {
       try {
@@ -30,6 +27,9 @@ const PostModal = ({ isOpen, toggleModal }) => {
 
     fetchLastPostId();
   }, []);
+  
+  if (!isOpen) return null;
+ 
 
   const handlePost = async () => {
     if (postContent.trim() === "") {
@@ -44,7 +44,7 @@ const PostModal = ({ isOpen, toggleModal }) => {
       await axios.post("http://localhost:3000/posts", {
         id: newPostId,
         content: postContent,
-        authorId: userId,
+        authorId: loggedUser.id,
         authorName: name,
         likes: [],
         comments: [],

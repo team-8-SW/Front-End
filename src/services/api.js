@@ -293,3 +293,21 @@ export const verifyEmailCode = async (pin) => {
   }
 };
 
+export const fetchNotifications = async (userId) => {
+  try {
+    const response = await axios.get(`http://localhost:3000/notifications?userId=${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching notifications:", error);
+    throw new Error("Network response was not ok");
+  }
+};
+
+export const markNotificationAsRead = async (notificationId) => {
+  try {
+    await axios.patch(`http://localhost:3000/notifications/${notificationId}`, { read: true });
+  } catch (error) {
+    console.error("Error marking notification as read:", error);
+  }
+};
+

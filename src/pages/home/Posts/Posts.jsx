@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef, useCallback } from "react";
 import PostDetails from "./PostDetails";
 import { fetchPosts } from "../../../services/api";
 
-const Posts = () => {
+const Posts = ({loggedUser}) => {
   const [posts, setPosts] = useState([]);
   const [page, setPage] = useState(1);
   const observer = useRef();
@@ -47,7 +47,7 @@ const Posts = () => {
          
           ref={index === posts.length - 1 ? lastPostElementRef : null}
         >
-          <PostDetails post={post}  key={post.id}/>
+          <PostDetails post={post}  key={post.id} loggedUser={loggedUser}/>
         </div>
       ))}
     </div>

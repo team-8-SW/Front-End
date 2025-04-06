@@ -1,7 +1,4 @@
 {
-  "currentUser": {
-    "id": "3"
-  },
   "users": [
     {
       "id": "1",
@@ -233,7 +230,7 @@
       "likes": [
         2,
         3,
-        "3"
+        "1"
       ],
       "comments": [
         {
@@ -290,7 +287,8 @@
       "authorId": 2,
       "authorName": "ahmed mohamed",
       "likes": [
-        1
+        1,
+        "3"
       ],
       "comments": [
         {
@@ -335,19 +333,22 @@
       "id": 1,
       "userId": 1,
       "message": "ahmed mohamed liked your post",
-      "timestamp": "2023-10-01T12:00:00Z"
+      "timestamp": "2023-10-01T12:00:00Z",
+      "isRead": false
     },
     {
       "id": 2,
       "userId": 1,
       "message": "Mark Maged commented on your post",
-      "timestamp": "2023-10-02T12:00:00Z"
+      "timestamp": "2023-10-02T12:00:00Z",
+      "isRead": true
     },
     {
-      "id":3,
-      "userId":3,
+      "id": 3,
+      "userId": 3,
       "message": "ahmed mohamed liked your post",
-      "timestamp": "2023-10-03T12:00:00Z"
+      "timestamp": "2023-10-03T12:00:00Z",
+      "isRead": false
     }
   ]
 }

@@ -1,6 +1,6 @@
 import React from "react";
 import CreatePost from "./Posts/CreatePost";
-import HomeProfileCard from "./HomeProfileCard";
+import ProfileCard from "./ProfileCard";
 import Posts from "./Posts/Posts";
 import Nav from "../../components/Nav";
 
@@ -10,7 +10,7 @@ const Home = () => {
     <Nav/>
     <div className="flex justify-center space-x-12 mr-4">
       <div className="w-1/5 ml-4 mt-4">
-        <HomeProfileCard />
+        <ProfileCard />
       </div>
       <div className="w-3/5">
         <CreatePost />

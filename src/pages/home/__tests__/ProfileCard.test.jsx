@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import { BrowserRouter as Router } from "react-router-dom";
-import HomeProfileCard from "../HomeProfileCard";
+import ProfileCard from "../ProfileCard";
 import "@testing-library/jest-dom";
 import * as api from "../../../services/api"; // Import everything as api
 
@@ -25,7 +25,7 @@ describe("HomeProfileCard Component", () => {
   test("renders user profile information correctly", async () => {
     render(
       <Router>
-        <HomeProfileCard />
+        <ProfileCard />
       </Router>
     );
 

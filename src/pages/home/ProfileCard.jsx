@@ -16,7 +16,7 @@ import {
   useUserData,
 } from "../../services/api";
 
-const HomeProfileCard = () => {
+const ProfileCard = () => {
   const userId = useUserId();
   const profilePicture = useProfilePicture(userId);
   const coverPhoto = useCoverPhoto(userId);
@@ -60,4 +60,4 @@ const HomeProfileCard = () => {
   );
 };
 
-export default HomeProfileCard;
+export default ProfileCard;

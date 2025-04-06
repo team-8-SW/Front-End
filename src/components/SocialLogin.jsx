@@ -29,7 +29,7 @@ const SocialLogin = ({ setLoggedUser  }) => {
 
   return (
     <GoogleLogin
-      clientId="http://93470150540-lbg03r6jfctm48l3nn6p5flmhniru635.apps.googleusercontent.com"
+      clientId="93470150540-lbg03r6jfctm48l3nn6p5flmhniru635.apps.googleusercontent.com"
       onSuccess={handleLoginSuccess}
       onError={handleLoginError}
     />

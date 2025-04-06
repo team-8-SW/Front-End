@@ -5,31 +5,28 @@ import {
   useName,
   handlerepostPost,
   handleLikePost,
-  handleAddNewComment,
-  handleLoadMoreComments,
 } from "../../../services/api";
-import { Button, Input } from "@material-tailwind/react";
+import { Button } from "@material-tailwind/react";
 import {
   HandThumbUpIcon as OutlineThumbUpIcon,
   ChatBubbleOvalLeftEllipsisIcon,
   ArrowPathRoundedSquareIcon as OutlinerepostIcon,
   PaperAirplaneIcon as ShareIcon,
-  PencilIcon, // Import the pencil icon
+  PencilIcon,
 } from "@heroicons/react/24/outline";
-import { 
+import {
   HandThumbUpIcon as SolidThumbUpIcon,
-  ArrowPathRoundedSquareIcon as SolidrepostIcon
+  ArrowPathRoundedSquareIcon as SolidrepostIcon,
 } from "@heroicons/react/24/solid";
+import CommentsSection from "./CommentsSection"; // Import the new CommentsSection component
 
 const PostDetails = ({ post }) => {
   const posterProfilePicture = useProfilePicture(post.authorId);
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(post.likes?.length || 0);
-  const userId = useUserId(); // Current user ID
+  const userId = useUserId();
   const commenterName = useName(userId);
   const commenterProfilePicture = useProfilePicture(userId);
-  const [visibleComments, setVisibleComments] = useState(2);
-  const [newComment, setNewComment] = useState("");
   const [comments, setComments] = useState(post.comments || []);
   const [showComments, setShowComments] = useState(false);
   const [reposted, setreposted] = useState(false);
@@ -53,7 +50,7 @@ const PostDetails = ({ post }) => {
       {userId === post.authorId && (
         <button
           className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
-          onClick={() => console.log("Edit post clicked")} // Replace with your edit logic
+          onClick={() => console.log("Edit post clicked")}
           data-testid="edit-post-btn"
         >
           <PencilIcon className="h-5 w-5" />
@@ -138,71 +135,20 @@ const PostDetails = ({ post }) => {
           data-testid="share-icon"
         >
           <ShareIcon className="h-5 w-5" />
-          Share 
+          Share
         </Button>
       </div>
 
       {/* Comments Section */}
       {showComments && (
-        <div className="mt-4">
-          {/* Input for New Comment */}
-          <div className="flex items-center gap-2 mb-4">
-            <img
-              src={commenterProfilePicture}
-              alt={`${commenterName}'s profile`}
-              className="w-8 h-8 rounded-full object-cover"
-            />
-            <Input
-              type="text"
-              placeholder="Write a comment..."
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              className="flex-1"
-            />
-            <Button
-              variant="filled"
-              color="blue"
-              onClick={() =>
-                handleAddNewComment(
-                  post.id,
-                  newComment,
-                  userId,
-                  commenterName,
-                  comments,
-                  setComments,
-                  setNewComment
-                )
-              }
-              className="flex-shrink-0"
-              data-testid="post-comment-btn"
-            >
-              Post
-            </Button>
-          </div>
-
-          {/* Display Comments */}
-          {comments.slice(0, visibleComments).map((comment) => (
-            <div key={comment.id} className="border-t border-gray-200 pt-2 mt-2 text-sm">
-              <div className="flex items-center gap-2">
-                <p className="text-gray-800 font-semibold">{comment.authorName}</p>
-              </div>
-              <p>{comment.content}</p>
-            </div>
-          ))}
-
-          {/* Load More Button */}
-          {visibleComments < comments.length && (
-            <Button
-              variant="text"
-              color="blue"
-              onClick={() => handleLoadMoreComments(setVisibleComments)}
-              className="mt-2"
-              data-testid="load-more-comments-btn"
-            >
-              Load More Comments
-            </Button>
-          )}
-        </div>
+        <CommentsSection
+          postId={post.id}
+          userId={userId}
+          commenterName={commenterName}
+          commenterProfilePicture={commenterProfilePicture}
+          comments={comments}
+          setComments={setComments}
+        />
       )}
     </div>
   );

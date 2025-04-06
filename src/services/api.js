@@ -10,6 +10,17 @@ export const useProfilePicture = (userId) => {
   } else return profilePicture;
 };
 
+export const fetchProfilePicture = async (userId) => {
+  let userData;
+  await fetchUserData(userId, (data) => {
+    userData = data;
+  });
+  const profilePicture = userData?.profilePicture;
+  if (profilePicture === "") {
+    return "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3bHGb_Zk4zWeD4jw9ew8HboAT2zQIUZhYNA&s";
+  } else return profilePicture;
+};
+
 const fetchUserId = async (setUserId) => {
   try {
     const response = await axios.get("http://localhost:3000/currentUser");

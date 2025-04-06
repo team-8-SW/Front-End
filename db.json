@@ -310,7 +310,14 @@
       "authorId": 1,
       "authorName": "youssef mohamed",
       "likes": [],
-      "comments": [],
+      "comments": [
+        {
+          "id": 1,
+          "authorId": "3",
+          "authorName": "Mark Maged",
+          "content": "Testing"
+        }
+      ],
       "reposts": []
     },
     {
@@ -321,6 +328,26 @@
       "likes": [],
       "comments": [],
       "reposts": []
+    }
+  ],
+  "notifications": [
+    {
+      "id": 1,
+      "userId": 1,
+      "message": "ahmed mohamed liked your post",
+      "timestamp": "2023-10-01T12:00:00Z"
+    },
+    {
+      "id": 2,
+      "userId": 1,
+      "message": "Mark Maged commented on your post",
+      "timestamp": "2023-10-02T12:00:00Z"
+    },
+    {
+      "id":3,
+      "userId":3,
+      "message": "ahmed mohamed liked your post",
+      "timestamp": "2023-10-03T12:00:00Z"
     }
   ]
 }

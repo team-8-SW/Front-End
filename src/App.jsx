@@ -13,6 +13,17 @@ import LoginPage from './pages/login/LoginPage';
 import SignUp from './pages/signup/SignUp';
 import { GoogleLogin } from '@react-oauth/google';
 import SocialLogin from './components/SocialLogin';
+import ResetPassword from "./pages/login/ResetPassword";
+import { useNavigate } from "react-router-dom";
+
+
+import { fetchUser } from "./services/profile";
+import ProtectedRoute from "./ProtectedRoute";
+
+import EmailManagement from "./pages/UpdateEmail/EmailManagement";
+import VerifyEmail from "./pages/UpdateEmail/VerifyEmail";
+import NetworkPage from "./pages/network/NetworkPage";
+
 
 function App() {
   const [loggedUser, setLoggedUser] = useState({});
@@ -33,23 +44,51 @@ function App() {
     <div className="bg-backGroundColor min-h-screen">
       <Nav />
       <div>
-        <Routes>
-          <Route
-            path="/profile"
-            element={<Profile loggedUser={loggedUser} />}
-          />
-          <Route path="/" element={<Home />} />
-          <Route
-            path="/education"
-            element={<DetailsEducation loggedUser={loggedUser} />}
-          />
-          <Route path="/experience" element={<DetailsExperience />} />
-          <Route
-            path="/skills"
-            element={<DetailedSkills loggedUser={loggedUser} />}
-          />
-          <Route path="/experienceform" element={<ExpForm />} />
+      <Routes>
+  <Route
+    path="/profile"
+    element={
+      <ProtectedRoute>
+        <Profile loggedUser={loggedUser} />
+      </ProtectedRoute>
+    }
+  />
+  <Route path="/" element={<Home />} />
+  <Route
+    path="/education"
+    element={
+      <ProtectedRoute>
+        <DetailsEducation loggedUser={loggedUser} />
+      </ProtectedRoute>
+    }
+  />
+  <Route
+    path="/experience"
+    element={
+      <ProtectedRoute>
+        <DetailsExperience loggedUser={loggedUser} />
+      </ProtectedRoute>
+    }
+  />
+  <Route
+    path="/skills"
+    element={
+      <ProtectedRoute>
+        <DetailedSkills loggedUser={loggedUser} />
+      </ProtectedRoute>
+    }
+  /> 
+  <Route path="/network" element={<NetworkPage />} />
+  <Route path="/login" element={<LoginPage setLoggedUser={setLoggedUser}/>} />
+  <Route path="/signup" element={<SignUp />} />
+  <Route path="/ResetPassword" element={<ResetPassword />} />
+  {/* <Route path="/*" element={<NotFound />} /> */}
+</Routes>
+<Routes>
+          <Route path="/EmailManagement" element={<EmailManagement/>}/>
+          <Route path="/VerifyEmail" element={<VerifyEmail/>}/>
         </Routes>
+       
       </div>
     </div>
   );

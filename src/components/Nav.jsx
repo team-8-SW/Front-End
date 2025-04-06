@@ -15,6 +15,8 @@ import { MdPeople } from "react-icons/md";
 import { AiFillMessage } from "react-icons/ai";
 import { FaBell } from "react-icons/fa";
 
+import { useNavigate } from "react-router-dom"; // Import useNavigate
+import UserSearch from "../pages/network/UserSearch";
 const Nav = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const location = useLocation(); // Get current route
@@ -36,12 +38,8 @@ const Nav = () => {
               </svg>
             </Typography>
           </Link>
-
-          <input
-            type="text"
-            placeholder="Search"
-            className="h-[34px] hidden sm:block sm:w-40 lg:w-60 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+          
+          < UserSearch />
         </div>
 
         {/* Center - Navigation Icons with Labels */}

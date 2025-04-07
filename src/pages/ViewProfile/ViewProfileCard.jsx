@@ -13,6 +13,7 @@ import {
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import ViewContactInfo from "./ViewContactInfo"; // Import ContactInfo Component
+import ConnectButton from "../network/ConnectButton";
  // Import ContactInfo Component
 
 const ProfileCard = ({ loggedUser }) => {
@@ -91,14 +92,10 @@ const ProfileCard = ({ loggedUser }) => {
 
       {/* Buttons */}
       <CardFooter className="flex justify-start gap-3 pb-6">
-      <Button className="rounded-full" color="blue">+ follow</Button>
+      <ConnectButton />
       <Button variant="outlined" className="rounded-full" color="blue">
         message
       </Button>
-      <Button variant="outlined" className="rounded-full">
-        connect
-      </Button>
-
       </CardFooter>
 
       {/* Edit Profile Modal */}

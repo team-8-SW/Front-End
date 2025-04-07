@@ -31,6 +31,8 @@ import Company from "./pages/company/Company";
 import JobTitle from "./pages/company/JobTitle";
 import JobDetailsForm from "./pages/company/JobDetailsForm";
 import View from "./pages/ViewProfile/View";
+import SearchResults from "./pages/network/SearchResults";
+import ConnectionsList from "./pages/network/ConnectionList";
 
 
 function App() {
@@ -117,6 +119,8 @@ function App() {
           <Route path="/EmailManagement" element={<EmailManagement/>}/>
           <Route path="/VerifyEmail" element={<VerifyEmail/>}/>
           <Route path="/companyform" element={< CreateCompanyForm loggedUser={loggedUser}/>}/>
+          <Route path="/SearchResults" element={<SearchResults />} />
+          <Route path="/ConnectionList" element={<ConnectionsList />} />
           
 
         </Routes> 

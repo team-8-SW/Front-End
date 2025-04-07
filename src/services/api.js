@@ -327,9 +327,9 @@ export const googleLogin = async (idToken) => {
   }
 };
 
-export const handleConnectionRequest = async (data) => {
+export const handleConnectionRequest = async (userId) => {
   try {
-    const response = await axios.post(`http://localhost:3000//api/connections/users/${userId} `);
+    const response = await axios.post(`http://localhost:3000/api/connections/users/${userId} `);
     return response.data;
   } catch (error) {
     console.error("API request failed:", error);
@@ -350,6 +350,15 @@ export const searchUsers = async (query, token) => {
     return response.data.users;
   } catch (error) {
     console.error('Search users error:', error);
+    throw error;
+  }
+};
+export const getConnections = async () => {
+  try {
+    const response = await apiClient().get('https://localhost:3000/api/connections/');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching connections:', error);
     throw error;
   }
 };

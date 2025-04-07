@@ -11,9 +11,6 @@ import { PlusIcon } from "@heroicons/react/24/outline";
 
 import { logout } from "../services/profile";
 import { useNavigate } from "react-router-dom";
-
-import { logout } from "../services/profile";
-import { useNavigate } from "react-router-dom";
 import UserSearch from "../pages/network/UserSearch";
 const Nav = () => {
   const [isAppsDropdownOpen, setIsAppsDropdownOpen] = useState(false);

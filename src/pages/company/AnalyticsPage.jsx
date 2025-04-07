@@ -18,7 +18,7 @@ const AnalyticsPage = ({ loggedUser }) => {
       case "visitors":
         return <VisitorsTab data={analyticsData.visitors} months={analyticsData.content?.months} />;
       case "followers":
-        return <FollowersTab data={analyticsData.followers} />;
+        return <FollowersTab analyticsData={analyticsData} />; // ✅ FIXED: pass full object
       default:
         return <ContentTab data={analyticsData.content} />;
     }

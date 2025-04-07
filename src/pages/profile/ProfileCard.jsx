@@ -13,11 +13,15 @@ import {
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import ContactInfo from "./ContactInfo"; // Import ContactInfo Component
+import ProfilePhotoCard from "./ProfilePhotoCard";
+import CoverPhotoCard from "./CoverPhotoCard"; // Import CoverPhotoCard Component
 
 const ProfileCard = ({ loggedUser }) => {
   const [open, setOpen] = useState(false);
   const [openContact, setOpenContact] = useState(false); // State for Contact Info modal
   const [userData, setUserData] = useState(null);
+  const [openPP, setOPenPP] = useState(false); // State for Profile Photo modal
+  const [openCP, setOPenCP] = useState(false);
 
   useEffect(() => {
     if (loggedUser) {
@@ -73,6 +77,7 @@ const ProfileCard = ({ loggedUser }) => {
           src={userData.coverPhoto || ""}
           alt="cover-image"
           className="w-full h-full object-cover p-0"
+          onClick={() => setOPenCP(true)}
         />
       </CardHeader>
 
@@ -81,7 +86,8 @@ const ProfileCard = ({ loggedUser }) => {
         <Avatar
           src={userData.profilePicture || ""}
           size="xxl"
-          className="border-4 border-white shadow-lg"
+          className="border-4 border-white shadow-lg cursor-pointer"
+          onClick={()=> setOPenPP(true)}
         />
       </div>
 
@@ -161,7 +167,14 @@ const ProfileCard = ({ loggedUser }) => {
       <Dialog open={openContact} handler={() => setOpenContact(false)}>
         <ContactInfo userData={userData} setOpenContact={setOpenContact} />
       </Dialog>
+      <Dialog open={openPP} handler={() => setOPenPP(false)}>
+        <ProfilePhotoCard userData={userData} setOpenPP={setOPenPP} />
+      </Dialog>
+      <Dialog open={openCP} handler={() => setOPenCP(false)}>
+        <CoverPhotoCard userData={userData} setOpenCP={setOPenCP} />
+      </Dialog>
     </Card>
+
   );
 };
 

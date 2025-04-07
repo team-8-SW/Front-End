@@ -11,7 +11,7 @@ import { PlusIcon } from "@heroicons/react/24/outline";
 
 import { logout } from "../services/profile";
 import { useNavigate } from "react-router-dom";
-
+import UserSearch from "../pages/network/UserSearch";
 const Nav = () => {
   const [isAppsDropdownOpen, setIsAppsDropdownOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
@@ -32,11 +32,8 @@ const Nav = () => {
               </svg>
             </Typography>
           </Link>
-          <input
-            type="text"
-            placeholder="Search"
-            className="h-[34px] hidden sm:block sm:w-40 lg:w-60 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+          
+          < UserSearch />
         </div>
         <div className="flex gap-6 text-gray-600">
           {[

@@ -23,11 +23,16 @@ import ProtectedRoute from "./ProtectedRoute";
 
 import EmailManagement from "./pages/UpdateEmail/EmailManagement";
 import VerifyEmail from "./pages/UpdateEmail/VerifyEmail";
+import NetworkPage from "./pages/network/NetworkPage";
+
+
 import CreateCompanyForm from "./pages/company/CreateCompanyForm";
 import Company from "./pages/company/Company";
 import JobTitle from "./pages/company/JobTitle";
 import JobDetailsForm from "./pages/company/JobDetailsForm";
 import View from "./pages/ViewProfile/View";
+import SearchResults from "./pages/network/SearchResults";
+import ConnectionsList from "./pages/network/ConnectionList";
 
 
 function App() {
@@ -101,6 +106,7 @@ function App() {
       </ProtectedRoute>
     }
   />
+   <Route path="/network" element={<NetworkPage />} />
   <Route path="/login" element={<LoginPage setLoggedUser={setLoggedUser}/>} />
   <Route path="/signup" element={<SignUp />} />
   <Route path="/ResetPassword" element={<ResetPassword />} />
@@ -113,6 +119,8 @@ function App() {
           <Route path="/EmailManagement" element={<EmailManagement/>}/>
           <Route path="/VerifyEmail" element={<VerifyEmail/>}/>
           <Route path="/companyform" element={< CreateCompanyForm loggedUser={loggedUser}/>}/>
+          <Route path="/SearchResults" element={<SearchResults />} />
+          <Route path="/ConnectionList" element={<ConnectionsList />} />
           
 
         </Routes> 

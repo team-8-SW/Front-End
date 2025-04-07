@@ -1,20 +1,26 @@
 import React from "react";
 import { GoogleLogin } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
+import { googleLogin } from "../services/api";
 
-
-
-const SocialLogin = () => {
+const SocialLogin = ({ setLoggedUser  }) => {
   const navigate = useNavigate();
-  const handleLoginSuccess = (credentialResponse) => {
-    navigate("/");
-    console.log("Google Login Success:", credentialResponse);
+
+  const handleLoginSuccess = async (credentialResponse) => {
     const { credential } = credentialResponse; 
 
-    
-    localStorage.setItem("google_token", credential);
+    console.log("Google Login Success:", credential);
 
-    console.log("Stored Google Token:", credential);
+    const response = await googleLogin(credential);
+
+    if (response.token) {
+      localStorage.setItem("token", response.token); 
+      localStorage.setItem("userId", response.user.id); 
+      setLoggedUser (response.user); 
+      navigate("/");
+    } else {
+      console.error("Login failed:", response.error);
+    }
   };
 
   const handleLoginError = () => {

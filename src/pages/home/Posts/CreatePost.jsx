@@ -1,11 +1,10 @@
 import React, { useState } from "react";
-import { useProfilePicture, useUserId } from "../../../services/api";
+import { useProfilePicture } from "../../../services/api";
 import PostModal from "./PostModal";
 import PostBar from "./PostBar";
 
-const CreatePost = () => {
-  const userId = useUserId();
-  const photo = useProfilePicture(userId);
+const CreatePost = ({loggedUser}) => {
+  const photo = useProfilePicture(loggedUser.id);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const toggleModal = () => {
@@ -19,7 +18,7 @@ const CreatePost = () => {
         toggleModal={toggleModal}
         className="w-12 h-12 rounded-full"
       />
-      <PostModal isOpen={isModalOpen} toggleModal={toggleModal} />
+      <PostModal isOpen={isModalOpen} toggleModal={toggleModal} loggedUser={loggedUser} />
     </div>
   );
 };

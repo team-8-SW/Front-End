@@ -6,7 +6,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 
 // Mock child components
 jest.mock("../CreatePost", () => () => <div data-testid="create-post">CreatePost</div>);
-jest.mock("../HomeProfileCard", () => () => <div data-testid="home-profile-card">HomeProfileCard</div>);
+jest.mock("../ProfileCard", () => () => <div data-testid="home-profile-card">ProfileCard</div>);
 jest.mock("../Posts", () => () => <div data-testid="posts">Posts</div>);
 
 describe("Home Component", () => {

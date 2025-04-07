@@ -3,7 +3,7 @@ import { Button } from "@material-tailwind/react";
 import { CameraIcon, CalendarIcon, DocumentTextIcon } from "@heroicons/react/24/outline";
 import ProfilePicture from "../ProfilePicture";
 
-const PostBar = ({ photo, toggleModal }) => {
+const PostBar = ({ photo, toggleModal, }) => {
   return (
     <div className="mt-8 mx-auto max-w-2xl p-4 bg-white rounded-lg shadow-md">
       <div className="flex items-center space-x-4">

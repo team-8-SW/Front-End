@@ -11,7 +11,7 @@ import AnalyticsPage from "./AnalyticsPage";
 const Company = ({ loggedUser }) => {
   return (
     <div>
-<Nav/>
+{/* <Nav/> */}
     
     <div className="flex justify-center items-start gap-5 w-full">
       

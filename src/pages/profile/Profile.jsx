@@ -10,7 +10,7 @@ const Profile = ({loggedUser}) => {
   return (
     <div className='bg-[#F3F2EF] '>
 
-    <Nav />
+    {/* <Nav /> */}
     <div className='flex flex-col items-center'>
     <div className='flex justify-center gap-10 mt-2 w-screen '>
       <div className='w-[50%]'>

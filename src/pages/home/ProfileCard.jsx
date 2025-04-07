@@ -9,19 +9,17 @@ import {
 } from "@material-tailwind/react";
 import { Link } from "react-router-dom";
 import {
-  useUserId,
   useProfilePicture,
   useCoverPhoto,
   useName,
   useUserData,
 } from "../../services/api";
 
-const HomeProfileCard = () => {
-  const userId = useUserId();
-  const profilePicture = useProfilePicture(userId);
-  const coverPhoto = useCoverPhoto(userId);
-  const name = useName(userId);
-  const userData = useUserData(userId);
+const ProfileCard = ({loggedUser}) => {
+  const profilePicture = useProfilePicture(loggedUser.id);
+  const coverPhoto = useCoverPhoto(loggedUser.id);
+  const name = useName(loggedUser.id);
+  const userData = useUserData(loggedUser.id);
   
   return (
     <Link to={`/profile`}>
@@ -60,4 +58,4 @@ const HomeProfileCard = () => {
   );
 };
 
-export default HomeProfileCard;
+export default ProfileCard;

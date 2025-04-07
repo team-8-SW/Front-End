@@ -10,6 +10,17 @@ export const useProfilePicture = (userId) => {
   } else return profilePicture;
 };
 
+export const fetchProfilePicture = async (userId) => {
+  let userData;
+  await fetchUserData(userId, (data) => {
+    userData = data;
+  });
+  const profilePicture = userData?.profilePicture;
+  if (profilePicture === "") {
+    return "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3bHGb_Zk4zWeD4jw9ew8HboAT2zQIUZhYNA&s";
+  } else return profilePicture;
+};
+
 const fetchUserId = async (setUserId) => {
   try {
     const response = await axios.get("http://localhost:3000/currentUser");
@@ -279,6 +290,24 @@ export const verifyEmailCode = async (pin) => {
   } catch (error) {
       console.error('Error verifying email:', error.message); 
       throw new Error('Error verifying email: ' + error.message);
+  }
+};
+
+export const fetchNotifications = async (userId) => {
+  try {
+    const response = await axios.get(`http://localhost:3000/notifications?userId=${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching notifications:", error);
+    throw new Error("Network response was not ok");
+  }
+};
+
+export const markNotificationAsRead = async (notificationId) => {
+  try {
+    await axios.patch(`http://localhost:3000/notifications/${notificationId}`, { read: true });
+  } catch (error) {
+    console.error("Error marking notification as read:", error);
   }
 };
 

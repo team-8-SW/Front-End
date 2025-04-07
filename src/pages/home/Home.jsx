@@ -1,21 +1,21 @@
 import React from "react";
 import CreatePost from "./Posts/CreatePost";
-import HomeProfileCard from "./HomeProfileCard";
+import ProfileCard from "./ProfileCard";
 import Posts from "./Posts/Posts";
 import Nav from "../../components/Nav";
 
-const Home = () => {
+const Home = ({loggedUser}) => {
   return (
   <div>
-    <Nav/>
+    {/* <Nav/> */}
     <div className="flex justify-center space-x-12 mr-4">
       <div className="w-1/5 ml-4 mt-4">
-        <HomeProfileCard />
+        <ProfileCard loggedUser={loggedUser} />
       </div>
       <div className="w-3/5">
-        <CreatePost />
+        <CreatePost loggedUser={loggedUser} />
         <div className="mt-4">
-          <Posts />
+          <Posts loggedUser={loggedUser} />
         </div>
       </div>
       <div className="w-1/5"></div>

@@ -75,16 +75,28 @@ export const useUserData = (userId) => {
   return user;
 };
 
-export const fetchPost = async (postId) => {
+export const fetchPosts = async (page) => {
   try {
-    const response = await fetch(`http://localhost:3000/posts/${postId}`);
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-    const post = await response.json();
-    return post;
+    const response = await axios.get(
+      `http://localhost:3000/posts?page=${page}`
+    );
+    return response.data;
   } catch (error) {
-    console.error("Error marking notification as read:", error);
+    console.error("Error fetching posts:", error);
+    throw new Error("Network response was not ok");
+  }
+};
+export const resetPassword = async (email) => {
+  try {
+    const response = await axios.get(`http://localhost:3000/users?email=${email}`);
+    
+    if (response.data.length === 0) {
+      throw new Error("Email not found.");
+    }
+
+    return "Password reset link sent!";
+  } catch (error) {
+    return error.response?.data?.error || error.message || "Something went wrong. Please try again.";
   }
 };
 
@@ -281,46 +293,21 @@ export const verifyEmailCode = async (pin) => {
   }
 };
 
-export const googleLogin = async (idToken) => {
+export const fetchNotifications = async (userId) => {
   try {
-    const response = await axios.post("http://localhost:3000/google-login", {
-      idToken,
-    });
-
-    if (response.data.token) {
-      return { token: response.data.token, user: response.data.user };
-    } else {
-      throw new Error("Login failed. Please try again.");
-    }
-  } catch (error) {
-    console.error("API Error:", error);
-    return { error: error.message || "Login failed. Please try again." };
-  }
-};
-
-export const handleConnectionRequest = async (data) => {
-  try {
-    const response = await axios.post(`http://localhost:3000//api/connections/users/${userId} `);
+    const response = await axios.get(`http://localhost:3000/notifications?userId=${userId}`);
     return response.data;
   } catch (error) {
-    console.error("API request failed:", error);
-    throw error;
+    console.error("Error fetching notifications:", error);
+    throw new Error("Network response was not ok");
   }
 };
- 
-export const searchUsers = async (query, token) => {
+
+export const markNotificationAsRead = async (notificationId) => {
   try {
-      const response = await axios.get(
-          `https://localhost:3000/api/users/me/search?query=${query}`,
-          {
-              headers: {
-                  Authorization: `Bearer ${token}`,
-              },
-          }
-      );
-      return response.data.users; 
+    await axios.patch(`http://localhost:3000/notifications/${notificationId}`, { read: true });
   } catch (error) {
-      console.error('Search users error:', error);
-      throw error;
+    console.error("Error marking notification as read:", error);
   }
 };
+

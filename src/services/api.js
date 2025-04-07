@@ -310,4 +310,46 @@ export const markNotificationAsRead = async (notificationId) => {
     console.error("Error marking notification as read:", error);
   }
 };
+export const googleLogin = async (idToken) => {
+  try {
+    const response = await axios.post("http://localhost:3000/google-login", {
+      idToken,
+    });
 
+    if (response.data.token) {
+      return { token: response.data.token, user: response.data.user };
+    } else {
+      throw new Error("Login failed. Please try again.");
+    }
+  } catch (error) {
+    console.error("API Error:", error);
+    return { error: error.message || "Login failed. Please try again." };
+  }
+};
+
+export const handleConnectionRequest = async (data) => {
+  try {
+    const response = await axios.post(`http://localhost:3000//api/connections/users/${userId} `);
+    return response.data;
+  } catch (error) {
+    console.error("API request failed:", error);
+    throw error;
+  }
+};
+ 
+export const searchUsers = async (query, token) => {
+  try {
+    const response = await axios.get(
+      `https://localhost:3000/api/users/me/search?query=${query}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data.users;
+  } catch (error) {
+    console.error('Search users error:', error);
+    throw error;
+  }
+};

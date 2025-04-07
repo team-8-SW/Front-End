@@ -62,7 +62,16 @@ function App() {
       </ProtectedRoute>
     }
   />
-  <Route path="/" element={<Home />} />
+  <Route
+    // path="/view/:id"
+     path="/view"
+    element={
+      <ProtectedRoute>
+        <View loggedUser={loggedUser} />  
+      </ProtectedRoute>
+    }
+  />
+  <Route path="/" element={<Home loggedUser={loggedUser}/>} />
   <Route
     path="/education"
     element={
@@ -86,28 +95,6 @@ function App() {
         <DetailedSkills loggedUser={loggedUser} />
       </ProtectedRoute>
     }
-  /> 
-  <Route path="/network" element={<NetworkPage />} />
-  <Route path="/login" element={<LoginPage setLoggedUser={setLoggedUser}/>} />
-  <Route path="/signup" element={<SignUp />} />
-  <Route path="/ResetPassword" element={<ResetPassword />} />
-  {/* <Route path="/*" element={<NotFound />} /> */}
-</Routes>
-<Routes>
-          <Route path="/EmailManagement" element={<EmailManagement/>}/>
-          <Route path="/VerifyEmail" element={<VerifyEmail/>}/>
-        </Routes>
-       
-      <Routes>
- 
-  <Route
-    // path="/view/:id"
-     path="/view"
-    element={
-      <ProtectedRoute>
-        <View loggedUser={loggedUser} />  
-      </ProtectedRoute>
-    }
   />
   <Route
     path="/company/*"
@@ -117,12 +104,18 @@ function App() {
       </ProtectedRoute>
     }
   />
-
+   <Route path="/network" element={<NetworkPage />} />
+  <Route path="/login" element={<LoginPage setLoggedUser={setLoggedUser}/>} />
+  <Route path="/signup" element={<SignUp />} />
+  <Route path="/ResetPassword" element={<ResetPassword />} />
+  <Route path="/jobtitle" element={<JobTitle loggedUser={loggedUser} />} />
   <Route path="/jobdetails" element={<JobDetailsForm loggedUser={loggedUser} />} />
   {/* <Route path="/*" element={<NotFound />} /> */}
   <Route path="/notifications" element={<NotificationsPage loggedUser={loggedUser} />} />
 </Routes>
         <Routes>
+          <Route path="/EmailManagement" element={<EmailManagement/>}/>
+          <Route path="/VerifyEmail" element={<VerifyEmail/>}/>
           <Route path="/companyform" element={< CreateCompanyForm loggedUser={loggedUser}/>}/>
           
 

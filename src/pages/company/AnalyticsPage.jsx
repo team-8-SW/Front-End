@@ -42,6 +42,7 @@ const AnalyticsPage = ({ loggedUser }) => {
           </button>
         ))}
       </div>
+      
 
       {/* Date & Export */}
       <div className="flex justify-between items-center mb-4">
@@ -52,8 +53,8 @@ const AnalyticsPage = ({ loggedUser }) => {
           📥 Export
         </button>
       </div>
-
       {renderTabComponent()}
+      
     </div>
   );
 };

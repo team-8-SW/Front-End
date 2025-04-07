@@ -24,7 +24,44 @@
             "location": "",
             "type": "",
             "experience": "",
-            "salary": ""
+            "salary": "",
+            "status": "open",
+            "description": "yesss"
+          },
+          {
+            "id": 2,
+            "title": "yesss",
+            "location": "",
+            "type": "",
+            "experience": "",
+            "salary": "",
+            "status": "open"
+          },
+          {
+            "id": 3,
+            "title": "yesss",
+            "location": "",
+            "type": "",
+            "experience": "",
+            "salary": "",
+            "status": "in review"
+          },
+          {
+            "id": 4,
+            "title": "yesss",
+            "location": "",
+            "type": "",
+            "experience": "",
+            "salary": "",
+            "status": "draft"
+          },
+          {
+            "id": 5,
+            "title": "graphic",
+            "location": "sjjsjs",
+            "type": "",
+            "workplace": "",
+            "description": "hshshhs"
           }
         ],
         "analytics": {
@@ -48,9 +85,9 @@
             "totalImpressions": 72,
             "engaged": 65,
             "totalUsers": 120,
-            "reactions": 0,
-            "comments": 0,
-            "reposts": 0
+            "reactions": 5,
+            "comments": 4,
+            "reposts": 7
           },
           "visitors": {
             "pageViews": 36,
@@ -76,57 +113,57 @@
             ],
             "total": 31,
             "list": [
-                {
-                  "name": "Ezz Ali",
-                  "headline": "Fresh graduate from computers and artificial intelligence | Flutter developer",
-                  "joined": "April 2025"
-                },
-                {
-                  "name": "Mohamed Soliman",
-                  "headline": "Software Engineer Full stack (backend engineer and Application Development and Integration)",
-                  "joined": "April 2025"
-                },
-                {
-                  "name": "Omar Ahmed Owais Abdel Tawab",
-                  "headline": "Software Engineer | Backend NodeJS | Frontend ReactJS",
-                  "joined": "April 2025"
-                },
-                {
-                  "name": "Mohamed Ezzat",
-                  "headline": "haram - giza - egypt",
-                  "joined": "April 2025"
-                },
-                {
-                  "name": "Mohamed Ahmed",
-                  "headline": "Full Stack Developer at Information Technology Institute (ITI)",
-                  "joined": "April 2025"
-                },
-                {
-                  "name": "Zead Shalaby",
-                  "headline": "Software Engineer | Backend Developer | Full-Stack Developer | Full-Time Learner",
-                  "joined": "April 2025"
-                },
-                {
-                  "name": "Mustapha Shuaibu",
-                  "headline": "Fullstack Web & Mobile Developer | MERN Stack | 3+ Years Experience | Registered Nurse",
-                  "joined": "April 2025"
-                },
-                {
-                  "name": "Masoud Gamal",
-                  "headline": "Al-Azhar University",
-                  "joined": "April 2025"
-                },
-                {
-                  "name": "Ahmed Elsharkway",
-                  "headline": "I am currently perusing my bachelor degree in computer science.",
-                  "joined": "April 2025"
-                },
-                {
-                  "name": "Mohamed Lotfy",
-                  "headline": "Flutter Developer",
-                  "joined": "April 2025"
-                }
-              ]
+              {
+                "name": "Ezz Ali",
+                "headline": "Fresh graduate from computers and artificial intelligence | Flutter developer",
+                "joined": "April 2025"
+              },
+              {
+                "name": "Mohamed Soliman",
+                "headline": "Software Engineer Full stack (backend engineer and Application Development and Integration)",
+                "joined": "April 2025"
+              },
+              {
+                "name": "Omar Ahmed Owais Abdel Tawab",
+                "headline": "Software Engineer | Backend NodeJS | Frontend ReactJS",
+                "joined": "April 2025"
+              },
+              {
+                "name": "Mohamed Ezzat",
+                "headline": "haram - giza - egypt",
+                "joined": "April 2025"
+              },
+              {
+                "name": "Mohamed Ahmed",
+                "headline": "Full Stack Developer at Information Technology Institute (ITI)",
+                "joined": "April 2025"
+              },
+              {
+                "name": "Zead Shalaby",
+                "headline": "Software Engineer | Backend Developer | Full-Stack Developer | Full-Time Learner",
+                "joined": "April 2025"
+              },
+              {
+                "name": "Mustapha Shuaibu",
+                "headline": "Fullstack Web & Mobile Developer | MERN Stack | 3+ Years Experience | Registered Nurse",
+                "joined": "April 2025"
+              },
+              {
+                "name": "Masoud Gamal",
+                "headline": "Al-Azhar University",
+                "joined": "April 2025"
+              },
+              {
+                "name": "Ahmed Elsharkway",
+                "headline": "I am currently perusing my bachelor degree in computer science.",
+                "joined": "April 2025"
+              },
+              {
+                "name": "Mohamed Lotfy",
+                "headline": "Flutter Developer",
+                "joined": "April 2025"
+              }
+            ]
           },
           "leads": {
             "total": 5

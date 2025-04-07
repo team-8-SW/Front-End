@@ -134,7 +134,15 @@ cancel
 <Typography variant='h4' className='text-gray-600'>job description:</Typography>
 <Typography variant='small' className='text-gray-600'>This will be visible to anyone who views your job post.</Typography>
 <div className="relative w-[32rem] border-2 border-gray-300 rounded-md p-2">
-      <Textarea variant="static" placeholder="job description" value={jobDetails.description} onChange={handleChange} rows={8} />
+<Textarea
+  variant="static"
+  name="description"  // ✅ added this line
+  placeholder="job description"
+  value={jobDetails.description}
+  onChange={handleChange}
+  rows={8}
+/>
+
       <div className="flex w-full justify-between py-1.5">
         <IconButton variant="text" color="blue-gray" size="sm">
           <svg

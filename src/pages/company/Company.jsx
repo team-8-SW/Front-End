@@ -8,6 +8,7 @@ import RightSide from "./RightSide";
 import Nav from "../../components/Nav";
 import AnalyticsPage from "./AnalyticsPage";
 import CompanyCreatePost from "./CompanyCreatePost";
+import ViewCompany from "./ViewCompany";
 
 
 const Company = ({ loggedUser }) => {
@@ -39,6 +40,8 @@ const Company = ({ loggedUser }) => {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="job" element={<Jobs loggedUser={loggedUser}/>} />
           <Route path="analytics" element={<AnalyticsPage loggedUser={loggedUser} />} />
+          
+          
           
 
         </Routes>

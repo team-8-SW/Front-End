@@ -33,6 +33,7 @@ import JobDetailsForm from "./pages/company/JobDetailsForm";
 import View from "./pages/ViewProfile/View";
 import SearchResults from "./pages/network/SearchResults";
 import ConnectionsList from "./pages/network/ConnectionList";
+import ViewCompany from "./pages/company/ViewCompany";
 
 
 function App() {
@@ -121,6 +122,7 @@ function App() {
           <Route path="/companyform" element={< CreateCompanyForm loggedUser={loggedUser}/>}/>
           <Route path="/SearchResults" element={<SearchResults />} />
           <Route path="/ConnectionList" element={<ConnectionsList />} />
+          <Route path="/viewcompany" element={<ViewCompany loggedUser={loggedUser} />} />
           
 
         </Routes> 

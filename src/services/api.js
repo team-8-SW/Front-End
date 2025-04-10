@@ -75,10 +75,10 @@ export const useUserData = (userId) => {
   return user;
 };
 
-export const fetchPosts = async (page) => {
+export const fetchPosts = async () => {
   try {
     const response = await axios.get(
-      `http://localhost:3000/posts?page=${page}`
+      `http://localhost:3000/posts`
     );
     return response.data;
   } catch (error) {
@@ -305,11 +305,12 @@ export const fetchNotifications = async (userId) => {
 
 export const markNotificationAsRead = async (notificationId) => {
   try {
-    await axios.patch(`http://localhost:3000/notifications/${notificationId}`, { read: true });
+    await axios.patch(`http://localhost:3000/notifications/${notificationId}`, { isRead: true });
   } catch (error) {
     console.error("Error marking notification as read:", error);
   }
 };
+
 export const googleLogin = async (idToken) => {
   try {
     const response = await axios.post("http://localhost:3000/google-login", {

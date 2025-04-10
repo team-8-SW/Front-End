@@ -7,6 +7,8 @@ import Jobs from "./Jobs";
 import RightSide from "./RightSide";
 import Nav from "../../components/Nav";
 import AnalyticsPage from "./AnalyticsPage";
+import CompanyCreatePost from "./CompanyCreatePost";
+
 
 const Company = ({ loggedUser }) => {
   return (
@@ -23,8 +25,17 @@ const Company = ({ loggedUser }) => {
       {/* Main Content */}
       <div className="w-[60%] p-5">
         <Routes>
+
           {/* REMOVE leading slash (nested routes must be relative) */}
           <Route path="companyposts" element={<CompanyPosts loggedUser={loggedUser} />} />
+          <Route path="companyposts"element={<div className="space-y-6">
+             <CompanyCreatePost companyId={loggedUser?.id} companyName={loggedUser?.company?.name}companyLogo={loggedUser?.company?.logo} />
+              <CompanyPosts companyId={loggedUser?.id} />
+    </div>
+  }
+/>
+
+
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="job" element={<Jobs loggedUser={loggedUser}/>} />
           <Route path="analytics" element={<AnalyticsPage loggedUser={loggedUser} />} />
@@ -46,3 +57,13 @@ const Company = ({ loggedUser }) => {
 };
 
 export default Company;
+
+
+
+
+
+
+
+
+
+

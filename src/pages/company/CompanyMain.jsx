@@ -12,7 +12,9 @@ const CompanyMain = ({loggedUser}) => {
         <Routes>
             <Route path="/companyposts" element={<CompanyPosts  />} />
             <Route path="/dashboard" element={<Dashboard />} />
+        
             <Route path="/companyposts" element={<CompanyPosts loggedUser={loggedUser} />} />
+
             
         </Routes>
         

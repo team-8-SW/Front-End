@@ -98,7 +98,7 @@ export const handleAddEdu = (education, userId, onSave,onClose) => {
   .then(() => {
     onSave(education);
     onClose();
-  })
+  }) 
   .catch((error) => {
     console.error("Error updating education:", error);
   });}

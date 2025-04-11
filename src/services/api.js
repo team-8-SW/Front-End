@@ -362,3 +362,20 @@ export const getConnections = async () => {
     throw error;
   }
 };
+export const acceptConnection = async (userId) => {
+  try {
+      const response = await axios.post(`https://localhost:3000/api/connections/${userId}/accept`);
+      return response.data; 
+  } catch (error) {
+      throw new Error('Failed to accept connection request: ' + error.message);
+  }
+};
+
+export const declineConnection = async (userId) => {
+  try {
+      const response = await axios.delete(`https://localhost:3000/api/connections/${userId}/decline`);
+      return response.data; 
+  } catch (error) {
+      throw new Error('Failed to decline connection request: ' + error.message);
+  }
+};

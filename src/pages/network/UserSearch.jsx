@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { searchUsers } from '../../services/api';
 
-const UserSearch = ({token}) => {
+const UserSearch = ({ token }) => {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState([]);
     const [loading, setLoading] = useState(false);
-    
+    const navigate = useNavigate(); 
 
     const handleSearch = async (e) => {
         setQuery(e.target.value);
@@ -26,7 +26,7 @@ const UserSearch = ({token}) => {
     };
 
     const handleSeeMore = () => {
-       navigate ('/SearchResults');
+        navigate('/SearchResults');
     };
 
     return (
@@ -39,7 +39,7 @@ const UserSearch = ({token}) => {
                 className="h-[34px] hidden sm:block sm:w-40 lg:w-60 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             {loading && <div>Loading...</div>}
-            {results.length > 0 && (
+            {results.length > 0 ? (
                 <div className="absolute bg-white border rounded shadow-lg mt-1 w-full z-10">
                     <ul>
                         {results.slice(0, 5).map((user) => (
@@ -56,6 +56,12 @@ const UserSearch = ({token}) => {
                         See More
                     </button>
                 </div>
+            ) : (
+                query.length > 2 && !loading && (
+                    <div className="absolute bg-white border rounded shadow-lg mt-1 w-full z-10">
+                        <div className="p-2 text-gray-500">No results found</div>
+                    </div>
+                )
             )}
         </div>
     );

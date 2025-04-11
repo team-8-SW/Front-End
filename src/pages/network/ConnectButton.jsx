@@ -14,15 +14,15 @@ const ConnectButton = ({ userId }) => {
       setIsConnected(true); 
     } catch (error) {
       console.error('Connection failed:', error);
-      setError('Connection failed. Please try again.');
+      /*setError('Connection failed. Please try again.');*/
     }
   };
 
   return (
-    <div>
+    <div className="min-w-[110px]">
       {!isConnected && ( 
         <button
-          className="border border-blue-500 rounded-full px-4 py-2 text-blue-500 font-semibold hover:bg-blue-500 hover:text-white transition duration-300"
+          className="w-[120px] border border-blue-500 rounded-full px-4 py-2 text-blue-500 font-semibold hover:bg-blue-500 hover:text-white transition duration-300 text-sm"
           onClick={handleClick}
           disabled={isPending} 
         >

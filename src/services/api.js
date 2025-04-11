@@ -380,3 +380,11 @@ export const declineConnection = async (userId) => {
       throw new Error('Failed to decline connection request: ' + error.message);
   }
 };
+export const removeConnection = async (connectionId) => {
+  try {
+    const response = await axios.delete(`${API_URL}/${connectionId}`);
+    return response.data; 
+  } catch (error) {
+    throw error; ``
+  }
+};

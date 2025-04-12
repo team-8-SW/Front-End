@@ -11,7 +11,7 @@ const CommentsSection = ({
 }) => {
   const [newComment, setNewComment] = useState("");
   const [visibleComments, setVisibleComments] = useState(2);
-
+  const loggedId=localStorage.getItem("userId");
 
 
   return (
@@ -37,7 +37,7 @@ const CommentsSection = ({
                           handleAddNewComment(
                             postId,
                             newComment,
-                            loggedUser.id,
+                            loggedId,
                             commenterName,
                             comments,
                             setComments,

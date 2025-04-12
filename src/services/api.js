@@ -55,7 +55,7 @@ export const useName = (userId) => {
   return name;
 };
 
-const fetchUserData = async (userId, setUser) => {
+const fetchOtherUserData = async (userId, setUser) => {
   try {
     const response = await axios.get(`http://localhost:3000/users/${userId}`);
     setUser(response.data);
@@ -63,14 +63,28 @@ const fetchUserData = async (userId, setUser) => {
     console.error("Error fetching user data:", error);
   }
 };
+const fetchUserData = async (userId, setUser,token) => {
+  try {
+    const response = await axios.get(`http://localhost:3000/users/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    setUser(response.data);
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+  }
+};
+export const useUserData = (userId,token) => {
 
-export const useUserData = (userId) => {
   const [user, setUser] = useState(null);
   useEffect(() => {
-    if (userId) {
-      fetchUserData(userId, setUser);
+    if (token) {
+      fetchUserData(userId, setUser, token);
+    } else if (userId) {
+      fetchOtherUserData(userId, setUser);
     }
-  }, [userId]);
+  }, [userId, token]);
 
   return user;
 };
@@ -386,5 +400,15 @@ export const removeConnection = async (connectionId) => {
     return response.data; 
   } catch (error) {
     throw error; ``
+  }
+};
+
+export const deletePost = async (postId) => {
+  try {
+    const response = await axios.delete(`http://localhost:3000/posts/${postId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting post:", error);
+    throw error;
   }
 };

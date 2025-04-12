@@ -16,10 +16,12 @@ import {
 } from "../../services/api";
 
 const ProfileCard = ({loggedUser}) => {
-  const profilePicture = useProfilePicture(loggedUser.id);
-  const coverPhoto = useCoverPhoto(loggedUser.id);
-  const name = useName(loggedUser.id);
-  const userData = useUserData(loggedUser.id);
+  const token = localStorage.getItem("token");
+  const loggedId = localStorage.getItem("userId");
+  const profilePicture = useProfilePicture(loggedId, token);
+  const coverPhoto = useCoverPhoto(loggedId, token);
+  const name = useName(loggedId, token);
+  const userData = useUserData(loggedId, token);
   
   return (
     <Link to={`/profile`}>

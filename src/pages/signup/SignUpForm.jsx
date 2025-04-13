@@ -1,6 +1,7 @@
+import axios from 'axios';
 import React, { useState, useEffect } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
-import { checkEmail, sendSignupEmail } from "../../services/api";
+import { sendSignupEmail } from "../../services/api";
 import SocialLogin from "../../components/SocialLogin";
 import { Link } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
@@ -8,6 +9,9 @@ import { GoogleLogin } from "@react-oauth/google";
 const SignUpForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [userName, setUserName] = useState("");
   const [recaptchaValue, setRecaptchaValue] = useState(null);
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
@@ -39,22 +43,23 @@ const SignUpForm = () => {
     }
 
     try {
-      const response = await checkEmail(email, password);
-
-      if (!response.success) {
-        setMessage(response.message);
-        setMessageType("error");
-        return;
-      }
+      const response = await axios.post('http://localhost:5000/api/auth/registerwithcaptcha', {
+        userName,
+        email,
+        password,
+        firstName,
+        lastName,
+        recaptchaToken: recaptchaValue,
+      });
 
       setMessage("Signup successful! A confirmation email has been sent.");
       setMessageType("success");
       setEmailSent(true);
-      sendSignupEmail(email);
       setResendTimer(30);
     } catch (error) {
-      setMessage("Failed to sign up. Please try again.");
+      setMessage(error.response?.data?.message || "Failed to sign up. Please try again.");
       setMessageType("error");
+      console.log(error.response?.data?.message || "Failed to sign up. Please try again.");
     }
   };
 
@@ -83,6 +88,42 @@ const SignUpForm = () => {
         )}
 
         <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="firstName">First Name</label>
+            <input
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
+              type="text"
+              placeholder="First Name"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="lastName">Last Name</label>
+            <input
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
+              type="text"
+              placeholder="Last Name"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="userName">Username</label>
+            <input
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
+              type="text"
+              placeholder="Username"
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
+              required
+            />
+          </div>
+
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">Email</label>
             <input
@@ -117,9 +158,9 @@ const SignUpForm = () => {
         </div>
 
         {emailSent && (
-          <button 
+          <button
             className={`mt-4 w-full ${resendTimer === 0 ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-500"} text-white font-medium py-2 rounded-lg`}
-            onClick={handleResendEmail} 
+            onClick={handleResendEmail}
             disabled={resendTimer > 0}>
             Resend Confirmation Email {resendTimer > 0 ? `(${resendTimer}s)` : ""}
           </button>

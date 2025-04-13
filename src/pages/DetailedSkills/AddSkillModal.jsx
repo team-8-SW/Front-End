@@ -1,15 +1,13 @@
 import React, { useState } from "react";
 import { Dialog, Button, Typography } from "@material-tailwind/react";
 import axios from "axios";
-import { handleAddSkills } from "../../services/profile";
-
 
 const AddSkillModal = ({ open, onClose, userId, onSkillAdded }) => {
   const [newSkill, setNewSkill] = useState("");
   const [error, setError] = useState(false);
 
-  const handleAddSkill = (event) => {
-    event.preventDefault(); // Prevent form refresh
+  const handleAddSkill = async (event) => {
+    event.preventDefault();
 
     if (!newSkill.trim()) {
       setError(true);
@@ -17,7 +15,26 @@ const AddSkillModal = ({ open, onClose, userId, onSkillAdded }) => {
     }
     setError(false);
 
-   handleAddSkills(newSkill, userId, onSkillAdded, setNewSkill,onClose);
+    const token = localStorage.getItem("token");
+
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/profiles/me/skills",
+        { name: newSkill.trim() }, // ✅ backend expects "name"
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (res.data?.skill) {
+        onSkillAdded(res.data.skill);
+      }
+      setNewSkill("");
+      onClose();
+    } catch (err) {
+      console.error("Error adding skill:", err);
+      alert(err.response?.data?.error || "Failed to add skill");
+    }
   };
 
   return (
@@ -26,7 +43,7 @@ const AddSkillModal = ({ open, onClose, userId, onSkillAdded }) => {
         <Typography variant="h5" className="mb-2">Add Skill</Typography>
         <input
           type="text"
-          placeholder="Skill (ex: Project Management)"
+          placeholder="Skill (e.g., React, Leadership)"
           value={newSkill}
           onChange={(e) => setNewSkill(e.target.value)}
           className={`border p-2 w-full rounded-md ${error ? "border-red-500" : ""}`}

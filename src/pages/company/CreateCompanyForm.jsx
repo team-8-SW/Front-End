@@ -1,166 +1,171 @@
 import React, { useState } from "react";
 import {
-  Card,
-  Typography,
-  Button,
-  Avatar,
-  Dialog,
-  Input,
-  Select,
-  Option
+  Card, Typography, Button, Dialog, Input, Select, Option
 } from "@material-tailwind/react";
-import { TrashIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
-import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-const CreateCompanyForm = ({ loggedUser }) => {
+const CreateCompanyForm = ({ setCompanyData }) => {
   const [open, setOpen] = useState(false);
-  const [companyData, setCompanyData] = useState({
-    logo: "",
+  const [logoPreview, setLogoPreview] = useState(null);
+  const [formData, setFormData] = useState({
     name: "",
-    website: "",
+    description: "",
     industry: "",
+    logo_url: "",
+    organization_type: "",
+    website: "",
     size: "",
-    type: "",
-    email: "",
+    location: "",
+    about: "",
+    cover_photo_url: ""
   });
+
   const navigate = useNavigate();
-   useEffect(() => {
-      if (loggedUser) {
-        setCompanyData(loggedUser.company|| {});
-      }
-    }, [loggedUser]);
+
+  const handleChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
+  };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.readAsDataURL(file);
       reader.onloadend = () => {
-        setCompanyData({ ...companyData, logo: reader.result });
+        setFormData((prev) => ({ ...prev, logo_url: reader.result }));
+        setLogoPreview(reader.result);
       };
+      reader.readAsDataURL(file);
     }
-  };
-
-  const handleChange = (e) => {
-    
-    setCompanyData({ ...companyData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const token = localStorage.getItem("token");
+
+    const payload = {
+      name: formData.name,
+      description: formData.description,
+      industry: formData.industry,
+      logo_url: formData.logo_url,
+      organization_type: formData.organization_type.trim(),
+      website: formData.website,
+      size: formData.size,
+      location: formData.location,
+      about: formData.about,
+      cover_photo_url: formData.cover_photo_url,
+    };
+
+    console.log("Submitting company payload:", payload);
+
     try {
-      await axios.patch(`http://localhost:3000/users/${loggedUser.id}`, {
-        company: companyData,
+      const res = await axios.post("http://localhost:5000/api/company", payload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       });
-      setOpen(false);
+
+      alert("Company created successfully!");
+      localStorage.setItem("companyData", JSON.stringify(res.data));
+      if (setCompanyData) setCompanyData(res.data);
+      navigate("/company");
     } catch (error) {
       console.error("Error creating company:", error);
+      alert(error.response?.data?.error || error.message || "Failed to create company");
     }
   };
 
   return (
     <div className="w-full max-w-7xl mx-auto p-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-      <Card className="w-full shadow-lg p-6">
+        <Card className="w-full shadow-lg p-6">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <Typography variant="h4" color="blue-gray">
+              Create Company Page
+            </Typography>
 
-        {/* Left Side - Form */}
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <Typography variant="h4" color="blue-gray">
-            Create Company Page
-          </Typography>
+            <Input label="Company Name" name="name" value={formData.name} onChange={handleChange} required />
+            <Input label="Description" name="description" value={formData.description} onChange={handleChange} />
+            <Input label="Industry" name="industry" value={formData.industry} onChange={handleChange} />
+            <Input label="Website" name="website" value={formData.website} onChange={handleChange} />
 
-          <Input label="Company Name" name="name" value={companyData.name} onChange={handleChange} required />
-          <Input label="Website" name="website" value={companyData.website} onChange={handleChange} />
-          <Input label="Industry" name="industry" value={companyData.industry} onChange={handleChange} required />
+            <Select
+              label="Organization Type"
+              value={formData.organization_type}
+              onChange={(val) => setFormData((prev) => ({ ...prev, organization_type: val }))}
+              required
+            >
+              <Option value="Public company">Public company</Option>
+              <Option value="Self-employed">Self-employed</Option>
+              <Option value="Government agency">Government agency</Option>
+              <Option value="Nonprofit">Nonprofit</Option>
+              <Option value="Sole proprietorship">Sole proprietorship</Option>
+              <Option value="Privately held">Privately held</Option>
+              <Option value="Partnership">Partnership</Option>
+            </Select>
 
-          <Select
-  label="Company Size"
-  value={companyData.size}
-  onChange={(val) => setCompanyData((prev) => ({ ...prev, size: val }))} // ✅ Fixed
->
-  <Option value="1-10 employees">1-10 employees</Option>
-  <Option value="11-50 employees">11-50 employees</Option>
-  <Option value="51-200 employees">51-200 employees</Option>
-  <Option value="201-500 employees">201-500 employees</Option>
-  <Option value="500+ employees">500+ employees</Option>
-</Select>
+            <Select
+              label="Company Size"
+              value={formData.size}
+              onChange={(val) => setFormData((prev) => ({ ...prev, size: val }))}
+              required
+            >
+              <Option value="1-10 employees">1-10 employees</Option>
+              <Option value="11-50 employees">11-50 employees</Option>
+              <Option value="51-200 employees">51-200 employees</Option>
+              <Option value="201-500 employees">201-500 employees</Option>
+              <Option value="500+ employees">500+ employees</Option>
+            </Select>
 
-<Select
-  label="Company Type"
-  value={companyData.type}
-  onChange={(val) => setCompanyData((prev) => ({ ...prev, type: val }))} // ✅ Fixed
->
-  <Option value="Public">Public</Option>
-  <Option value="Private">Private</Option>
-  <Option value="Non-Profit">Non-Profit</Option>
-  <Option value="Government">Government</Option>
-</Select>
+            <Input label="Location" name="location" value={formData.location} onChange={handleChange} />
+            <Input label="About" name="about" value={formData.about} onChange={handleChange} />
+            <Input label="Cover Photo URL" name="cover_photo_url" value={formData.cover_photo_url} onChange={handleChange} />
 
-          <Input label="Company Email" name="email" value={companyData.email} onChange={handleChange} required />
+            <div>
+              <Typography variant="small">Upload Logo</Typography>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="mt-1"
+              />
+            </div>
 
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">Upload Logo</label>
-            <input type="file" accept="image/*" onChange={handleFileChange} className="text-sm" />
-            {companyData.logo && (
-              <Button
-                color="red"
-                onClick={() => setCompanyData({ ...companyData, logo: "" })}
-                className="flex items-center gap-1"
-              >
-                <TrashIcon className="w-4 h-4" /> Remove
+            <div className="flex justify-end gap-4">
+              <Button variant="outlined" color="blue" onClick={() => setOpen(true)}>
+                Preview
               </Button>
-            )}
-          </div>
+              <Button color="blue" type="submit">
+                Create Company
+              </Button>
+            </div>
+          </form>
+        </Card>
 
-          <div className="flex justify-end gap-4 pt-4">
-            <Button variant="outlined" color="blue" onClick={() => setOpen(true)}>
-              Preview
-            </Button>
-
-
-            <Button color="blue" type="submit" onClick={() => navigate("/company")}>
-              
-              Create or update
-            </Button>
-
-          </div>
-        </form>
-      </Card>
-
-        {/* Right Side - Company Card Preview */}
         <Card className="w-full shadow-lg p-6">
           <Typography variant="h5" className="mb-4 text-center">Preview Card</Typography>
-          <div className="flex flex-col ">
-          {companyData.logo && <img src={companyData.logo} alt="Company Logo Preview" className="w-40 mt-4" />}
-            <Typography variant="h6">{companyData.name || "Company Name"}</Typography>
-            <Typography className="text-sm text-gray-500">{companyData.industry || "Industry"}</Typography>
-            <div className="mt-4 text-sm space-y-1 ">
-              <Typography><strong>Website:</strong> {companyData.website || "N/A"}</Typography>
-              <Typography><strong>Size:</strong> {companyData.size || "N/A"}</Typography>
-              <Typography><strong>Type:</strong> {companyData.type || "N/A"}</Typography>
-              <Typography><strong>Email:</strong> {companyData.email || "N/A"}</Typography>
-              <Button className="rounded-full bg-blue-700 p-3">+ follow</Button>
-            </div>
+          <div className="flex flex-col gap-1">
+            <img src={logoPreview || formData.logo_url || "default-avatar.png"} alt="Logo" className="w-40 h-40 object-contain" />
+            <Typography variant="h6">{formData.name || "Company Name"}</Typography>
+            <Typography className="text-sm text-gray-500">{formData.industry || "Industry"}</Typography>
+            <Typography className="text-sm">Location: {formData.location}</Typography>
+            <Typography className="text-sm">Website: {formData.website}</Typography>
+            <Typography className="text-sm">Type: {formData.organization_type}</Typography>
+            <Typography className="text-sm">Size: {formData.size}</Typography>
+            <Typography className="text-sm">About: {formData.about}</Typography>
+            <img src={formData.cover_photo_url || "default-cover.jpg"} alt="Cover" className="w-full h-32 object-cover mt-2" />
           </div>
         </Card>
       </div>
 
-      {/* Modal Dialog for Full Preview */}
       <Dialog open={open} handler={() => setOpen(false)}>
         <div className="p-6">
-          <Typography variant="h5">Company Info Preview</Typography>
-          <div className="mt-4 space-y-2">
-          {companyData.logo && <img src={companyData.logo} alt="Company Logo Preview" className="w-40 mt-4" />}
-            <Typography><strong>Name:</strong> {companyData.name}</Typography>
-            <Typography><strong>Website:</strong> {companyData.website}</Typography>
-            <Typography><strong>Industry:</strong> {companyData.industry}</Typography>
-            <Typography><strong>Size:</strong> {companyData.size}</Typography>
-            <Typography><strong>Type:</strong> {companyData.type}</Typography>
-            <Typography><strong>Email:</strong> {companyData.email}</Typography>
-           
-          </div>
+          <Typography variant="h5">Full Preview</Typography>
+          <pre className="text-sm mt-2">{JSON.stringify(formData, null, 2)}</pre>
         </div>
       </Dialog>
     </div>

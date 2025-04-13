@@ -8,10 +8,13 @@ import Resume from './Resume'
 const Main = ({loggedUser,setLoggedUser}) => {
 
   return (
-    <div className='w-full'>
+    <div className='w-full '>
         <div className='w-full'>
         <ProfileCard  loggedUser={loggedUser} setLoggedUser={setLoggedUser}/>
+        <div className='mb-5'>
         <Exp loggedUser={loggedUser}/>
+        </div>
+      
         <Education  loggedUser={loggedUser}/>
 
         <SkillsCard loggedUser={loggedUser} />  

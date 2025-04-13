@@ -15,26 +15,34 @@ const CoverPhotoCard = ({ userData, setOpenCP }) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onloadend = async () => {
-      const updatedUser = { ...userData, coverPhoto: reader.result };
-      try {
-        await axios.patch(`http://localhost:3000/users/${userData.id}`, updatedUser);
-        window.location.reload(); // optional: refresh to show change
-      } catch (error) {
-        console.error("Error uploading profile picture:", error);
-      }
-    };
-    reader.readAsDataURL(file);
+    const token = localStorage.getItem("token");
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      await axios.post("http://localhost:5000/api/profiles/me/cover-photo", formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      window.location.reload();
+    } catch (error) {
+      console.error("Error uploading cover photo:", error);
+    }
   };
 
-  const handleRemoveProfilePicture = async () => {
-    const updatedUser = { ...userData, coverPhoto: "/photos/55k1z8997gh8dwtihm11aajyq.svg" };
+  const handleRemoveCoverPhoto = async () => {
+    const token = localStorage.getItem("token");
     try {
-      await axios.patch(`http://localhost:3000/users/${userData.id}`, updatedUser);
-      window.location.reload(); // optional: refresh to show change
+      await axios.delete("http://localhost:5000/api/profiles/me/cover-photo", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      window.location.reload();
     } catch (error) {
-      console.error("Error removing profile picture:", error);
+      console.error("Error removing cover photo:", error);
     }
   };
 
@@ -45,16 +53,16 @@ const CoverPhotoCard = ({ userData, setOpenCP }) => {
           {/* Header */}
           <div className="flex justify-between items-center w-full">
             <Typography variant="h5" className="font-semibold text-white">
-              Profile Photo
+              Cover Photo
             </Typography>
             <MdCancel className="text-white cursor-pointer" size={30} onClick={() => setOpenCP(false)} />
           </div>
 
-          {/* Profile Photo */}
+          {/* Current Cover Photo */}
           <img
-            src={userData.coverPhoto}
-            alt="Profile"
-            className="w-[80%] h-[200px]  mt-4"
+            src={userData.coverPhotoUrl || "/photos/55k1z8997gh8dwtihm11aajyq.svg"}
+            alt="Cover"
+            className="w-[80%] h-[200px] mt-4 object-cover rounded"
           />
 
           {/* Hidden File Input */}
@@ -77,7 +85,7 @@ const CoverPhotoCard = ({ userData, setOpenCP }) => {
             </div>
 
             {/* Delete Button */}
-            <div className="flex flex-col items-center cursor-pointer" onClick={handleRemoveProfilePicture}>
+            <div className="flex flex-col items-center cursor-pointer" onClick={handleRemoveCoverPhoto}>
               <FaRegTrashAlt />
               <Typography variant="h6" className="text-white mt-2">
                 Delete Photo

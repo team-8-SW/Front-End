@@ -14,25 +14,34 @@ const ProfilePhotoCard = ({ userData, setOpenPP }) => {
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
-    const reader = new FileReader();
-    reader.onloadend = async () => {
-      const updatedUser = { ...userData, profilePicture: reader.result };
-      try {
-        await axios.patch(`http://localhost:3000/users/${userData.id}`, updatedUser);
-        window.location.reload(); // optional: refresh to show change
-      } catch (error) {
-        console.error("Error uploading profile picture:", error);
-      }
-    };
-    reader.readAsDataURL(file);
+  
+    const token = localStorage.getItem("token");
+    const formData = new FormData();
+    formData.append("file", file);
+  
+    try {
+      await axios.post("http://localhost:5000/api/profiles/me/profile-picture", formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      window.location.reload();
+    } catch (error) {
+      console.error("Error uploading profile picture:", error);
+    }
   };
+  
 
   const handleRemoveProfilePicture = async () => {
-    const updatedUser = { ...userData, profilePicture: "/photos/blank-profile-picture-973460_1280.svg" };
+    const token = localStorage.getItem("token");
     try {
-      await axios.patch(`http://localhost:3000/users/${userData.id}`, updatedUser);
-      window.location.reload(); // optional: refresh to show change
+      await axios.delete("http://localhost:5000/api/profiles/me/profile-picture", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      window.location.reload();
     } catch (error) {
       console.error("Error removing profile picture:", error);
     }
@@ -42,22 +51,17 @@ const ProfilePhotoCard = ({ userData, setOpenPP }) => {
     <div>
       <Card className="bg-[#293138] text-white p-4">
         <div className="flex flex-col items-center justify-center gap-12">
-          {/* Header */}
           <div className="flex justify-between items-center w-full">
-            <Typography variant="h5" className="font-semibold text-white">
-              cover Photo
-            </Typography>
-            <MdCancel className="text-white cursor-pointer" size={30} onClick={() => setOpenPP(false)} />
+            <Typography variant="h5">Profile Photo</Typography>
+            <MdCancel size={30} className="cursor-pointer" onClick={() => setOpenPP(false)} />
           </div>
 
-          {/* Profile Photo */}
           <img
-            src={userData.profilePicture}
+            src={userData.profilePictureUrl}
             alt="Profile"
             className="w-[200px] h-[200px] rounded-full border-4 border-white shadow-lg mt-4"
           />
 
-          {/* Hidden File Input */}
           <input
             type="file"
             accept="image/*"
@@ -66,22 +70,14 @@ const ProfilePhotoCard = ({ userData, setOpenPP }) => {
             onChange={handleFileChange}
           />
 
-          {/* Action Buttons */}
           <div className="flex justify-between items-center w-full px-8">
-            {/* Upload Button */}
             <div className="flex flex-col items-center cursor-pointer" onClick={triggerFileInput}>
               <FaCamera />
-              <Typography variant="h6" className="text-white mt-2">
-                Add Photo
-              </Typography>
+              <Typography variant="h6" className="mt-2">Add Photo</Typography>
             </div>
-
-            {/* Delete Button */}
             <div className="flex flex-col items-center cursor-pointer" onClick={handleRemoveProfilePicture}>
               <FaRegTrashAlt />
-              <Typography variant="h6" className="text-white mt-2">
-                Delete Photo
-              </Typography>
+              <Typography variant="h6" className="mt-2">Delete Photo</Typography>
             </div>
           </div>
         </div>

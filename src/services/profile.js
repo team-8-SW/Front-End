@@ -7,24 +7,6 @@ import { useState, useEffect } from "react";
 
 
 
-// export const fetchUserId = async () => {
-//   try {
-//     const response = await axios.get("http://localhost:3000/currentUser");
-//     console.log("User fetched:", response.data);
-    
-//     if (response.data.length > 0) {
-//       return response.data[0].id; // ✅ Return the first user's ID
-//     } else {
-//       console.error("No user found in currentUser");
-//       return null;
-//     }
-//   } catch (error) {
-//     console.error("Error fetching user ID:", error);
-//     return null;
-//   }
-  
-// };
-
    
 
 export const fetchUser = async ( setLoggedUser) => {
@@ -56,35 +38,46 @@ export const handleDeleteExp = (experiences,userId,onDelete) => {
     })
     .catch((err) => console.error("Error deleting experience:", err));
 };
-export const handleDeleteEdu = (edu,userId,onDelete) => {
-  axios
-      .get(`http://localhost:3000/users/${userId}`)
-      .then((res) => {
-        const updatedEducation = res.data.education.filter((e) => !(e.school === edu.school && e.degree === edu.degree));
-        return axios.patch(`http://localhost:3000/users/${userId}`, { education: updatedEducation });
-      })
-      .then(() => {
-        onDelete(edu);
-      })
-      .catch((error) => {
-        console.error("Error deleting education:", error);
-      });
-  }
-export const handleDeleteSkill = (skill,userId,onDelete) => {
-  axios
-  .get(`http://localhost:3000/users/${userId}`)
-  .then((res) => {
-    const updatedSkills = res.data.skills.filter((s) => s !== skill);
+export const handleDeleteEdu = async (edu, onDelete) => {
+  const token = localStorage.getItem("token");
 
-    return axios.patch(`http://localhost:3000/users/${userId}`, {
-      skills: updatedSkills, // Update only the skills array
+  if (!edu.id) {
+    console.error("Missing education ID.");
+    return;
+  }
+
+  try {
+    await axios.delete(`http://localhost:5000/api/profiles/me/education/${edu.id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
-  })
-  .then(() => {
-    onDelete(skill); // Update the UI in React
-  })
-  .catch((err) => console.error("Error deleting skill:", err));
-}
+
+    onDelete(edu); // update UI
+  } catch (err) {
+    console.error("Error deleting education:", err);
+    alert(err.response?.data?.error || "Failed to delete education");
+  }
+};
+
+
+
+export const handleDeleteSkill = async (skillId, userId, onDelete) => {
+  const token = localStorage.getItem("token");
+  try {
+    await axios.delete(`http://localhost:5000/api/profiles/me/skills/${skillId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    onDelete(skillId); // This filters in the component
+  } catch (err) {
+    console.error("Error deleting skill:", err);
+    alert("Failed to delete skill");
+  }
+};
+
+
 
 export const handleAddSkill = (newSkill,userId,onSkillAdded) => {
 }
@@ -104,64 +97,49 @@ export const handleAddEdu = (education, userId, onSave,onClose) => {
   });}
 
 
-  // export const handleAddJob = (jobData, userId) => {
-  //   axios
-  //   .get(`http://localhost:3000/users/${userId}`)
-  //   .then((response) => {
-  //     const updatedJob = [...response.data.company.jobs, jobData];
-  //     return axios.patch(`http://localhost:3000/users/${userId}`, { company.jobs : updatedEducation });
-  //   })
-    
-  //   .catch((error) => {
-  //     console.error("Error updating education:", error);
-  //   });}
+  
 
-export const handleAddExperience = (newExp, userId, onExpAdded,onClose,setNewExp) => {
-  axios
-  .get(`http://localhost:3000/users/${userId}`)
-  .then((response) => {
-    const updatedExp = [...(response.data.experience || []), newExp];
-    return axios.patch(`http://localhost:3000/users/${userId}`, {
-      experience: updatedExp,
-    });
-  })
-  .then(() => {
-    onExpAdded(newExp);
-    setNewExp({
-      title: "",
-      company: "",
-      employmentType: "",
-      locationType: "",
-      startDate: "",
-      endDate: "",
-      description: "",
-      location: "",
-      profileHeadline: "",
-      foundJobSource: ""
-    });
-    onClose();
-  })
-  .catch((error) => console.error("Error adding experience:", error));
-}
-export const handleAddSkills = (newSkill,userId,onSkillAdded, setNewSkill,onClose) => {
-  axios.get(`http://localhost:3000/users/${userId}`)
-      .then(response => {
-        const n=[...response.data.skills]
-        
-        const updatedSkills = [...n, newSkill];
-
-        return axios.patch(`http://localhost:3000/users/${userId}`, {
-          skills: updatedSkills
-        });
-      })
-      .then(response => {
-        console.log("Skill added successfully!", response.data);
-        onSkillAdded(newSkill); // Update parent component
-        setNewSkill(""); // Clear input
-        onClose(); // Close modal
-      })
-      .catch(error => console.error("Error adding skill:", error));
-}
+  export const handleAddExperience = async (newExp, onExpAdded, onClose, setNewExp) => {
+    const token = localStorage.getItem("token");
+  
+    try {
+      const res = await axios.post("http://localhost:5000/api/profiles/me/experience", newExp, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+  
+      onExpAdded(res.data.experience);
+      setNewExp({
+        title: "", company: "", employmentType: "", locationType: "",
+        startDate: "", endDate: "", description: "", location: "",
+      });
+      onClose();
+    } catch (err) {
+      console.error("Error adding experience:", err);
+      alert(err.response?.data?.error || "Failed to add experience");
+    }
+  };
+  
+  export const handleDeleteExperience = async (experienceId, onDelete) => {
+    const token = localStorage.getItem("token");
+    try {
+      // Log the ID to ensure it's being passed correctly
+      console.log("Attempting to delete experience with ID:", experienceId);
+  
+      // Make the DELETE request to the backend
+      await axios.delete(`http://localhost:5000/api/profiles/me/experience/${experienceId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+  
+      // After successful deletion, update the UI by calling the onDelete function
+      onDelete(experienceId); // Pass the experience ID to remove it from the UI
+    } catch (err) {
+      console.error("Error deleting experience:", err);
+      alert("Failed to delete experience: " + (err.response?.data?.message || "Unknown error"));
+    }
+  };
+  
+  
+  
 
 
 export const logout = (navigate) => {

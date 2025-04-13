@@ -4,27 +4,27 @@ import { Typography, Card } from "@material-tailwind/react";
 import ExpData from "./ExpData";
 import { FaArrowLeft } from "react-icons/fa";
 import AddExpModal from "./AddExpModal";
-import axios from "axios";
 import { Link } from "react-router-dom";
 
 const DetailedExpCard = ({ loggedUser }) => {
-  const [experiences, setExperiences] = useState(loggedUser?.experience || []);
+  const [experiences, setExperiences] = useState(loggedUser?.experiences || []);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  console.log(experiences);
 
   useEffect(() => {
-    setExperiences(loggedUser?.experience || []);
+    setExperiences(loggedUser?.experiences || []);
+    console.log("Experiences updated:", loggedUser?.experiences || []);
   }, [loggedUser]);
 
   const handleExpAdded = (newExp) => {
-    setExperiences([...experiences, newExp]); // Update UI
+    setExperiences([...experiences, newExp]);
   };
 
   const handleExpDelete = (deletedExp) => {
-    setExperiences(experiences.filter((exp) => !(exp.title== deletedExp.title && exp.company == deletedExp.company && exp.startDate == deletedExp.startDate && exp.endDate == deletedExp.endDate)));
+    setExperiences(experiences.filter((exp) =>
+      !(exp.title === deletedExp.title && exp.company === deletedExp.company &&
+        exp.startDate === deletedExp.startDate && exp.endDate === deletedExp.endDate)
+    ));
   };
-
-  if (!loggedUser) return <p>Loading user data...</p>;
 
   return (
     <div>
@@ -34,9 +34,9 @@ const DetailedExpCard = ({ loggedUser }) => {
             <div className="flex justify-between">
               <div className="flex gap-2 items-center">
                 <Link to="/profile">
-                <button className="text-gray-600 hover:text-gray-800">
-                  <FaArrowLeft className="w-5 h-5" />
-                </button>
+                  <button className="text-gray-600 hover:text-gray-800">
+                    <FaArrowLeft className="w-5 h-5" />
+                  </button>
                 </Link>
                 <Typography variant="h3" className="font-medium text-gray-800">
                   Experience
@@ -47,11 +47,10 @@ const DetailedExpCard = ({ loggedUser }) => {
               </button>
             </div>
 
-            {/* Display Experiences */}
             <div>
               {experiences.length > 0 ? (
-                experiences.map((experiences, index) => (
-                  <ExpData key={index} experiences={experiences} userId={loggedUser.id} onDelete={handleExpDelete} />
+                experiences.map((experience, index) => (
+                  <ExpData key={index} experiences={experience}  onDelete={handleExpDelete} />
                 ))
               ) : (
                 <Typography color="gray">No Experience Added</Typography>
@@ -63,7 +62,7 @@ const DetailedExpCard = ({ loggedUser }) => {
       <AddExpModal
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        userId={loggedUser.id}
+        
         onExpAdded={handleExpAdded}
       />
     </div>

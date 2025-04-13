@@ -4,6 +4,10 @@ import PostModal from "./PostModal";
 import PostBar from "./PostBar";
 
 const CreatePost = ({loggedUser}) => {
+  if (!loggedUser) {
+    return <div className="w-full h-24 bg-gray-100 rounded-lg animate-pulse"></div>;
+  }
+
   const photo = useProfilePicture(loggedUser.id);
   const [isModalOpen, setIsModalOpen] = useState(false);
 

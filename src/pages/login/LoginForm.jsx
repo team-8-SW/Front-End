@@ -1,96 +1,100 @@
+import axios from 'axios';
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
-import { signIn } from "../../services/api";
-import SocialLogin from "../../components/SocialLogin";
+import { Link, useNavigate } from "react-router-dom";
 
-const LoginForm = ({setLoggedUser}) => {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
-    const navigate = useNavigate();
+const LoginForm = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("");
+  const navigate = useNavigate();
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setError(""); 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setMessage("");
+    setMessageType("");
 
-        const response = await signIn(email, password,setLoggedUser);
+    try {
+      const response = await axios.post("http://localhost:5000/api/auth/login", {
+        email,
+        password
+      });
 
-        if (typeof response === "string") {
-            setError(response); 
-        } else if (response.token) {
-            localStorage.setItem("token", response.token);
-            localStorage.setItem("userId", response.user.id);
-            navigate("/"); 
-        }
-    };
+      const token = response.data.token;
+      localStorage.setItem("token", token); // Store token in localStorage
+      setMessage("Login successful!");
+      setMessageType("success");
 
-    return (
-        <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
-            <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-                <h2 className="text-2xl font-bold mb-4 flex flex-col">Sign in</h2>
-                <button className="w-full hover:bg-gray-100">
-                    <SocialLogin />
-                </button>
-                <div className="flex items-center my-4">
-                    <div className="flex-grow border-t border-gray-300"></div>
-                    <span className="px-3 text-gray-500 text-sm">or</span>
-                    <div className="flex-grow border-t border-gray-300"></div>
-                </div>
-                {error && <p className="text-red-500 center text-center text-sm mb-4">{error}</p>}
-                <form onSubmit={handleSubmit}>
-                    <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2 mt-4" htmlFor="email">
-                            Email
-                        </label>
-                        <input
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            id="email"
-                            type="email"
-                            placeholder="Enter your Email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div className="mb-6">
-                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
-                            Password
-                        </label>
-                        <input
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-                            id="password"
-                            type="password"
-                            placeholder="Password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <Link
-                        className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
-                        to="/ResetPassword"
-                    >
-                        Forgot Password?
-                    </Link>
-                    <div className="flex items-center justify-between">
-                        <button
-                            className="w-full border-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-3xl focus:outline-none focus:shadow-outline mt-5"
-                            type="submit"
-                        >
-                            Sign In
-                        </button>
-                    </div>
-                </form>
-            </div>
-            <div>
-                New to LinkedIn?{" "}
-                <Link className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800 underline" to="/Signup">
-                    Sign up
-                </Link>
-            </div>
+      setTimeout(() => {
+        navigate("/"); // change if your dashboard route is different
+      }, 1000);
+    } catch (error) {
+      setMessage(error.response?.data?.message || "Login failed. Please try again.");
+      setMessageType("error");
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
+      <h2 className="text-xl font-semibold text-center mb-6 text-gray-800">
+        Welcome back to Career Hub
+      </h2>
+
+      <div className="bg-white shadow-lg rounded-lg px-8 pt-8 pb-10 w-full max-w-md border border-gray-200">
+        {message && (
+          <p className={`text-center text-sm font-bold mb-4 ${messageType === "error" ? "text-red-500" : "text-green-500"}`}>
+            {message}
+          </p>
+        )}
+
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2">
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="mb-6">
+            <label htmlFor="password" className="block text-gray-700 text-sm font-bold mb-2">
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg"
+          >
+            Sign In
+          </button>
+        </form>
+
+        <div className="mt-6 text-center text-sm text-gray-600">
+          Don't have an account?{" "}
+          <Link to="/signup" className="text-blue-600 hover:underline">
+            Join now
+          </Link>
         </div>
-    );
+      </div>
+    </div>
+  );
 };
 
 export default LoginForm;

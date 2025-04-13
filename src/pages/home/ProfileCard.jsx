@@ -16,6 +16,10 @@ import {
 } from "../../services/api";
 
 const ProfileCard = ({loggedUser}) => {
+  if (!loggedUser) {
+    return <div className="w-full max-w-xs mx-auto h-48 bg-gray-100 rounded-lg animate-pulse"></div>;
+  }
+
   const profilePicture = useProfilePicture(loggedUser.id);
   const coverPhoto = useCoverPhoto(loggedUser.id);
   const name = useName(loggedUser.id);

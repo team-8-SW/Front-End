@@ -5,12 +5,12 @@ import { Link } from "react-router-dom";
 
 const ContactInfo = ({ userData, setOpenContact }) => {
   const [contact, setContact] = useState({
-    email: userData.email || "",
-    phone: userData.phone || "",
-    phoneType: userData.phoneType || "Mobile",
-    address: userData.address || "",
-    birthdayMonth: userData.birthdayMonth || "Month",
-    birthdayDay: userData.birthdayDay || "Day",
+    email: userData?.email || "",
+    phone: userData?.phone || "",
+    phoneType: userData?.phoneType || "Mobile",
+    address: userData?.address || "",
+    birthdayMonth: userData?.birthdayMonth || "Month",
+    birthdayDay: userData?.birthdayDay || "Day",
   });
 
   const handleChange = (e) => {

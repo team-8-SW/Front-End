@@ -1,21 +1,19 @@
 import { Typography } from "@material-tailwind/react";
 import React from "react";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
-import axios from "axios";
 import { handleDeleteSkill } from "../../services/profile";
 
 const SkillsData = ({ skill, userId, onDelete }) => {
   const handleDelete = () => {
-    handleDeleteSkill(skill, userId, onDelete);
-
-   
+    handleDeleteSkill(skill.skillId, userId, onDelete);
+    window.location.reload();
   };
 
   return (
     <div>
       <div className="flex justify-between mt-3">
         <Typography variant="h6" className="font-medium text-gray-800">
-          {skill}
+          {skill.skillName}
         </Typography>
         <div className="flex gap-2">
           <button className="text-gray-600 hover:text-gray-800">

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import CompanyCreatePost from "./CompanyCreatePost";
-import CompanyPostsDetails from "./companypostsDetails";
+import CompanyPostsDetails from "./companyPostsDetails";
 import { fetchPosts, useUserId } from "../../services/api";
 
 const CompanyPosts = ({ loggedUser }) => {

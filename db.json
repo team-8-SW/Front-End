@@ -240,6 +240,60 @@
       "locationCountry": "egypt",
       "resume": [],
       "privacy": "public"
+    },
+    {
+      "id": 2,
+      "fname": "ahmed",
+      "lname": "mohamed",
+      "locationCity": "giza",
+      "locationCountry": "egypt",
+      "profilePicture": "/photos/55k1z8997gh8dwtihm11aajyq.svg",
+      "coverPhoto": "/photos/55k1z8997gh8dwtihm11aajyq.svg",
+      "education": [
+        {
+          "degree": "bachelor",
+          "major": "computer science",
+          "school": "helwan university",
+          "from": "2015",
+          "to": "2019"
+        }
+      ],
+      "skills": [
+        "html",
+        "css",
+        "js"
+      ],
+      "experience": [
+        {
+          "title": "Software Engineer",
+          "company": "Microsoft",
+          "employmentType": "Full-time",
+          "locationType": "On-site",
+          "startDate": "2022",
+          "endDate": "2025",
+          "description": "mdnnd",
+          "location": "New York, USA",
+          "profileHeadline": "emmem",
+          "foundJobSource": "LinkedIn"
+        },
+        {
+          "title": "Data Scientist",
+          "company": "Google",
+          "employmentType": "Full-time",
+          "locationType": "On-site",
+          "startDate": null,
+          "endDate": null,
+          "description": null,
+          "location": null,
+          "profileHeadline": null,
+          "foundJobSource": null
+        }
+      ],
+      "industry": [
+        {
+          "name": "web development"
+        }
+      ]
     }
   ],
   "posts": [
@@ -347,6 +401,62 @@
       "userId": 1,
       "message": "Mark Maged commented on your post",
       "timestamp": "2023-10-02T12:00:00Z",
+      "isRead": true
+    },
+    {
+      "id": 3,
+      "userId": 1,
+      "message": "ahmed mohamed liked your post",
+      "timestamp": "2023-10-03T12:00:00Z",
+      "isRead": true
+    },
+    {
+      "id": 4,
+      "userId": 1,
+      "message": "ahmed mohamed liked your post",
+      "timestamp": "2023-10-04T12:00:00Z",
+      "isRead": true
+    },
+    {
+      "id": 5,
+      "userId": 1,
+      "message": "ahmed mohamed liked your post",
+      "timestamp": "2023-10-05T12:00:00Z",
+      "isRead": false
+    },
+    {
+      "id": 6,
+      "userId": 1,
+      "message": "ahmed mohamed liked your post",
+      "timestamp": "2023-10-06T12:00:00Z",
+      "isRead": false
+    },
+    {
+      "id": 7,
+      "userId": 1,
+      "message": "ahmed mohamed liked your post",
+      "timestamp": "2023-10-07T12:00:00Z",
+      "isRead": true
+    },
+    {
+      "id": 8,
+      "userId": 1,
+      "message": "ahmed mohamed liked your post",
+      "timestamp": "2023-10-08T12:00:00Z",
+      "isRead": true
+    },
+    {
+      "id": 9,
+      "userId": 1,
+      "message": "ahmed mohamed liked your post",
+      "timestamp": "2023-10-09T12:00:00Z",
+      "isRead": true
+    },
+    {
+      "id": 10,
+      "userId": 1,
+      "message": "ahmed mohamed liked your post",
+      "timestamp": "2023-10-10T12:00:00Z",
       "isRead": true
     }
   ]

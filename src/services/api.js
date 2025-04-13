@@ -307,9 +307,16 @@ export const verifyEmailCode = async (pin) => {
   }
 };
 
-export const fetchNotifications = async (userId) => {
+export const fetchNotifications = async (token) => {
   try {
-    const response = await axios.get(`http://localhost:3000/notifications?userId=${userId}`);
+    const userId = localStorage.getItem("userId");
+    const response = await axios.get(`http://localhost:3000/notifications?userId=${userId}`
+    // , {
+    //   headers: {
+    //     Authorization: `Bearer ${token}`,
+    //   },
+    // }
+    );
     return response.data;
   } catch (error) {
     console.error("Error fetching notifications:", error);
@@ -325,6 +332,20 @@ export const markNotificationAsRead = async (notificationId) => {
   }
 };
 
+export const unReadCount= async (token) => {
+  try {
+    const userId = localStorage.getItem("userId");
+    const response = await axios.get(`http://localhost:3000/notifications?userId=${userId}&isRead=false`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data.length;
+  } catch (error) {
+    console.error("Error fetching unread notifications count:", error);
+    throw new Error("Network response was not ok");
+  }
+};
 export const googleLogin = async (idToken) => {
   try {
     const response = await axios.post("http://localhost:3000/google-login", {

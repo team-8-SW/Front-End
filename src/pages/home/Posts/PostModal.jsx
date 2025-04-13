@@ -8,6 +8,8 @@ const PostModal = ({ isOpen, toggleModal,loggedUser }) => {
   const [error, setError] = useState("");
   const [lastPostId, setLastPostId] = useState(null);
   const name = useName(loggedUser.id);
+  const token = localStorage.getItem("token");
+  const loggedUserId = localStorage.getItem("userId");
   useEffect(() => {
     const fetchLastPostId = async () => {
       try {
@@ -41,7 +43,7 @@ const PostModal = ({ isOpen, toggleModal,loggedUser }) => {
     const newPostId = (parseInt(lastPostId, 10) + 1).toString();
 
     try {
-      await axios.post("http://localhost:3000/posts", {
+      await axios.post("http://localhost:3000/api/posts/me/newpost", {
         id: newPostId,
         content: postContent,
         authorId: loggedUser.id,
@@ -49,6 +51,10 @@ const PostModal = ({ isOpen, toggleModal,loggedUser }) => {
         likes: [],
         comments: [],
         reposts: [],
+      },{
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
       console.log("Post successful");
       toggleModal();

@@ -18,11 +18,19 @@ const Posts = ({ loggedUser }) => {
     fetchAllPosts();
   }, []);
 
+  const handleRemovePost = (postId) => {
+    setPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId));
+  };
+
   return (
     <div>
       {posts.map((post) => (
         <div key={post.id}>
-          <PostDetails post={post} loggedUser={loggedUser} />
+          <PostDetails
+            post={post}
+            loggedUser={loggedUser}
+            onRemovePost={handleRemovePost} // Pass the remove function
+          />
         </div>
       ))}
     </div>

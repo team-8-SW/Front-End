@@ -79,6 +79,13 @@ const Leftside = () => {
         <Button className="rounded-full bg-blue-700 px-4 py-1 text-[14px] font-semibold shadow hover:bg-blue-800 transition">
           + Create
         </Button>
+        <Link to="/viewcompany">
+        <Button
+          variant="outlined"
+          className="rounded-full border px-4 py-1 text-[14px] font-medium hover:bg-gray-100 transition flex items-center gap-1"
+        >
+          <span className="text-lg">👁</span> View as member
+        </Button>
         <Link to="/view">
           <Button
             variant="outlined"

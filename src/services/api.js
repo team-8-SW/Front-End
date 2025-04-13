@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { fetchUser } from "./profile";
+import { MdVisibility } from "react-icons/md";
 
 export const useProfilePicture = (userId) => {
   const userData=useUserData(userId);
@@ -55,7 +56,7 @@ export const useName = (userId) => {
   return name;
 };
 
-const fetchUserData = async (userId, setUser) => {
+const fetchOtherUserData = async (userId, setUser) => {
   try {
     const response = await axios.get(`http://localhost:3000/users/${userId}`);
     setUser(response.data);
@@ -63,23 +64,39 @@ const fetchUserData = async (userId, setUser) => {
     console.error("Error fetching user data:", error);
   }
 };
+const fetchUserData = async (userId, setUser,token) => {
+  try {
+    const response = await axios.get(`http://localhost:3000/users/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    setUser(response.data);
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+  }
+};
+export const useUserData = (userId,token) => {
 
-export const useUserData = (userId) => {
   const [user, setUser] = useState(null);
   useEffect(() => {
-    if (userId) {
-      fetchUserData(userId, setUser);
+    if (token) {
+      fetchUserData(userId, setUser, token);
+    } else if (userId) {
+      fetchOtherUserData(userId, setUser);
     }
-  }, [userId]);
+  }, [userId, token]);
 
   return user;
 };
 
-export const fetchPosts = async () => {
+export const fetchPosts = async (token) => {
   try {
-    const response = await axios.get(
-      `http://localhost:3000/posts`
-    );
+    const response = await axios.get(`http://localhost:3000/api/posts/me/feed`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return response.data;
   } catch (error) {
     console.error("Error fetching posts:", error);
@@ -237,32 +254,27 @@ export const handlerepostPost = async (postId, userId, reposted, setreposted, se
     setrepostsCount((prev) => prev + 1);
   }
 }
-async function postComment(postId, comment) {
-  try {
-    const response = await axios.get(`http://localhost:3000/posts/${postId}`);
-    const post = response.data;
-    post.comments.push(comment);
-    await axios.put(`http://localhost:3000/posts/${postId}`, post);
-  } catch (error) {
-    console.error("Error posting the comment:", error);
-  }
-}
-export const handleAddNewComment = (postId,newComment, userId,authorName, comments, setComments, setNewComment) => {
-  if (newComment.trim() === "") {
-    return;
-  }
-  const lastId = comments.length > 0 ? comments[comments.length - 1].id : 0;
-  const comment = {
-    id: lastId+1,
-    authorId: userId,
-    authorName: authorName,
-    content: newComment,
-  };
 
-  postComment(postId, comment);
-  setComments((prev) => [...prev, comment]);
-  setNewComment("");
-};
+export const handleAddNewComment = async (postId,newComment, token) => {
+  try {
+    // Prepare the payload for the API request
+    const payload = {
+      post_id: postId,
+      content: newComment,
+      visibility: "public",
+    };
+
+    // Make the POST request to the given endpoint with the token
+    await axios.post("http://localhost:3000/api/posts/me/comment", payload, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
+  catch (error) {
+    console.error("Error posting comment:", error);
+  }};
+
 
 
 export const handleLoadMoreComments = (setVisibleComments) => {
@@ -293,24 +305,47 @@ export const verifyEmailCode = async (pin) => {
   }
 };
 
-export const fetchNotifications = async (userId) => {
+export const fetchNotifications = async (token) => {
   try {
-    const response = await axios.get(`http://localhost:3000/notifications?userId=${userId}`);
-    return response.data;
+    await axios.get(`https://localhost:3000/api/notifications/me`
+    , {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+    );
   } catch (error) {
     console.error("Error fetching notifications:", error);
     throw new Error("Network response was not ok");
   }
 };
 
-export const markNotificationAsRead = async (notificationId) => {
+export const markNotificationAsRead = async (notificationId,token) => {
   try {
-    await axios.patch(`http://localhost:3000/notifications/${notificationId}`, { isRead: true });
+    await axios.patch(`https://localhost:3000/api/notifications/me/${notificationId}/markasread`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
   } catch (error) {
     console.error("Error marking notification as read:", error);
   }
 };
 
+export const unReadCount= async (token) => {
+  try {
+    const response = await axios.get(`https://localhost:3000/api/notifications/me/unread-count`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data.length;
+  } catch (error) {
+    console.error("Error fetching unread notifications count:", error);
+    throw new Error("Network response was not ok");
+  }
+};
 export const googleLogin = async (idToken) => {
   try {
     const response = await axios.post("http://localhost:3000/google-login", {
@@ -380,3 +415,33 @@ export const declineConnection = async (userId) => {
       throw new Error('Failed to decline connection request: ' + error.message);
   }
 };
+export const removeConnection = async (connectionId) => {
+  try {
+    const response = await axios.delete(`${API_URL}/${connectionId}`);
+    return response.data; 
+  } catch (error) {
+    throw error; ``
+  }
+};
+
+export const deletePost = async (postId) => {
+  try {
+    const response = await axios.delete(`http://localhost:3000/api/posts/me/deletepost`,postId);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting post:", error);
+    throw error;
+  }
+};
+
+export const getPostEngagement= async (postId) =>
+{
+      try{
+        const response = await axios.get(`http://localhost:3000/api/posts/me/postengagement`,postId);
+        return response.data;
+      }
+      catch(error){
+        console.error("Error fetching post engagement:", error);
+        throw error;
+      }
+}

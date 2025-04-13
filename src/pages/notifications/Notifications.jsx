@@ -4,13 +4,14 @@ import { fetchNotifications, markNotificationAsRead } from '../../services/api';
 const Notifications = ({ loggedUser }) => {
   const [notifications, setNotifications] = useState([]);
   const [selectedNotifications, setSelectedNotifications] = useState([]);
-
+  const token = localStorage.getItem('token');
+  
   useEffect(() => {
     // Fetch notifications when the component mounts
-    fetchNotifications(loggedUser.id).then((data) => {
+    fetchNotifications(token).then((data) => {
       setNotifications(data);
     });
-  }, [loggedUser.id]);
+  }, [token]);
 
   const handleCheckboxChange = (id) => {
     setSelectedNotifications((prev) =>

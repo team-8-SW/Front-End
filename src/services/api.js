@@ -55,7 +55,7 @@ export const useName = (userId) => {
   return name;
 };
 
-const fetchUserData = async (userId, setUser) => {
+const fetchOtherUserData = async (userId, setUser) => {
   try {
     const response = await axios.get(`http://localhost:3000/users/${userId}`);
     setUser(response.data);
@@ -63,14 +63,28 @@ const fetchUserData = async (userId, setUser) => {
     console.error("Error fetching user data:", error);
   }
 };
+const fetchUserData = async (userId, setUser,token) => {
+  try {
+    const response = await axios.get(`http://localhost:3000/users/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    setUser(response.data);
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+  }
+};
+export const useUserData = (userId,token) => {
 
-export const useUserData = (userId) => {
   const [user, setUser] = useState(null);
   useEffect(() => {
-    if (userId) {
-      fetchUserData(userId, setUser);
+    if (token) {
+      fetchUserData(userId, setUser, token);
+    } else if (userId) {
+      fetchOtherUserData(userId, setUser);
     }
-  }, [userId]);
+  }, [userId, token]);
 
   return user;
 };
@@ -293,9 +307,16 @@ export const verifyEmailCode = async (pin) => {
   }
 };
 
-export const fetchNotifications = async (userId) => {
+export const fetchNotifications = async (token) => {
   try {
-    const response = await axios.get(`http://localhost:3000/notifications?userId=${userId}`);
+    const userId = localStorage.getItem("userId");
+    const response = await axios.get(`http://localhost:3000/notifications?userId=${userId}`
+    // , {
+    //   headers: {
+    //     Authorization: `Bearer ${token}`,
+    //   },
+    // }
+    );
     return response.data;
   } catch (error) {
     console.error("Error fetching notifications:", error);
@@ -311,6 +332,20 @@ export const markNotificationAsRead = async (notificationId) => {
   }
 };
 
+export const unReadCount= async (token) => {
+  try {
+    const userId = localStorage.getItem("userId");
+    const response = await axios.get(`http://localhost:3000/notifications?userId=${userId}&isRead=false`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data.length;
+  } catch (error) {
+    console.error("Error fetching unread notifications count:", error);
+    throw new Error("Network response was not ok");
+  }
+};
 export const googleLogin = async (idToken) => {
   try {
     const response = await axios.post("http://localhost:3000/google-login", {
@@ -378,5 +413,23 @@ export const declineConnection = async (userId) => {
       return response.data; 
   } catch (error) {
       throw new Error('Failed to decline connection request: ' + error.message);
+  }
+};
+export const removeConnection = async (connectionId) => {
+  try {
+    const response = await axios.delete(`${API_URL}/${connectionId}`);
+    return response.data; 
+  } catch (error) {
+    throw error; ``
+  }
+};
+
+export const deletePost = async (postId) => {
+  try {
+    const response = await axios.delete(`http://localhost:3000/posts/${postId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting post:", error);
+    throw error;
   }
 };

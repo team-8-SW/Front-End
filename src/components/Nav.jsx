@@ -8,18 +8,39 @@ import { MdWork, MdPeople } from "react-icons/md";
 import { AiFillMessage } from "react-icons/ai";
 import { FaBell } from "react-icons/fa";
 import { PlusIcon } from "@heroicons/react/24/outline";
-
+import { unReadCount } from "../services/api";
 import { logout } from "../services/profile";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import UserSearch from "../pages/network/UserSearch";
 const Nav = () => {
   const [isAppsDropdownOpen, setIsAppsDropdownOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(null);
   const location = useLocation();
-  const navigate = useNavigate();
 
   const isActive = (path) => location.pathname === path;
 
+  useEffect(() => {
+    const fetchUnreadCount = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const count = await unReadCount(token);
+        setUnreadCount(count);
+      } catch (error) {
+        console.error("Error fetching unread notifications count:", error);
+      }
+    };
+
+    
+    fetchUnreadCount();
+
+    
+    const interval = setInterval(fetchUnreadCount, 1000);
+
+    
+    return () => clearInterval(interval);
+  }, []);
   return (
     <div className="sticky top-0 left-0 w-full bg-white shadow-md z-50 h-[52px]">
       <div className="flex gap-40 items-center px-3 max-w-screen-xl mx-auto py-[5px]">
@@ -48,11 +69,27 @@ const Nav = () => {
               to={to}
               className="flex flex-col items-center group"
             >
-              <Icon
-                className={`h-6 w-6 ${
-                  isActive(to) ? "text-blue-700" : "text-gray-900 group-hover:text-blue-700"
-                }`}
-              />
+              {label === "Notifications" && (
+                <div className="relative">
+                  <Icon
+                    className={`h-6 w-6 ${
+                      isActive(to) ? "text-blue-700" : "text-gray-900 group-hover:text-blue-700"
+                    }`}
+                  />
+                  {unreadCount !== null && unreadCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                      {unreadCount}
+                    </span>
+                  )}
+                </div>
+              )}
+              {label !== "Notifications" && (
+                <Icon
+                  className={`h-6 w-6 ${
+                    isActive(to) ? "text-blue-700" : "text-gray-900 group-hover:text-blue-700"
+                  }`}
+                />
+              )}
               <span
                 className={`text-xs mt-1 ${
                   isActive(to)

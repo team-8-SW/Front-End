@@ -64,7 +64,17 @@
             "location": "sjjsjs",
             "type": "",
             "workplace": "",
-            "description": "hshshhs"
+            "description": "hshshhs",
+            "status": "open"
+          },
+          {
+            "id": 6,
+            "title": "graphic",
+            "location": "bgbhh",
+            "type": "Full-time",
+            "workplace": "Full-time",
+            "description": "bhbbbbb",
+            "status": "open"
           }
         ],
         "analytics": {
@@ -230,28 +240,63 @@
       "locationCountry": "egypt",
       "resume": [],
       "privacy": "public"
+    },
+    {
+      "id": 2,
+      "fname": "ahmed",
+      "lname": "mohamed",
+      "locationCity": "giza",
+      "locationCountry": "egypt",
+      "profilePicture": "/photos/55k1z8997gh8dwtihm11aajyq.svg",
+      "coverPhoto": "/photos/55k1z8997gh8dwtihm11aajyq.svg",
+      "education": [
+        {
+          "degree": "bachelor",
+          "major": "computer science",
+          "school": "helwan university",
+          "from": "2015",
+          "to": "2019"
+        }
+      ],
+      "skills": [
+        "html",
+        "css",
+        "js"
+      ],
+      "experience": [
+        {
+          "title": "Software Engineer",
+          "company": "Microsoft",
+          "employmentType": "Full-time",
+          "locationType": "On-site",
+          "startDate": "2022",
+          "endDate": "2025",
+          "description": "mdnnd",
+          "location": "New York, USA",
+          "profileHeadline": "emmem",
+          "foundJobSource": "LinkedIn"
+        },
+        {
+          "title": "Data Scientist",
+          "company": "Google",
+          "employmentType": "Full-time",
+          "locationType": "On-site",
+          "startDate": null,
+          "endDate": null,
+          "description": null,
+          "location": null,
+          "profileHeadline": null,
+          "foundJobSource": null
+        }
+      ],
+      "industry": [
+        {
+          "name": "web development"
+        }
+      ]
     }
   ],
   "posts": [
-    {
-      "id": "1",
-      "authorId": 1,
-      "authorName": "youssef mohamed",
-      "content": "hello",
-      "likes": [
-        2,
-        3,
-        "1"
-      ],
-      "comments": [],
-      "reposts": [
-        1,
-        "3"
-      ],
-      "companyId": "1",
-      "companyName": "youssef's compan",
-      "companyLogo": ""
-    },
     {
       "id": "2",
       "content": "hi",
@@ -267,28 +312,9 @@
       ]
     },
     {
-      "id": "3",
-      "content": "This is test 4\n",
-      "authorId": 1,
-      "authorName": "youssef mohamed",
-      "likes": [],
-      "comments": [
-        {
-          "id": 1,
-          "authorId": "1",
-          "authorName": "youssef mansi",
-          "content": "hellooo"
-        }
-      ],
-      "reposts": [],
-      "companyId": "1",
-      "companyName": "youssef's compan",
-      "companyLogo": ""
-    },
-    {
       "id": "4",
       "content": "sw",
-      "authorId": 1,
+      "authorId": "1",
       "authorName": "youssef mohamed",
       "likes": [],
       "comments": [],
@@ -342,6 +368,24 @@
       "comments": [],
       "reposts": [],
       "timestamp": "2025-04-10T17:41:03.437Z"
+    },
+    {
+      "id": "9",
+      "content": "amrnasserrrr",
+      "authorId": "1",
+      "authorName": "youssef's compan",
+      "companyId": "1",
+      "likes": [],
+      "comments": [
+        {
+          "id": 1,
+          "authorId": "1",
+          "authorName": "youssef mansi",
+          "content": "alooooo"
+        }
+      ],
+      "reposts": [],
+      "timestamp": "2025-04-12T16:34:48.732Z"
     }
   ],
   "notifications": [
@@ -361,10 +405,59 @@
     },
     {
       "id": 3,
-      "userId": 3,
+      "userId": 1,
       "message": "ahmed mohamed liked your post",
       "timestamp": "2023-10-03T12:00:00Z",
+      "isRead": true
+    },
+    {
+      "id": 4,
+      "userId": 1,
+      "message": "ahmed mohamed liked your post",
+      "timestamp": "2023-10-04T12:00:00Z",
+      "isRead": true
+    },
+    {
+      "id": 5,
+      "userId": 1,
+      "message": "ahmed mohamed liked your post",
+      "timestamp": "2023-10-05T12:00:00Z",
       "isRead": false
+    },
+    {
+      "id": 6,
+      "userId": 1,
+      "message": "ahmed mohamed liked your post",
+      "timestamp": "2023-10-06T12:00:00Z",
+      "isRead": false
+    },
+    {
+      "id": 7,
+      "userId": 1,
+      "message": "ahmed mohamed liked your post",
+      "timestamp": "2023-10-07T12:00:00Z",
+      "isRead": true
+    },
+    {
+      "id": 8,
+      "userId": 1,
+      "message": "ahmed mohamed liked your post",
+      "timestamp": "2023-10-08T12:00:00Z",
+      "isRead": true
+    },
+    {
+      "id": 9,
+      "userId": 1,
+      "message": "ahmed mohamed liked your post",
+      "timestamp": "2023-10-09T12:00:00Z",
+      "isRead": true
+    },
+    {
+      "id": 10,
+      "userId": 1,
+      "message": "ahmed mohamed liked your post",
+      "timestamp": "2023-10-10T12:00:00Z",
+      "isRead": true
     }
   ]
 }

@@ -3,22 +3,23 @@ import { useProfilePicture } from "../../../services/api";
 import PostModal from "./PostModal";
 import PostBar from "./PostBar";
 
+
 const CreatePost = ({loggedUser}) => {
   const photo = useProfilePicture(loggedUser.id);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const toggleModal = () => {
-    setIsModalOpen(!isModalOpen);
+  const [isPostModalOpen, setIsPostModalOpen] = useState(false);
+  
+  const togglePostModal = () => {
+    setIsPostModalOpen(!isPostModalOpen);
   };
 
   return (
     <div>
       <PostBar
         photo={photo}
-        toggleModal={toggleModal}
+        togglePostModal={togglePostModal}
         className="w-12 h-12 rounded-full"
       />
-      <PostModal isOpen={isModalOpen} toggleModal={toggleModal} loggedUser={loggedUser} />
+      <PostModal isOpen={isPostModalOpen} toggleModal={togglePostModal} loggedUser={loggedUser} />
     </div>
   );
 };

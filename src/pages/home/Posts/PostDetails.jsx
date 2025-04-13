@@ -5,6 +5,7 @@ import {
   handlerepostPost,
   handleLikePost,
   deletePost,
+  getPostEngagement,
 } from "../../../services/api";
 import { Button } from "@material-tailwind/react";
 import {
@@ -36,16 +37,14 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
   useEffect(() => {
-    if (Array.isArray(post.likes) && post.likes.includes(loggedId)) {
+    if (post.liked) {
       setLiked(true);
     }
-  }, [post.likes, loggedId]);
-
-  useEffect(() => {
-    if (Array.isArray(post.reposts) && post.reposts.includes(loggedId)) {
-      setreposted(true);
-    }
-  }, [post.reposts, loggedId]);
+  }, [post.liked]);
+  
+  const engagement=getPostEngagement(post.id);
+  setLikesCount(engagement.like_count);
+  setrepostsCount(engagement.repost_count)
 
   const handleDeletePost = async () => {
     try {

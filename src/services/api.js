@@ -426,10 +426,22 @@ export const removeConnection = async (connectionId) => {
 
 export const deletePost = async (postId) => {
   try {
-    const response = await axios.delete(`http://localhost:3000/posts/${postId}`);
+    const response = await axios.delete(`http://localhost:3000/api/posts/me/deletepost`,postId);
     return response.data;
   } catch (error) {
     console.error("Error deleting post:", error);
     throw error;
   }
 };
+
+export const getPostEngagement= async (postId) =>
+{
+      try{
+        const response = await axios.get(`http://localhost:3000/api/posts/me/postengagement`,postId);
+        return response.data;
+      }
+      catch(error){
+        console.error("Error fetching post engagement:", error);
+        throw error;
+      }
+}

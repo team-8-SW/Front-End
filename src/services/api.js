@@ -348,18 +348,23 @@ export const unReadCount= async (token) => {
 };
 export const googleLogin = async (idToken) => {
   try {
-    const response = await axios.post("http://localhost:3000/google-login", {
+    const response = await axios.post("http://localhost:3000/api/auth/social/google", {
       idToken,
     });
 
-    if (response.data.token) {
-      return { token: response.data.token, user: response.data.user };
+    if (response.data.accessToken) {
+      return {
+        token: response.data.accessToken,
+        message: response.data.message,
+      };
     } else {
-      throw new Error("Login failed. Please try again.");
+      throw new Error("Login failed. No access token received.");
     }
   } catch (error) {
-    console.error("API Error:", error);
-    return { error: error.message || "Login failed. Please try again." };
+    console.error("Google Login API Error:", error);
+    return {
+      error: error.response?.data?.message || error.message || "Login failed. Please try again.",
+    };
   }
 };
 

@@ -376,7 +376,7 @@ export const handleConnectionRequest = async (userId) => {
 export const searchUsers = async (query, token) => {
   try {
     const response = await axios.get(
-      `https://localhost:3000/api/users/me/search?query=${query}`,
+      `http://localhost:3000/api/users/me/search?q=${query}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -417,10 +417,10 @@ export const declineConnection = async (userId) => {
 };
 export const removeConnection = async (connectionId) => {
   try {
-    const response = await axios.delete(`${API_URL}/${connectionId}`);
+    const response = await axios.delete(`http://localhost:3000/api/connections/${connectionId}`);
     return response.data; 
   } catch (error) {
-    throw error; ``
+    throw error; 
   }
 };
 

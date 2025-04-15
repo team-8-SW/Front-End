@@ -420,6 +420,7 @@ export const removeConnection = async (connectionId) => {
     const response = await axios.delete(`http://localhost:3000/api/connections/${connectionId}`);
     return response.data; 
   } catch (error) {
+    console.error('Remove connection error:', error);
     throw error; 
   }
 };

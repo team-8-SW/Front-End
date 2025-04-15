@@ -41,6 +41,7 @@ const Nav = () => {
     
     return () => clearInterval(interval);
   }, []);
+  let navigate = useNavigate();
   return (
     <div className="sticky top-0 left-0 w-full bg-white shadow-md z-50 h-[52px]">
       <div className="flex gap-40 items-center px-3 max-w-screen-xl mx-auto py-[5px]">

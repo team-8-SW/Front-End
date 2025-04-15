@@ -143,6 +143,6 @@ export const handleAddEdu = (education, userId, onSave,onClose) => {
 
 
 export const logout = (navigate) => {
-  localStorage.removeItem("userId"); // Remove user data
+  localStorage.removeItem("token"); // Remove user data
   navigate("/login"); // Redirect to login page
 };

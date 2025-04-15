@@ -32,10 +32,11 @@ function App() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    const publicRoutes = ["/signup", "/login", "/ResetPassword"];
   
-    if (!token) {
+    if (!token && !publicRoutes.includes(window.location.pathname)) {
       navigate("/login");
-    } else {
+    } else if (token) {
       axios.get("http://localhost:5000/api/profiles/", {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -50,10 +51,6 @@ function App() {
       })
       .catch((err) => {
         console.error("Failed to fetch user:", err);
-        if (err.response) {
-          console.log("Error status:", err.response.status);
-          console.log("Error data:", err.response.data);
-        }
         if (err.response?.status === 401) {
           localStorage.removeItem("token");
           navigate("/login");

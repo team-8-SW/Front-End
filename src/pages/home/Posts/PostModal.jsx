@@ -40,7 +40,7 @@ const PostModal = ({ isOpen, toggleModal,loggedUser }) => {
     }
     setError("");
 
-    const newPostId = (parseInt(lastPostId, 10) + 1).toString();
+    
 
     try {
       await axios.post("http://localhost:5000/api/posts/me/newpost", {

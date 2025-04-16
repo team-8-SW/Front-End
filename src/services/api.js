@@ -264,7 +264,6 @@ export const handleAddNewComment = async (postId,newComment, token) => {
     const payload = {
       post_id: postId,
       content: newComment,
-      visibility: "public",
     };
 
     // Make the POST request to the given endpoint with the token

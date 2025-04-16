@@ -7,7 +7,7 @@ const SearchResults = ({ token }) => {
     const [results, setResults] = useState([]);
     const location = useLocation();
     const query = new URLSearchParams(location.search).get('query');
-
+    
     useEffect(() => {
         const fetchResults = async () => {
             try {
@@ -38,7 +38,7 @@ const SearchResults = ({ token }) => {
                                 />
                                 <span className="font-medium">{user.name}</span>
                             </div>
-                           <ConnectButton />
+                           <ConnectButton token={token} userId />
                         </li>
                     ))}
                 </ul>

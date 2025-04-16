@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { handleConnectionRequest } from '../../services/api';
 
-const ConnectButton = ({ userId }) => {
+const ConnectButton = ({ token, userId }) => {
   const [isPending, setIsPending] = useState(false);
   const [isConnected, setIsConnected] = useState(false); 
   const [error, setError] = useState(null);
-
+  
   const handleClick = async () => {
     setError(null);
     try {
-      await handleConnectionRequest(userId);
+      await handleConnectionRequest(token, userId); // Assuming handleConnectionRequest is a function that handles the connection request
       setIsPending(true); 
       setIsConnected(true); 
     } catch (error) {

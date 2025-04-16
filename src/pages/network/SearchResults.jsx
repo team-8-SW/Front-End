@@ -29,14 +29,14 @@ const SearchResults = ({ token }) => {
             ) : (
                 <ul className="space-y-4">
                     {results.map((user) => (
-                        <li key={user.id} className="flex items-center justify-between p-2 border-b">
+                        <li key={user.id} className="bg-white rounded-lg shadow p-4 flex items-center justify-between">
                             <div className="flex items-center">
                                 <img
                                     src={user.profilePicture}
                                     alt={user.name}
-                                    className="w-10 h-10 rounded-full mr-3"
+                                    className="w-12 h-12 rounded-full mr-4"
                                 />
-                                <span className="font-medium">{user.name}</span>
+                                <span className="font-medium text-gray-800">{user.name}</span>
                             </div>
                            <ConnectButton token={token} userId />
                         </li>

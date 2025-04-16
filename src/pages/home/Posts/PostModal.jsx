@@ -44,12 +44,8 @@ const PostModal = ({ isOpen, toggleModal,loggedUser }) => {
 
     try {
       await axios.post("http://localhost:5000/api/posts/me/newpost", {
-      
         content: postContent,
         visibility: "public"
-
-
-       
       },{
         headers: {
           Authorization: `Bearer ${token}`,

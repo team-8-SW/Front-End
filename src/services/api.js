@@ -3,19 +3,17 @@ import axios from "axios";
 import { fetchUser } from "./profile";
 import { MdVisibility } from "react-icons/md";
 
-export const useProfilePicture = (userId) => {
-  const userData=useUserData(userId);
+export const useProfilePicture = (token) => {
+  const userData=useUserData(token);
   const profilePicture=userData?.profilePicture;
   if (profilePicture === "") {
     return "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3bHGb_Zk4zWeD4jw9ew8HboAT2zQIUZhYNA&s";
   } else return profilePicture;
 };
 
-export const fetchProfilePicture = async (userId) => {
-  let userData;
-  await fetchUserData(userId, (data) => {
-    userData = data;
-  });
+export const fetchProfilePicture = async (userId,token) => {
+  
+  const userData=await fetchUserData(userId,token);
   const profilePicture = userData?.profilePicture;
   if (profilePicture === "") {
     return "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3bHGb_Zk4zWeD4jw9ew8HboAT2zQIUZhYNA&s";
@@ -40,8 +38,8 @@ export const useUserId = () => {
 };
 
 
-export const useCoverPhoto = (userId) => {
-  const userData=useUserData(userId);
+export const useCoverPhoto = (userId,token) => {
+  const userData=useUserData(userId,token);
   const coverPhoto=userData?.coverPhoto;
   if (coverPhoto === "") {
     return "https://thingscareerrelated.com/wp-content/uploads/2021/10/default-background-image.png?w=862";
@@ -50,15 +48,15 @@ export const useCoverPhoto = (userId) => {
 
 
 
-export const useName = (userId) => {
-  const userData=useUserData(userId);
+export const useName = (userId,token) => {
+  const userData=useUserData(userId,token);
   const name=`${userData?.fname} ${userData?.lname}`;
   return name;
 };
 
 const fetchOtherUserData = async (userId, setUser) => {
   try {
-    const response = await axios.get(`http://localhost:3000/users/${userId}`);
+    const response = await axios.get(`http://localhost:3000/api/profiles/me/${userId}`);
     setUser(response.data);
   } catch (error) {
     console.error("Error fetching user data:", error);
@@ -66,7 +64,7 @@ const fetchOtherUserData = async (userId, setUser) => {
 };
 const fetchUserData = async (userId, setUser,token) => {
   try {
-    const response = await axios.get(`http://localhost:3000/users/${userId}`, {
+    const response = await axios.get(`http://localhost:3000/api/profiles/`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -201,73 +199,64 @@ export const signIn = async (email, password,setLoggedUser) => {
     return "Login failed. Please try again.";
   }
 };
-const likePost = async (postId, userId) => {
+const likePost = async (postId, token) => {
   try {
-    const response = await axios.get(`http://localhost:3000/posts/${postId}`);
-    const post = response.data;
-    post.likes.push(userId);
-    await axios.put(`http://localhost:3000/posts/${postId}`, post);
+    await axios.post(`http://localhost:3000/api/posts/me/like`, postId, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
   } catch (error) {
     console.error("Error liking the post:", error);
   }
 };
 
-const unlikePost = async (postId, userId) => {
+const unlikePost = async (postId, token) => {
   try {
-    const response = await axios.get(`http://localhost:3000/posts/${postId}`);
-    const post = response.data;
-    post.likes = post.likes.filter((id) => id !== userId);
-    await axios.put(`http://localhost:3000/posts/${postId}`, post);
+    await axios.delete(`http://localhost:3000/api/posts/me/unlike`,postId, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
   } catch (error) {
     console.error("Error unliking the post:", error);
   }
 };
 
 
-export const handleLikePost = async (postId, userId, liked, setLiked, setLikesCount) => {
+export const handleLikePost = async (postId, token, liked, setLiked, setLikesCount) => {
   if (liked) {
-    await unlikePost(postId, userId);
+    await unlikePost(postId, token);
     setLiked(false);
-    setLikesCount((prev) => prev - 1);
+    const likes_count=getPostEngagement(postId).like_count;
+    setLikesCount(likes_count);
   } else {
-    await likePost(postId, userId);
+    await likePost(postId, token);
     setLiked(true);
-    setLikesCount((prev) => prev + 1);
+    const likes_count=getPostEngagement(postId).like_count;
+    setLikesCount(likes_count);
   }
 };
 
-const repostPost = async (postId, userId) => {
+const repostPost = async (postId, userId,token) => {
   try {
-    const response = await axios.get(`http://localhost:3000/posts/${postId}`);
-    const post = response.data;
-    post.reposts.push(userId);
-    await axios.put(`http://localhost:3000/posts/${postId}`, post);
+    await axios.post(`http://localhost:3000/api/posts/me/share`),postId, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
   } catch (error) {
     console.error("Error sharing the post:", error);
   }
 };
 
-const unrepostPost = async (postId, userId) => {
-  try {
-    const response = await axios.get(`http://localhost:3000/posts/${postId}`);
-    const post = response.data;
-    post.reposts = post.reposts.filter((id) => id !== userId);
-    await axios.put(`http://localhost:3000/posts/${postId}`, post);
-  } catch (error) {
-    console.error("Error unsharing the post:", error);
-  }
+
+export const handlerepostPost = async (postId,token, setrepostsCount) => {
+  
+    await repostPost(postId,token);
+    const reposts_count=getPostEngagement(postId).repost_count;
+    setrepostsCount(reposts_count);
 };
-export const handlerepostPost = async (postId, userId, reposted, setreposted, setrepostsCount) => {
-  if (reposted) {
-    await unrepostPost(postId, userId);
-    setreposted(false);
-    setrepostsCount((prev) => prev - 1);
-  } else {
-    await repostPost(postId, userId);
-    setreposted(true);
-    setrepostsCount((prev) => prev + 1);
-  }
-}
 
 export const handleAddNewComment = async (postId,newComment, token) => {
   try {

@@ -1,18 +1,17 @@
 import React, { useState } from "react";
 import { Button, Input } from "@material-tailwind/react";
-import { handleAddNewComment } from "../../../services/api";
+import { handleAddNewComment,getPostEngagement } from "../../../services/api";
 const CommentsSection = ({
   postId,
-  loggedUser,
+  token,
   commenterName,
   commenterProfilePicture,
   comments,
-  setComments,
 }) => {
   const [newComment, setNewComment] = useState("");
   const [visibleComments, setVisibleComments] = useState(2);
-  const loggedId=localStorage.getItem("userId");
-
+  
+  const comments_count= getPostEngagement(postId).comment_count;
 
   return (
     <div className="mt-4">
@@ -37,11 +36,7 @@ const CommentsSection = ({
                           handleAddNewComment(
                             postId,
                             newComment,
-                            loggedId,
-                            commenterName,
-                            comments,
-                            setComments,
-                            setNewComment
+                            token
                           )}
           className="flex-shrink-0"
           data-testid="post-comment-btn"
@@ -64,7 +59,7 @@ const CommentsSection = ({
       ))}
 
       {/* Load More Button */}
-      {visibleComments < comments.length && (
+      {visibleComments < comments_count && (
         <Button
           variant="text"
           color="blue"

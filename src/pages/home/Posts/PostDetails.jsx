@@ -24,27 +24,24 @@ import CommentsSection from "./CommentsSection";
 
 const PostDetails = ({ post, loggedUser, onRemovePost }) => {
   const token = localStorage.getItem("token");
-  const loggedId = localStorage.getItem("userId");
-  const posterProfilePicture = useProfilePicture(post.authorId);
+  const postEngagement = getPostEngagement(post.id);
+  const posterProfilePicture = useProfilePicture(post.authorId,token);
   const [liked, setLiked] = useState(false);
-  const [likesCount, setLikesCount] = useState(post.likes?.length || 0);
-  const commenterName = useName(loggedId, token);
-  const commenterProfilePicture = useProfilePicture(loggedId, token);
+  const [likesCount, setLikesCount] = useState(postEngagement.like_count || 0);
+  const commenterName = useName(0, token);
+  const commenterProfilePicture = useProfilePicture(0, token);
   const [comments, setComments] = useState(post.comments || []);
   const [showComments, setShowComments] = useState(false);
-  const [reposted, setreposted] = useState(false);
-  const [repostsCount, setrepostsCount] = useState(post.reposts?.length || 0);
+  const [repostsCount, setrepostsCount] = useState(postEngagement.repost_count || 0);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
-
+  
   useEffect(() => {
     if (post.liked) {
       setLiked(true);
     }
   }, [post.liked]);
   
-  const engagement=getPostEngagement(post.id);
-  setLikesCount(engagement.like_count);
-  setrepostsCount(engagement.repost_count)
+
 
   const handleDeletePost = async () => {
     try {
@@ -134,7 +131,7 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
           color="blue"
           className="flex items-center gap-1 hover:text-blue-600"
           onClick={() =>
-            handleLikePost(post.id, loggedId, liked, setLiked, setLikesCount)
+            handleLikePost(post.id,token, liked, setLiked, setLikesCount)
           }
           data-testid="like-icon"
         >
@@ -164,15 +161,10 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
           color="blue"
           className="flex items-center gap-1 hover:text-blue-600"
           onClick={() =>
-            handlerepostPost(post.id, loggedUser.id, reposted, setreposted, setrepostsCount)
+            handlerepostPost(post.id, token , setrepostsCount)
           }
           data-testid="repost-icon"
         >
-          {reposted ? (
-            <SolidrepostIcon className="h-5 w-5 text-blue-600" />
-          ) : (
-            <OutlinerepostIcon className="h-5 w-5" />
-          )}
           Repost {repostsCount}
         </Button>
 
@@ -192,11 +184,10 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
       {showComments && (
         <CommentsSection
           postId={post.id}
-          loggedUser={loggedUser}
+          token={token}
           commenterName={commenterName}
           commenterProfilePicture={commenterProfilePicture}
           comments={comments}
-          setComments={setComments}
         />
       )}
     </div>

@@ -18,15 +18,18 @@ const UserSearch = ({ token }) => {
             try {
                 const params = { q: value }; // optional: add industry, company_id, etc.
                 const response = await searchUsers(token, params);
-                setResults(response.users); // assuming response contains { users: [...] }
+                if(!response) {
+                    setResults([]);
+                } else{
+                    setResults(response.users); // assuming response contains { users: [...] }
+                }
             } catch (error) {
                 console.error('Error fetching search results:', error);
             } finally {
                 setLoading(false);
             }
-        } else {
-            setResults([]);
         }
+        
     };
     
 

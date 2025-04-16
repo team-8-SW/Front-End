@@ -11,7 +11,7 @@ const SearchResults = ({ token }) => {
     useEffect(() => {
         const fetchResults = async () => {
             try {
-                const users = await searchUsers(query, token);
+                const users = await searchUsers(token,params);
                 setResults(users);
             } catch (error) {
                 console.error('Error fetching search results:', error);
@@ -19,7 +19,7 @@ const SearchResults = ({ token }) => {
         };
 
         fetchResults();
-    }, [query, token]);
+    }, [token, query]);
 
     return (
         <div className="p-4">

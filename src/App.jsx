@@ -30,9 +30,9 @@ import ViewCompany from "./pages/company/ViewCompany";
 function App() {
   const [loggedUser, setLoggedUser] = useState(null);
   const navigate = useNavigate();
-
+  const token = localStorage.getItem("token");
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    
     const publicRoutes = ["/signup", "/login", "/ResetPassword","profile"];
   
     if (!token && !publicRoutes.includes(window.location.pathname)) {
@@ -41,21 +41,21 @@ function App() {
       axios.get("http://localhost:5000/api/profiles/", {
         headers: {
           'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          //'Content-Type': 'application/json'
         }
       })
       .then((res) => {
         setLoggedUser({
           ...res.data,
-          id: "",
+          //id: "",
         });
       })
       .catch((err) => {
         console.error("Failed to fetch user:", err);
-        if (err.response?.status === 401) {
-          localStorage.removeItem("token");
-          navigate("/login");
-        }
+        // if (err.response?.status === 401) {
+        //   localStorage.removeItem("token");
+        //   navigate("/login");
+        // }
       });
     }
     console.log("loggeduser:", loggedUser);
@@ -84,7 +84,7 @@ function App() {
         <Route path="/EmailManagement" element={<EmailManagement />} />
        
         <Route path="/companyform" element={<CreateCompanyForm loggedUser={loggedUser} />} />
-        <Route path="/SearchResults" element={<SearchResults />} />
+        <Route path="/SearchResults" element={<SearchResults token={token} />} />
         <Route path="/ConnectionList" element={<ConnectionsList />} />
         <Route path="/viewcompany" element={<ViewCompany loggedUser={loggedUser} />} />
       </Routes>

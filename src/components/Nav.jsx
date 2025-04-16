@@ -21,26 +21,27 @@ const Nav = () => {
 
   const isActive = (path) => location.pathname === path;
 
-  useEffect(() => {
-    const fetchUnreadCount = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const count = await unReadCount(token);
-        setUnreadCount(count);
-      } catch (error) {
-        console.error("Error fetching unread notifications count:", error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchUnreadCount = async () => {
+  //     try {
+  //       const token = localStorage.getItem("token");
+  //       const count = await unReadCount(token);
+  //       setUnreadCount(count);
+  //     } catch (error) {
+  //       console.error("Error fetching unread notifications count:", error);
+  //     }
+  //   };
 
     
-    fetchUnreadCount();
+  //   fetchUnreadCount();
 
     
-    const interval = setInterval(fetchUnreadCount, 1000);
+    // const interval = setInterval(fetchUnreadCount, 1000);
 
     
-    return () => clearInterval(interval);
-  }, []);
+  //   return () => clearInterval(interval);
+  // }, []);
+  const token = localStorage.getItem("token");
   let navigate = useNavigate();
   return (
     <div className="sticky top-0 left-0 w-full bg-white shadow-md z-50 h-[52px]">
@@ -55,7 +56,7 @@ const Nav = () => {
             </Typography>
           </Link>
           
-          < UserSearch />
+          <UserSearch token={token} />
         </div>
         <div className="flex gap-6 text-gray-600">
           {[

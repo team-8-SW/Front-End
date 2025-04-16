@@ -7,25 +7,18 @@ const UserSearch = ({ token }) => {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [token, setToken] = useState(null);
     const navigate = useNavigate(); 
     
-    useEffect(() => {
-        const storedToken = localStorage.getItem('token');
-        if (storedToken && storedToken !== 'null' && storedToken !== 'undefined') {
-            setToken(storedToken);
-        } else {
-            console.warn('No valid token found in localStorage');
-        }
-    }, []);
-
     const handleSearch = async (e) => {
-        setQuery(e.target.value);
-        if (e.target.value.length > 2) {
+        const value = e.target.value;
+        setQuery(value);
+    
+        if (value.length > 2) {
             setLoading(true);
             try {
-                const users = await searchUsers(e.target.value, token);
-                setResults(users);
+                const params = { q: value }; // optional: add industry, company_id, etc.
+                const response = await searchUsers(token, params);
+                setResults(response.users); // assuming response contains { users: [...] }
             } catch (error) {
                 console.error('Error fetching search results:', error);
             } finally {
@@ -35,6 +28,7 @@ const UserSearch = ({ token }) => {
             setResults([]);
         }
     };
+    
 
     const handleSeeMore = () => {
         navigate('/SearchResults');

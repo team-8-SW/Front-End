@@ -395,7 +395,7 @@ export const handleConnectionRequest = async (userId) => {
 // };
 
 export const searchUsers = async (token, params) => {
-  const { data } = await axios.get('http://localhost:5000/me/search', {
+  const { data } = await axios.get('http://localhost:5000/api/users/me/search', {
     params,
     headers: {
       Authorization: `Bearer ${token}`,

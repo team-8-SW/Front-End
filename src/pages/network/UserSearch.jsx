@@ -29,12 +29,14 @@ const UserSearch = ({ token }) => {
                 setLoading(false);
             }
         }
-        
+        else{
+            setResults([]); // clear results if query is less than 3 characters
+        }
     };
     
 
     const handleSeeMore = () => {
-        navigate('/SearchResults');
+        navigate(`/SearchResults?query=${encodeURIComponent(query)}`);
         setQuery('');
        setResults([]);
     };

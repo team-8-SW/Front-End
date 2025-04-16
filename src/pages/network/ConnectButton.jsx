@@ -10,7 +10,7 @@ const ConnectButton = ({ userId }) => {
     setError(null);
     try {
       await handleConnectionRequest(userId);
-      setIsPending(true); 
+      setIsPendiZng(true); 
       setIsConnected(true); 
     } catch (error) {
       console.error('Connection failed:', error);

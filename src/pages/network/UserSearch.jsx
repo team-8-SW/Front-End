@@ -50,7 +50,7 @@ const UserSearch = ({ token }) => {
                         {results.slice(0, 5).map((user) => (
                             <li key={user.id} className="flex items-center p-2 hover:bg-gray-100">
                                 <img src={user.profilePicture} alt={user.name} className="w-8 h-8 rounded-full mr-2" />
-                                <span>{user.name}</span>
+                                <span className="text-sm text-gray-900">{user.name}</span>
                             </li>
                         ))}
                     </ul>

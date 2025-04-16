@@ -25,7 +25,7 @@ import CommentsSection from "./CommentsSection";
 const PostDetails = ({ post, loggedUser, onRemovePost }) => {
   const token = localStorage.getItem("token");
   const postEngagement = getPostEngagement(post.id);
-  const posterProfilePicture = useProfilePicture(post.authorId,token);
+  const posterProfilePicture = useProfilePicture(post.userId,token);
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(postEngagement.like_count || 0);
   const commenterName = useName(0, token);

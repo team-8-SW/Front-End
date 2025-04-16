@@ -11,7 +11,7 @@ const SearchResults = ({ token }) => {
     useEffect(() => {
         const fetchResults = async () => {
             try {
-                const users = await searchUsers(token,params);
+                const users = await searchUsers(token,{ q: query });
                 setResults(users);
             } catch (error) {
                 console.error('Error fetching search results:', error);

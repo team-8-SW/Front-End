@@ -35,6 +35,8 @@ const UserSearch = ({ token }) => {
 
     const handleSeeMore = () => {
         navigate('/SearchResults');
+        setQuery('');
+       setResults([]);
     };
 
     return (
@@ -48,7 +50,7 @@ const UserSearch = ({ token }) => {
             />
             {loading && <div>Loading...</div>}
             {results.length > 0 ? (
-                <div className="absolute bg-white border rounded shadow-lg mt-1 w-full z-10">
+                <div className="absolute bg-white text-black border rounded shadow-lg mt-1 w-full z-10">
                     <ul>
                         {results.slice(0, 5).map((user) => (
                             <li key={user.id} className="flex items-center p-2 hover:bg-gray-100 text-black">

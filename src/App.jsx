@@ -84,7 +84,7 @@ function App() {
         <Route path="/EmailManagement" element={<EmailManagement />} />
        
         <Route path="/companyform" element={<CreateCompanyForm loggedUser={loggedUser} />} />
-        <Route path="/SearchResults" element={<SearchResults token={token} />} />
+        <Route path="/SearchResults" element={<SearchResults loggedUser={loggedUser} />} />
         <Route path="/ConnectionList" element={<ConnectionsList />} />
         <Route path="/viewcompany" element={<ViewCompany loggedUser={loggedUser} />} />
       </Routes>

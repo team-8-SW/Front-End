@@ -29,12 +29,15 @@ const UserSearch = ({ token }) => {
                 setLoading(false);
             }
         }
+        else {
+            setResults([]);
+        }
         
     };
     
 
     const handleSeeMore = () => {
-        navigate('/SearchResults');
+        navigate(`/SearchResults?query=${encodeURIComponent(query)}`);
         setQuery('');
        setResults([]);
     };

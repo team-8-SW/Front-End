@@ -26,13 +26,14 @@ import SearchResults from "./pages/network/SearchResults";
 import ConnectionsList from "./pages/network/ConnectionList";
 import ViewCompany from "./pages/company/ViewCompany";
 
+
 function App() {
   const [loggedUser, setLoggedUser] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    const publicRoutes = ["/signup", "/login", "/ResetPassword"];
+    const publicRoutes = ["/signup", "/login", "/ResetPassword","profile"];
   
     if (!token && !publicRoutes.includes(window.location.pathname)) {
       navigate("/login");
@@ -46,7 +47,7 @@ function App() {
       .then((res) => {
         setLoggedUser({
           ...res.data,
-          id: res.data.profile.id,
+          id: "",
         });
       })
       .catch((err) => {
@@ -57,6 +58,7 @@ function App() {
         }
       });
     }
+    console.log("loggeduser:", loggedUser);
   }, [navigate]);
   
   

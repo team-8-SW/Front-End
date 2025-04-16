@@ -33,7 +33,7 @@ function App() {
   const token = localStorage.getItem("token");
   useEffect(() => {
     
-    const publicRoutes = ["/signup", "/login", "/ResetPassword","/profiles"];
+    const publicRoutes = ["/signup", "/login", "/ResetPassword","profile"];
   
     if (!token && !publicRoutes.includes(window.location.pathname)) {
       navigate("/login");
@@ -67,10 +67,10 @@ function App() {
     <div className="bg-backGroundColor min-h-screen">
       <Nav />
       <Routes>
-        <Route path="/profiles" element={<Profile loggedUser={loggedUser} />} />
+        <Route path="/profile" element={<Profile loggedUser={loggedUser} />} />
         <Route path="/view" element={<ProtectedRoute><View loggedUser={loggedUser} /></ProtectedRoute>} />
         <Route path="/" element={<Home loggedUser={loggedUser} />} />
-        <Route path="/me/education" element={<DetailsEducation loggedUser={loggedUser} />} />
+        <Route path="/education" element={<DetailsEducation loggedUser={loggedUser} />} />
         <Route path="/experience" element={<DetailsExperience loggedUser={loggedUser} />} />
         <Route path="/skills" element={<DetailedSkills loggedUser={loggedUser} />} />
         <Route path="/company/*" element={<Company loggedUser={loggedUser} />} />
@@ -84,7 +84,7 @@ function App() {
         <Route path="/EmailManagement" element={<EmailManagement />} />
        
         <Route path="/companyform" element={<CreateCompanyForm loggedUser={loggedUser} />} />
-        <Route path="/SearchResults" element={<SearchResults token={token} />} />
+        <Route path="/SearchResults" element={<SearchResults loggedUser={loggedUser} />} />
         <Route path="/ConnectionList" element={<ConnectionsList />} />
         <Route path="/viewcompany" element={<ViewCompany loggedUser={loggedUser} />} />
       </Routes>

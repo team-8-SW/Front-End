@@ -358,21 +358,16 @@ export const googleLogin = async (idToken) => {
   }
 };
 
-export const handleConnectionRequest = async (token, params) => {
+export const handleConnectionRequest = async (userId) => {
   try {
-    const { response } = await axios.post(`http://localhost:5000/api/connections/users`,{
-      params,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    return response;
+    const response = await axios.post(`http://localhost:5000/api/connections/users/${userId} `);
+    return response.data;
   } catch (error) {
     console.error("API request failed:", error);
     throw error;
   }
 };
-
+ 
 // export const searchUsers = async (query, token) => {
 //   try {
 //     // const response = await axios.get(

@@ -15,7 +15,7 @@ import ResetPassword from "./pages/login/ResetPassword";
 import ProtectedRoute from "./ProtectedRoute";
 
 import EmailManagement from "./pages/UpdateEmail/EmailManagement";
-import VerifyEmail from "./pages/UpdateEmail/VerifyEmail";
+
 import NetworkPage from "./pages/network/NetworkPage";
 import CreateCompanyForm from "./pages/company/CreateCompanyForm";
 import Company from "./pages/company/Company";
@@ -82,7 +82,7 @@ function App() {
         <Route path="/jobdetails" element={<JobDetailsForm loggedUser={loggedUser} />} />
         <Route path="/notifications" element={<NotificationsPage loggedUser={loggedUser} />} />
         <Route path="/EmailManagement" element={<EmailManagement />} />
-        <Route path="/VerifyEmail" element={<VerifyEmail />} />
+       
         <Route path="/companyform" element={<CreateCompanyForm loggedUser={loggedUser} />} />
         <Route path="/SearchResults" element={<SearchResults />} />
         <Route path="/ConnectionList" element={<ConnectionsList />} />

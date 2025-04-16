@@ -13,7 +13,7 @@ const PostModal = ({ isOpen, toggleModal,loggedUser }) => {
   useEffect(() => {
     const fetchLastPostId = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/posts");
+        const response = await axios.get("http://localhost:5000/posts");
         const posts = response.data;
         const maxId = posts.reduce(
           (max, post) => (post.id > max ? post.id : max),
@@ -43,14 +43,13 @@ const PostModal = ({ isOpen, toggleModal,loggedUser }) => {
     const newPostId = (parseInt(lastPostId, 10) + 1).toString();
 
     try {
-      await axios.post("http://localhost:3000/api/posts/me/newpost", {
-        id: newPostId,
+      await axios.post("http://localhost:5000/api/posts/me/newpost", {
+      
         content: postContent,
-        authorId: loggedUser.id,
-        authorName: name,
-        likes: [],
-        comments: [],
-        reposts: [],
+        visibility: "public"
+
+
+       
       },{
         headers: {
           Authorization: `Bearer ${token}`,

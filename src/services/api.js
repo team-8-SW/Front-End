@@ -92,7 +92,7 @@ export const useUserData = (userId,token) => {
 
 export const fetchPosts = async (token) => {
   try {
-    const response = await axios.get(`http://localhost:3000/api/posts/me/feed`, {
+    const response = await axios.get(`http://localhost:5000/api/posts/me/feed`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -103,6 +103,20 @@ export const fetchPosts = async (token) => {
     throw new Error("Network response was not ok");
   }
 };
+export const fetchMyPosts = async (token) => {
+  try {
+    const response = await axios.get(`http://localhost:5000/api/posts/me`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching posts:", error);
+    throw new Error("Network response was not ok");
+  }
+};
+
 export const resetPassword = async (email) => {
   try {
     const response = await axios.get(`http://localhost:3000/users?email=${email}`);
@@ -366,21 +380,39 @@ export const handleConnectionRequest = async (userId) => {
   }
 };
  
-export const searchUsers = async (query, token) => {
-  try {
-    const response = await axios.get(
-      `http://localhost:3000/api/users/me/search?q=${query}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    return response.data.users;
-  } catch (error) {
-    console.error('Search users error:', error);
-    throw error;
-  }
+// export const searchUsers = async (query, token) => {
+//   try {
+//     // const response = await axios.get(
+//     //   `http://localhost:5000/api/users/me/search?q=${query}`,
+//     //   {
+//     //     headers: {
+//     //       Authorization: `Bearer ${token}`,
+//     //     },
+//     //   }
+//     // );
+//     const { data } = await axios.get('http://localhost:5000/me/search', {
+//       params,
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//       },
+//     });
+    
+//     // return response.data.users;
+//     return data.users;
+//   } catch (error) {
+//     console.error('Search users error:', error);
+//     throw error;
+//   }
+// };
+
+export const searchUsers = async (token, params) => {
+  const { data } = await axios.get('http://localhost:3000/me/search', {
+    params,
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return data;
 };
 export const getConnections = async () => {
   try {

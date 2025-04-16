@@ -15,7 +15,7 @@ import ResetPassword from "./pages/login/ResetPassword";
 import ProtectedRoute from "./ProtectedRoute";
 
 import EmailManagement from "./pages/UpdateEmail/EmailManagement";
-import VerifyEmail from "./pages/UpdateEmail/VerifyEmail";
+
 import NetworkPage from "./pages/network/NetworkPage";
 import CreateCompanyForm from "./pages/company/CreateCompanyForm";
 import Company from "./pages/company/Company";
@@ -26,13 +26,14 @@ import SearchResults from "./pages/network/SearchResults";
 import ConnectionsList from "./pages/network/ConnectionList";
 import ViewCompany from "./pages/company/ViewCompany";
 
+
 function App() {
   const [loggedUser, setLoggedUser] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    const publicRoutes = ["/signup", "/login", "/ResetPassword"];
+    const publicRoutes = ["/signup", "/login", "/ResetPassword","profile"];
   
     if (!token && !publicRoutes.includes(window.location.pathname)) {
       navigate("/login");
@@ -46,7 +47,7 @@ function App() {
       .then((res) => {
         setLoggedUser({
           ...res.data,
-          id: res.data.profile.id,
+          id: "",
         });
       })
       .catch((err) => {
@@ -57,6 +58,7 @@ function App() {
         }
       });
     }
+    console.log("loggeduser:", loggedUser);
   }, [navigate]);
   
   
@@ -80,7 +82,7 @@ function App() {
         <Route path="/jobdetails" element={<JobDetailsForm loggedUser={loggedUser} />} />
         <Route path="/notifications" element={<NotificationsPage loggedUser={loggedUser} />} />
         <Route path="/EmailManagement" element={<EmailManagement />} />
-        <Route path="/VerifyEmail" element={<VerifyEmail />} />
+       
         <Route path="/companyform" element={<CreateCompanyForm loggedUser={loggedUser} />} />
         <Route path="/SearchResults" element={<SearchResults />} />
         <Route path="/ConnectionList" element={<ConnectionsList />} />

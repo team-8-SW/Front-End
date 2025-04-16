@@ -22,8 +22,8 @@ const SearchResults = ({ token }) => {
     }, [token, query]);
 
     return (
-        <div className="p-4">
-            <h1 className="text-2xl font-bold mb-4">Search Results for "{query}"</h1>
+        <div className="p-6 max-w-4xl mx-auto">
+            <h1 className="text-2xl font-bold mb-6">Search Results for "{query}"</h1>
             {results.length === 0 ? (
                 <p>No results found.</p>
             ) : (

@@ -1,12 +1,23 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import { searchUsers } from '../../services/api';
 
 const UserSearch = ({ token }) => {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [token, setToken] = useState(null);
     const navigate = useNavigate(); 
+    
+    useEffect(() => {
+        const storedToken = localStorage.getItem('token');
+        if (storedToken && storedToken !== 'null' && storedToken !== 'undefined') {
+            setToken(storedToken);
+        } else {
+            console.warn('No valid token found in localStorage');
+        }
+    }, []);
 
     const handleSearch = async (e) => {
         setQuery(e.target.value);

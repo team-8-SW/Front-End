@@ -76,11 +76,11 @@ const SignUpForm = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
-      <h2 className="text-xl font-semibold text-center mb-6 text-gray-800">
+      <h2 className="text-xl pt-6 pr-4 pb-6 pl-4 font-semibold text-center mb-6 text-gray-800 font-medium">
         Make the most of your professional life
       </h2>
 
-      <div className="bg-white shadow-lg rounded-lg px-8 pt-8 pb-10 w-full max-w-md border border-gray-200">
+      <div className="bg-white shadow-lg mx-auto max-w-[400px] rounded-lg px-9 pt-8 pb-5 w-full border-gray-200">
         {message && (
           <p className={`text-center text-sm font-bold mb-4 ${messageType === "error" ? "text-red-500" : "text-green-500"}`}>
             {message}
@@ -88,7 +88,7 @@ const SignUpForm = () => {
         )}
 
         <form onSubmit={handleSubmit}>
-          <div className="mb-4">
+          <div className="mb-5">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="firstName">First Name</label>
             <input
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
@@ -175,11 +175,12 @@ const SignUpForm = () => {
         <button className="w-full">
           <SocialLogin />
         </button>
-      </div>
 
-      <div className="mt-6 text-gray-600">
+        <div className="mt-6 text-gray-600 items-center">
         Already on LinkedIn? <Link className="text-blue-600 hover:underline" to="/login">Sign in</Link>
       </div>
+      </div>
+
     </div>
   );
 };

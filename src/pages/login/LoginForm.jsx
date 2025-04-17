@@ -80,19 +80,21 @@ const LoginForm = () => {
 
           <button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg mb-3"
           >
             Sign In
           </button>
+          <Link to="/ResetPassword" className="text-blue-600 hover:underline">
+            Forgot password?
+          </Link>
         </form>
-
-        <div className="mt-6 text-center text-sm text-gray-600">
+      </div>
+      <div className="mt-6 text-center text-sm text-gray-600">
           Don't have an account?{" "}
           <Link to="/signup" className="text-blue-600 hover:underline">
             Join now
           </Link>
         </div>
-      </div>
     </div>
   );
 };

@@ -40,7 +40,9 @@ const UserSearch = ({ token }) => {
         setQuery('');
        setResults([]);
     };
-
+    const handleProfileClick = () => {
+        navigate(`/View`);  
+    };
     return (
         <div className="relative">
             <input
@@ -55,7 +57,7 @@ const UserSearch = ({ token }) => {
                 <div className="absolute bg-white text-black border rounded shadow-lg mt-1 w-full z-10">
                     <ul>
                         {results.slice(0, 5).map((user) => (
-                            <li key={user.id} className="flex items-center p-2 hover:bg-gray-100 text-black">
+                            <li key={user.id} className="flex items-center p-2 hover:bg-gray-100 text-black" onClick={() => handleProfileClick()}>
                                 <img src={user.profilePicture} alt={user.userName} className="w-8 h-8 rounded-full mr-2" />
                                 <span>{user.userName}</span>
                             </li>

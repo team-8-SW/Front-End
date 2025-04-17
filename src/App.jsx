@@ -68,7 +68,7 @@ function App() {
       <Nav />
       <Routes>
         <Route path="/profile" element={<Profile loggedUser={loggedUser} />} />
-        <Route path="/view" element={<ProtectedRoute><View loggedUser={loggedUser} /></ProtectedRoute>} />
+        <Route path="/view" element={<View loggedUser={loggedUser} />} />
         <Route path="/" element={<Home loggedUser={loggedUser} />} />
         <Route path="/education" element={<DetailsEducation loggedUser={loggedUser} />} />
         <Route path="/experience" element={<DetailsExperience loggedUser={loggedUser} />} />

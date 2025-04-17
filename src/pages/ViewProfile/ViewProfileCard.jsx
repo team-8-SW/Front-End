@@ -108,7 +108,7 @@ const ProfileCard = ({ loggedUser }) => {
       {/* Buttons */}
       <CardFooter className="flex items-center gap-4 flex-wrap md:flex-nowrap pb-6 mt-6 relative">
       <div className="min-w-[110px]">
-      <ConnectButton />
+       <ConnectButton userId={user.userId} token={token} />
       </div>
       <Button variant="outlined" className="rounded-full w-[120px]" color="blue">
   Message

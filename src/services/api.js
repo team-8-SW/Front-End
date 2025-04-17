@@ -358,40 +358,24 @@ export const googleLogin = async (idToken) => {
   }
 };
 
-export const handleConnectionRequest = async (userId) => {
+
+export const handleConnectionRequest = async (userId, token) => {
   try {
-    const response = await axios.post(`http://localhost:5000/api/connections/users/${userId} `);
+    const response = await axios.post(
+      `http://localhost:5000/api/connections/users/${userId}`, 
+      {}, 
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     return response.data;
   } catch (error) {
     console.error("API request failed:", error);
     throw error;
   }
 };
- 
-// export const searchUsers = async (query, token) => {
-//   try {
-//     // const response = await axios.get(
-//     //   `http://localhost:5000/api/users/me/search?q=${query}`,
-//     //   {
-//     //     headers: {
-//     //       Authorization: `Bearer ${token}`,
-//     //     },
-//     //   }
-//     // );
-//     const { data } = await axios.get('http://localhost:5000/me/search', {
-//       params,
-//       headers: {
-//         Authorization: `Bearer ${token}`,
-//       },
-//     });
-    
-//     // return response.data.users;
-//     return data.users;
-//   } catch (error) {
-//     console.error('Search users error:', error);
-//     throw error;
-//   }
-// };
 
 export const searchUsers = async (token, params) => {
   const { data } = await axios.get('http://localhost:5000/api/users/me/search', {

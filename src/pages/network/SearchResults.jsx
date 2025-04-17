@@ -13,6 +13,7 @@ const SearchResults = ({ token }) => {
             try {
                 const response = await searchUsers(token,{ q: query });
                 setResults(response.users);
+                console.log("Search results response:", response);
             } catch (error) {
                 console.error('Error fetching search results:', error);
             }
@@ -29,16 +30,16 @@ const SearchResults = ({ token }) => {
             ) : (
                 <ul className="space-y-4">
                     {results.map((user) => (
-                        <li key={user.id} className="bg-white rounded-lg shadow p-4 flex items-center justify-between">
+                        <li key={user.UserId} className="bg-white rounded-lg shadow p-4 flex items-center justify-between ">
                             <div className="flex items-center">
                                 <img
-                                    src={user.profilePicture}
-                                    alt={user.name}
+                                    src={user.profilePictureUrl}
+                                    alt={user.Userame}
                                     className="w-12 h-12 rounded-full mr-4"
                                 />
-                                <span className="font-medium text-gray-800">{user.name}</span>
+                                <span className="text-xl text-gray-800">{user.userName}</span>
                             </div>
-                           <ConnectButton />
+                           <ConnectButton userId={user.userId} token={token} />
                         </li>
                     ))}
                 </ul>

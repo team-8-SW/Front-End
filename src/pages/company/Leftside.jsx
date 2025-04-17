@@ -86,13 +86,6 @@ const Leftside = () => {
         >
           <span className="text-lg">👁</span> View as member
         </Button>
-        <Link to="/view">
-          <Button
-            variant="outlined"
-            className="rounded-full border px-4 py-1 text-[14px] font-medium hover:bg-gray-100 transition flex items-center gap-1"
-          >
-            <span className="text-lg">👁</span> View as member
-          </Button>
         </Link>
       </div>
 

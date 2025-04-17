@@ -32,10 +32,9 @@ function App() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    console.log("Token:", token);
   
-    if (!token) {
-      navigate("/login");
-    } else {
+  
       axios.get("http://localhost:5000/api/profiles/", {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -60,7 +59,7 @@ function App() {
         }
       });
     }
-  }, [navigate]);
+  , [navigate]);
   
   
 

@@ -43,7 +43,7 @@ const PendingConnections = ({ loggedUser }) => {
           </div>
         </div>
       ))}
-    </div>
+  </div>
   );
 };
 

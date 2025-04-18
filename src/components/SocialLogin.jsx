@@ -15,8 +15,10 @@ const SocialLogin = ({ setLoggedUser  }) => {
 
     if (response.token) {
       localStorage.setItem("token", response.token); 
-      localStorage.setItem("userId", response.user.id); 
-      setLoggedUser (response.user); 
+      /*localStorage.setItem("userId", response.user.id);*/
+    if (response.user) {
+        setLoggedUser(response.user);
+    }
       navigate("/");
     } else {
       console.error("Login failed:", response.error);
@@ -29,7 +31,6 @@ const SocialLogin = ({ setLoggedUser  }) => {
 
   return (
     <GoogleLogin
-      clientId="93470150540-lbg03r6jfctm48l3nn6p5flmhniru635.apps.googleusercontent.com"
       onSuccess={handleLoginSuccess}
       onError={handleLoginError}
     />

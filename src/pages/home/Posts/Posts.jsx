@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
 import PostDetails from "./PostDetails";
 import { fetchPosts } from "../../../services/api";
+import { fetchMyPosts } from "../../../services/api"; // Adjust the import path as necessary
 
 const Posts = ({ loggedUser }) => {
   const [posts, setPosts] = useState([]);
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchAllPosts = async () => {
       try {
-        const allPosts = await fetchPosts();
+        const allPosts = await fetchMyPosts(token);
         setPosts(allPosts);
       } catch (error) {
         console.error("Error fetching posts:", error);

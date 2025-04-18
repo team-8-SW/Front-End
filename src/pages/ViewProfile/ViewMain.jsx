@@ -25,7 +25,8 @@ const ViewMain = ({ loggedUser, setLoggedUser }) => {
           },
         });
 
-        setProfileData(res.data);          // set entire response
+        setProfileData(res.data);     
+        console.log("profile dataaaa",res.data)     // set entire response
         setVisibility(res.data.public);    // extract and store visibility
 
       } catch (err) {
@@ -54,6 +55,10 @@ const ViewMain = ({ loggedUser, setLoggedUser }) => {
         loggedUser={loggedUser}
         setLoggedUser={setLoggedUser}
         profile={profileData.profile}
+        userid={userid}
+        token={localStorage.getItem("token")}
+        connectionStatus={profileData.connectionStatus.status}
+       
       />
 
       {visibility ? (
@@ -62,6 +67,7 @@ const ViewMain = ({ loggedUser, setLoggedUser }) => {
           <ViewEdu education={profileData.education} />
           <ViewSkills skills={profileData.skills} />
           <ViewResume resumeUrl={profileData.profile?.resumeUrl} />
+
         </>
       ) : (
         <Card className='mt-10'>

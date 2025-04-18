@@ -8,8 +8,8 @@ const CreatePost = ({loggedUser}) => {
   if (!loggedUser) {
     return <div className="w-full h-24 bg-gray-100 rounded-lg animate-pulse"></div>;
   }
-
-  const photo = useProfilePicture(loggedUser.id);
+  const token = localStorage.getItem("token");
+  const photo = useProfilePicture(0,token);
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   
   const togglePostModal = () => {

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import { searchUsers } from '../../services/api';
 
 const UserSearch = ({ token }) => {
@@ -7,28 +8,42 @@ const UserSearch = ({ token }) => {
     const [results, setResults] = useState([]);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate(); 
-
+    
     const handleSearch = async (e) => {
-        setQuery(e.target.value);
-        if (e.target.value.length > 2) {
+        const value = e.target.value;
+        setQuery(value);
+    
+        if (value.length > 2) {
             setLoading(true);
             try {
-                const users = await searchUsers(e.target.value, token);
-                setResults(users);
+                const params = { q: value }; // optional: add industry, company_id, etc.
+                const response = await searchUsers(token, params);
+                if(!response) {
+                    setResults([]);
+                } else{
+                    setResults(response.users); // assuming response contains { users: [...] }
+                }
             } catch (error) {
                 console.error('Error fetching search results:', error);
             } finally {
                 setLoading(false);
             }
-        } else {
-            setResults([]);
+        }
+        else{
+            setResults([]); // clear results if query is less than 3 characters
         }
     };
+    
 
     const handleSeeMore = () => {
-        navigate('/SearchResults');
+        navigate(`/SearchResults?query=${encodeURIComponent(query)}`);
+        setQuery('');
+       setResults([]);
     };
-
+    const handleProfileClick = (userId) => {
+        navigate(`/view/${userId}`);
+    };
+    
     return (
         <div className="relative">
             <input
@@ -40,12 +55,12 @@ const UserSearch = ({ token }) => {
             />
             {loading && <div>Loading...</div>}
             {results.length > 0 ? (
-                <div className="absolute bg-white border rounded shadow-lg mt-1 w-full z-10">
+                <div className="absolute bg-white text-black border rounded shadow-lg mt-1 w-full z-10">
                     <ul>
                         {results.slice(0, 5).map((user) => (
-                            <li key={user.id} className="flex items-center p-2 hover:bg-gray-100">
-                                <img src={user.profilePicture} alt={user.name} className="w-8 h-8 rounded-full mr-2" />
-                                <span>{user.name}</span>
+                            <li key={user.id} className="flex items-center p-2 hover:bg-gray-100 text-black" onClick={() => handleProfileClick(user.userId)}>
+                                <img src={user.profilePicture} alt={user.userName} className="w-8 h-8 rounded-full mr-2" />
+                                <span>{user.userName}</span>
                             </li>
                         ))}
                     </ul>

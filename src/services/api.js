@@ -389,23 +389,43 @@ export const getConnections = async () => {
     throw error;
   }
 };
-export const acceptConnection = async (userId) => {
+export const acceptConnection = async (connectionId) => {
+  const token = localStorage.getItem('token'); 
   try {
-      const response = await axios.post(`https://localhost:5000/api/connections/${userId}/accept`);
-      return response.data; 
+    const response = await axios.post(
+      `http://localhost:5000/api/connections/${connectionId}/accept`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data.connectionRequest;
   } catch (error) {
-      throw new Error('Failed to accept connection request: ' + error.message);
+    throw new Error('Failed to accept connection request: ' + error.message);
   }
 };
 
-export const declineConnection = async (userId) => {
+export const declineConnection = async (connectionId) => {
+  const token = localStorage.getItem('token');
+
   try {
-      const response = await axios.delete(`https://localhost:5000/api/connections/${userId}/decline`);
-      return response.data; 
+    const response = await axios.post(
+      `http://localhost:5000/api/connections/${connectionId}/decline`,
+      {}, 
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data.connectionRequest;
   } catch (error) {
-      throw new Error('Failed to decline connection request: ' + error.message);
+    throw new Error('Failed to decline connection request: ' + error.message);
   }
 };
+
 export const removeConnection = async (connectionId) => {
   try {
     const response = await axios.delete(`http://localhost:5000/api/connections/${connectionId}`);

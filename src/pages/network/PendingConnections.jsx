@@ -127,7 +127,7 @@ const PendingConnectionsPage = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center flex-1 min-w-0">
                   <div className="w-12 h-12 rounded-full bg-gray-200 overflow-hidden mr-3 flex-shrink-0">
-                    <img 
+                    {/* <img 
                       src={user.avatar || "https://via.placeholder.com/48"} 
                       alt={user.name}
                       className="w-full h-full object-cover"
@@ -135,7 +135,7 @@ const PendingConnectionsPage = () => {
                         e.target.src = "https://via.placeholder.com/48";
                         e.target.onerror = null;
                       }}
-                    />
+                    /> */}
                   </div>
                   <div className="min-w-0">
                     <p className="font-medium truncate">{user.name}</p>

@@ -454,48 +454,20 @@ export const fetchPendingConnections = async (token) => {
     console.log("API Response:", response.data); // Debug
 
     let connections = [];
-    if (Array.isArray(response.data)) {
-      connections = response.data;
-    } else if (response.data?.data && Array.isArray(response.data.data)) {
-      connections = response.data.data;
-    } else if (response.data?.connections && Array.isArray(response.data.connections)) {
-      connections = response.data.connections;
-    } else if (response.data) {
-      connections = [response.data];
+
+    if (Array.isArray(response.data.pendingRequests)) {
+      connections = response.data.pendingRequests;
     }
-
-    const enrichedConnections = await Promise.all(
-      connections.map(async (conn) => {
-        try {
-          const userId = conn.senderId || conn.userId;
-          const userRes = await axios.get(`${API_URL}/users/${userId}`, {
-            headers: { Authorization: `Bearer ${token}` }
-          });
-
-          const user = userRes.data;
-
-          return {
-            id: conn.id || conn._id,
-            name: user.name || `${user.first_name} ${user.last_name}` || user.user_name || "Unknown User",
-            username: user.user_name || "unknown",
-            title: user.title || user.headline || "No title",
-            avatar: user.profilePicture || user.avatar || "",
-            mutualConnections: conn.mutualConnections || 0
-          };
-        } catch (error) {
-          console.error("Error fetching user details:", error);
-          return {
-            id: conn.id || conn._id,
-            name: "Unknown User",
-            username: "unknown",
-            title: "No title",
-            avatar: "",
-            mutualConnections: 0
-          };
-        }
-      })
-    );
-
+    const enrichedConnections = connections.map((conn) => {
+      return {
+        id: conn.connection_id,
+        name: `${conn.first_name} ${conn.last_name}`,
+        username: conn.user_name || conn.first_name.toLowerCase(),
+        title: conn.headline || "No title",
+        avatar: conn.profile_picture_url || "",
+        mutualConnections: 0
+      };
+    });
     return enrichedConnections;
   } catch (error) {
     console.error("API Error Details:", {

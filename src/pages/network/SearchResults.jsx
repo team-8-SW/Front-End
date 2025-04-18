@@ -24,10 +24,10 @@ const SearchResults = ({ token }) => {
         fetchResults();
     }, [token, query]);
 
-    const handleProfileClick = () => {
-        navigate(`/View`);  
+    const handleProfileClick = (userId) => {
+        navigate(`/view/${userId}`);
     };
-
+    
     return (
         <div className="p-6 max-w-4xl mx-auto">
             <h1 className="text-2xl font-bold mb-6">Search Results for "{query}"</h1>
@@ -36,7 +36,7 @@ const SearchResults = ({ token }) => {
             ) : (
                 <ul className="space-y-4">
                     {results.map((user) => (
-                        <li key={user.UserId} onClick={() => handleProfileClick()} className="bg-white rounded-lg shadow p-4 flex items-center justify-between ">
+                        <li key={user.UserId} onClick={() => handleProfileClick(user.userId)} className="bg-white rounded-lg shadow p-4 flex items-center justify-between ">
                             <div className="flex items-center">
                                 <img
                                     src={user.profilePictureUrl}

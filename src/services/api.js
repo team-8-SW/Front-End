@@ -115,18 +115,12 @@ export const fetchMyPosts = async (token) => {
   }
 };
 
-export const resetPassword = async (email) => {
-  try {
-    const response = await axios.get(`http://localhost:5000/users?email=${email}`);
-    
-    if (response.data.length === 0) {
-      throw new Error("Email not found.");
-    }
+export const forgotPassword = (data) => {
+  return axios.post('http://localhost:5000/api/auth/forgot-password', data);
+};
 
-    return "Password reset link sent!";
-  } catch (error) {
-    return error.response?.data?.error || error.message || "Something went wrong. Please try again.";
-  }
+export const resetPassword = (data) => {
+  return axios.post('http://localhost:5000/api/auth/reset-password', data);
 };
 
 export const sendSignupEmail = async (email) => {
@@ -475,6 +469,72 @@ export const fetchPendingConnections = async (token) => {
       data: error.response?.data,
       config: error.config
     });
+    throw error;
+  }
+};
+
+const api = axios.create({
+  baseURL: API_URL,
+  timeout: 10000,
+});
+
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response) {
+      console.error('API error:', error.response.status, error.response.data);
+    } else if (error.request) {
+      console.error('No response from server:', error.request);
+    } else {
+      console.error('Axios config error:', error.message);
+    }
+
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token');
+      window.location.href = '/login';
+    }
+
+    return Promise.reject(error);
+  }
+);
+
+export const getMessageRequests = async () => {
+  try {
+    const response = await api.get('/messages/requests');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching message requests:', error);
+    throw error;
+  }
+};
+
+export const acceptMessageRequest = async (id) => {
+  try {
+    const response = await api.post(`/messages/requests/${id}/accept`);
+    return response.data;
+  } catch (error) {
+    console.error('Error accepting message request:', error);
+    throw error;
+  }
+};
+
+export const declineMessageRequest = async (id) => {
+  try {
+    const response = await api.post(`/messages/requests/${id}/decline`);
+    return response.data;
+  } catch (error) {
+    console.error('Error declining message request:', error);
     throw error;
   }
 };

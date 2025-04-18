@@ -1,29 +1,27 @@
 import { useState } from "react";
-import { resetPassword } from "../../services/api";
+import { forgotPassword } from "../../services/api";
 
 const ResetPassword = () => {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setMessage(""); 
+    setMessage("");
 
     try {
-      const result = await resetPassword(email);
-      setMessage(result);
+      const result = await forgotPassword({ email });
+      setMessage(result.data.message || "Reset link sent.");
     } catch (error) {
       setMessage("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
   };
-  
-
 
   return (
-    
     <div className="flex min-h-screen items-center justify-center bg-gray-100">
       <div className="w-full max-w-md p-6 bg-white rounded-2xl shadow-lg">
         <h2 className="text-2xl font-bold text-center text-gray-700 mb-4">Reset Password</h2>
@@ -47,16 +45,15 @@ const ResetPassword = () => {
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition"
             disabled={loading}
           >
-            Send Reset Link
+            {loading ? "Sending..." : "Send Reset Link"}
           </button>
         </form>
         {message && (
-  <p className="mt-4 text-center text-sm text-red-500">{message}</p>
-)}
-
+          <p className="mt-4 text-center text-sm text-red-500">{message}</p>
+        )}
       </div>
     </div>
   );
 };
-      
+
 export default ResetPassword;

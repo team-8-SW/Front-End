@@ -10,6 +10,7 @@ import DetailsEducation from "./pages/DetailedEducation/DetailsEducation";
 import DetailsExperience from "./pages/Detailedexperience/DetailsExperience";
 import DetailedSkills from "./pages/DetailedSkills/DetailedSkills";
 import LoginPage from './pages/login/LoginPage';
+
 import SignUp from './pages/signup/SignUp';
 import ResetPassword from "./pages/login/ResetPassword";
 import ProtectedRoute from "./ProtectedRoute";

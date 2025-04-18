@@ -20,9 +20,11 @@ const FollowerModal = ({ followers, onClose }) => {
         <div className="space-y-3">
           {followers.map((follower, index) => (
             <div key={index} className="flex flex-col border-b pb-2">
-              <p className="font-semibold text-sm">{follower.name} · 3rd</p>
-              <p className="text-sm text-gray-600">{follower.headline}</p>
-              <p className="text-xs text-gray-400">{follower.joined}</p>
+              <p className="font-semibold text-sm">{follower.full_name || "Unnamed User"}</p>
+              <p className="text-xs text-gray-400">
+                Followed on{" "}
+                {new Date(follower.followed_at).toLocaleDateString("en-GB")}
+              </p>
             </div>
           ))}
         </div>

@@ -9,7 +9,7 @@ import { AiFillMessage } from "react-icons/ai";
 import { FaBell } from "react-icons/fa";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { unReadCount } from "../services/api";
-import { logout } from "../services/profile";
+
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import UserSearch from "../pages/network/UserSearch";
@@ -18,6 +18,7 @@ const Nav = () => {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(null);
   const location = useLocation();
+  const navigate = useNavigate();
 
   const isActive = (path) => location.pathname === path;
 
@@ -41,6 +42,12 @@ const Nav = () => {
     
     return () => clearInterval(interval);
   }, []);
+
+   const logout = (navigate) => {
+    localStorage.removeItem("userId"); // Remove user data
+    navigate("/login"); // Redirect to login page
+  };
+ 
   return (
     <div className="sticky top-0 left-0 w-full bg-white shadow-md z-50 h-[52px]">
       <div className="flex gap-40 items-center px-3 max-w-screen-xl mx-auto py-[5px]">

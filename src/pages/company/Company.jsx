@@ -28,7 +28,7 @@ const Company = ({ loggedUser }) => {
         <Routes>
 
           {/* REMOVE leading slash (nested routes must be relative) */}
-          <Route path="companyposts" element={<CompanyPosts loggedUser={loggedUser} />} />
+ 
           <Route path="companyposts"element={<div className="space-y-6">
              <CompanyCreatePost companyId={loggedUser?.id} companyName={loggedUser?.company?.name}companyLogo={loggedUser?.company?.logo} />
               <CompanyPosts companyId={loggedUser?.id} />

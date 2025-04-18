@@ -25,6 +25,7 @@ import View from "./pages/ViewProfile/View";
 import SearchResults from "./pages/network/SearchResults";
 import ConnectionsList from "./pages/network/ConnectionList";
 import ViewCompany from "./pages/company/ViewCompany";
+import CompanyJobsTab from "./pages/company/CompanyJobsTab";
 
 function App() {
   const [loggedUser, setLoggedUser] = useState(null);
@@ -68,7 +69,7 @@ function App() {
       <Nav />
       <Routes>
         <Route path="/profile" element={<Profile loggedUser={loggedUser} />} />
-        <Route path="/view" element={<ProtectedRoute><View loggedUser={loggedUser} /></ProtectedRoute>} />
+        <Route path="/view/:id" element={<View loggedUser={loggedUser} />} />
         <Route path="/" element={<Home loggedUser={loggedUser} />} />
         <Route path="/education" element={<DetailsEducation loggedUser={loggedUser} />} />
         <Route path="/experience" element={<DetailsExperience loggedUser={loggedUser} />} />
@@ -86,7 +87,8 @@ function App() {
         <Route path="/companyform" element={<CreateCompanyForm loggedUser={loggedUser} />} />
         <Route path="/SearchResults" element={<SearchResults />} />
         <Route path="/ConnectionList" element={<ConnectionsList />} />
-        <Route path="/viewcompany" element={<ViewCompany loggedUser={loggedUser} />} />
+        <Route path="/viewcompany/*" element={<ViewCompany loggedUser={loggedUser} />} />
+        <Route path="companyjobs" element={<CompanyJobsTab/>} />
       </Routes>
     </div>
   );

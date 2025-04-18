@@ -61,7 +61,7 @@ const Nav = () => {
             { to: "/", icon: IoHomeSharp, label: "Home" },
             { to: "/network", icon: MdPeople, label: "Network" },
             { to: "/jobs", icon: MdWork, label: "Jobs" },
-            { to: "/messaging", icon: AiFillMessage, label: "Messaging" },
+            { to: "/messages", icon: AiFillMessage, label: "Messaging" },
             { to: "/notifications", icon: FaBell, label: "Notifications" },
           ].map(({ to, icon: Icon, label }) => (
             <Link key={to} to={to} className="flex flex-col items-center group">

@@ -5,11 +5,13 @@ import { Routes, Route, useNavigate } from "react-router-dom";
 import Nav from "./components/Nav";
 import Profile from "./pages/profile/Profile";
 import Home from "./pages/home/Home";
+import ForgotPassword from "./pages/login/ForgotPassword";
 import NotificationsPage from "./pages/notifications/NotificationsPage";
 import DetailsEducation from "./pages/DetailedEducation/DetailsEducation";
 import DetailsExperience from "./pages/Detailedexperience/DetailsExperience";
 import DetailedSkills from "./pages/DetailedSkills/DetailedSkills";
 import LoginPage from './pages/login/LoginPage';
+
 import SignUp from './pages/signup/SignUp';
 import ResetPassword from "./pages/login/ResetPassword";
 import ProtectedRoute from "./ProtectedRoute";
@@ -35,6 +37,13 @@ function App() {
     const token = localStorage.getItem("token");
     console.log("Token:", token);
   
+    
+    const publicRoutes = [
+      "/signup", 
+      "/login", 
+      "/forgot-password",
+      "/reset-password"  // Added reset password as public
+    ];
   
       axios.get("http://localhost:5000/api/profiles/", {
         headers: {
@@ -68,6 +77,9 @@ function App() {
     <div className="bg-backGroundColor min-h-screen">
       <Nav />
       <Routes>
+
+      <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/profile" element={<Profile loggedUser={loggedUser} />} />
         <Route path="/view/:id" element={<View loggedUser={loggedUser} />} />
         <Route path="/" element={<Home loggedUser={loggedUser} />} />
@@ -78,7 +90,6 @@ function App() {
         <Route path="/network" element={<NetworkPage />} />
         <Route path="/login" element={<LoginPage setLoggedUser={setLoggedUser} />} />
         <Route path="/signup" element={<SignUp />} />
-        <Route path="/ResetPassword" element={<ResetPassword />} />
         <Route path="/jobtitle" element={<JobTitle loggedUser={loggedUser} />} />
         <Route path="/jobdetails" element={<JobDetailsForm loggedUser={loggedUser} />} />
         <Route path="/notifications" element={<NotificationsPage loggedUser={loggedUser} />} />

@@ -4,9 +4,11 @@ import { acceptConnection } from '../../services/api';
 const AcceptConnection = ({ userId, onSuccess }) => {
     const handleAccept = async () => {
         try {
-            const response = await acceptConnection(userId);
-            if (response) {
+            const connection = await acceptConnection(userId);
+            if (connection?.status === "accepted") {
                 onSuccess(userId); 
+            } else {
+                console.warn('Connection not accepted:', connection);
             }
         } catch (error) {
             console.error('Error accepting connection:', error);

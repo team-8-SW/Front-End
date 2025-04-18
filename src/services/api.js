@@ -13,7 +13,7 @@ export const useProfilePicture = (token) => {
 
 export const fetchProfilePicture = async (userId,token) => {
   
-  const userData=await fetchUserData(userId,token);
+  const userData=await useUserData(userId,token);
   const profilePicture = userData?.profilePicture;
   if (profilePicture === "") {
     return "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3bHGb_Zk4zWeD4jw9ew8HboAT2zQIUZhYNA&s";

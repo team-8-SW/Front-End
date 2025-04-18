@@ -1,51 +1,21 @@
-import React, { useState, useEffect } from 'react';
+// JobTitleTop.jsx
+import React, { useState } from 'react';
 import { Card, Typography, Button, Input } from '@material-tailwind/react';
 import { MdDone } from 'react-icons/md';
 import { GiStarShuriken } from 'react-icons/gi';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import JobTitleBottom from './JobTitleBottom';
 
-const JobTitleTop = ({ loggedUser }) => {
+const JobTitleTop = () => {
   const [newJobTitle, setNewJobTitle] = useState('');
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    setNewJobTitle(e.target.value);
-  };
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (newJobTitle.trim() === '') return;
 
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.post(
-        'http://localhost:3000/api/company/job',
-        {
-          title: newJobTitle,
-          company_id: loggedUser.company.id, // required for your backend
-          description: '',
-          location: '',
-          employment_type: '',
-          workplace_type: '',
-          experience_level: '',
-          industry: '',
-          salary: 0,
-          expires_at: new Date().toISOString(),
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      const newJob = response.data.job;
-      localStorage.setItem('latestJobId', newJob.id); // Save job ID
-      navigate('/jobdetails');
-    } catch (err) {
-      console.error('Error creating job:', err);
-      alert(err.response?.data?.error || 'Failed to create job');
-    }
+    localStorage.setItem('latestJobTitle', newJobTitle);
+    navigate('/jobdetails');
   };
 
   return (
@@ -80,7 +50,7 @@ const JobTitleTop = ({ loggedUser }) => {
                       type="text"
                       name="title"
                       value={newJobTitle}
-                      onChange={handleChange}
+                      onChange={(e) => setNewJobTitle(e.target.value)}
                       label="Job Title"
                       required
                     />

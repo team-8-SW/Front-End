@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { Button } from "@material-tailwind/react";
-import { useUserId, useName } from "../../services/api";
+import React, { useState } from "react";
+import { Button, Input } from "@material-tailwind/react";
+import { useUserId } from "../../services/api";
 import axios from "axios";
 
 const CompanyPostModal = ({
@@ -8,32 +8,14 @@ const CompanyPostModal = ({
   toggleModal,
   companyId,
   companyName,
-  setPosts, // ✅ new prop to update posts list
+  setPosts,
 }) => {
   if (!isOpen) return null;
 
   const [postContent, setPostContent] = useState("");
+  const [postTitle, setPostTitle] = useState("");
+  const [mediaFile, setMediaFile] = useState(null);
   const [error, setError] = useState("");
-  const [lastPostId, setLastPostId] = useState(null);
-  const userId = useUserId();
-  const name = useName(userId);
-
-  useEffect(() => {
-    const fetchLastPostId = async () => {
-      try {
-        const response = await axios.get("http://localhost:3000/posts");
-        const posts = response.data;
-        const maxId = posts.reduce(
-          (max, post) => (parseInt(post.id) > max ? parseInt(post.id) : max),
-          0
-        );
-        setLastPostId(maxId);
-      } catch (error) {
-        console.error("Error fetching posts:", error);
-      }
-    };
-    fetchLastPostId();
-  }, []);
 
   const handlePost = async () => {
     if (postContent.trim() === "") {
@@ -42,31 +24,33 @@ const CompanyPostModal = ({
     }
 
     setError("");
-    const newPostId = (parseInt(lastPostId, 10) + 1).toString();
 
-    const newPost = {
-      id: newPostId,
-      content: postContent,
-      authorId: companyId,
-      authorName: companyName,
-      companyId: companyId,
-      likes: [],
-      comments: [],
-      reposts: [],
-      timestamp: new Date().toISOString(),
-    };
-    
+    const formData = new FormData();
+    formData.append("title", postTitle);
+    formData.append("content", postContent);
+    if (mediaFile) formData.append("media", mediaFile);
 
     try {
-      await axios.post("http://localhost:3000/posts", newPost);
+      const token = localStorage.getItem("token");
+      const response = await axios.post(
+        `http://localhost:5000/api/company/${companyId}/update`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
-      // ✅ Update post list immediately
       if (setPosts) {
-        setPosts(prev => [newPost, ...prev]);
+        setPosts((prev) => [response.data, ...prev]);
       }
 
       toggleModal();
       setPostContent("");
+      setPostTitle("");
+      setMediaFile(null);
     } catch (error) {
       console.error("Error posting:", error);
     }
@@ -86,14 +70,31 @@ const CompanyPostModal = ({
         onClick={handleModalClick}
       >
         <h2 className="text-xl font-bold mb-4">Post as Company</h2>
+
+        <Input
+          label="Post Title"
+          className="mb-3"
+          value={postTitle}
+          onChange={(e) => setPostTitle(e.target.value)}
+        />
+
         <textarea
-          className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mb-3"
           rows="4"
           placeholder="What's on your company's mind?"
           value={postContent}
           onChange={(e) => setPostContent(e.target.value)}
         />
+
+        <input
+          type="file"
+          accept="image/*"
+          className="mb-3"
+          onChange={(e) => setMediaFile(e.target.files[0])}
+        />
+
         {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+
         <div className="flex justify-end mt-4">
           <Button onClick={toggleModal} className="mr-2">
             Cancel

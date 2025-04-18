@@ -1,97 +1,182 @@
 import React, { useEffect, useState } from 'react';
-import { Input, Button, Typography, Select, Option, Card, Textarea, IconButton } from '@material-tailwind/react';
+import {
+  Input,
+  Button,
+  Typography,
+  Select,
+  Option,
+  Card,
+  Textarea
+} from '@material-tailwind/react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-const JobDetailsForm = () => {
-  const Navigate = useNavigate();
-  const [jobId, setJobId] = useState(null);
+const JobDetailsForm = ({ loggedUser }) => {
+  const navigate = useNavigate();
   const [jobDetails, setJobDetails] = useState({
-    location: '',
-    type: '',
-    workplace: '',
+    title: '',
     description: '',
+    location: '',
+    employment_type: '',
+    workplace_type: '',
+    experience_level: '',
+    industry: '',
+    salary: '',
+    expires_at: ''
   });
 
   useEffect(() => {
-    const storedJobId = localStorage.getItem("latestJobId");
-    if (!storedJobId) return console.error("No job ID in localStorage");
-
-    setJobId(storedJobId);
-    const fetchJobDetails = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const res = await axios.get(`http://localhost:3000/api/company/job/${storedJobId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        const job = res.data.job;
-        setJobDetails({
-          location: job.location || '',
-          type: job.employment_type || '',
-          workplace: job.workplace_type || '',
-          description: job.description || '',
-        });
-      } catch (err) {
-        console.error("Failed to fetch job:", err);
-      }
-    };
-
-    fetchJobDetails();
+    const storedTitle = localStorage.getItem("latestJobTitle");
+    if (storedTitle) {
+      setJobDetails(prev => ({ ...prev, title: storedTitle }));
+    }
   }, []);
 
   const handleChange = (e) => {
     setJobDetails({ ...jobDetails, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert("Your backend does not support job updates. Please create a new one.");
+    const token = localStorage.getItem("token");
+  
+    if (!jobDetails.title) {
+      return alert("Missing required fields.");
+    }
+  
+    try {
+      console.log("Submitting job payload:", jobDetails);
+  
+      await axios.post(
+        `http://localhost:5000/api/company/job`,
+        {
+          title: jobDetails.title,
+          description: jobDetails.description,
+          location: jobDetails.location,
+          employment_type: jobDetails.employment_type,
+          workplace_type: jobDetails.workplace_type,
+          experience_level: jobDetails.experience_level,
+          industry: jobDetails.industry,
+          salary: parseInt(jobDetails.salary),
+          expires_at: new Date(jobDetails.expires_at).toISOString(),
+          company_id:"20f970d2-7933-41db-af9e-9fb987a11a1e" ,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+  
+      alert("Job created successfully");
+      navigate("/jobs");
+    } catch (error) {
+      console.error(
+        "Error creating job:",
+        error?.response?.data || error.message || error
+      );
+      alert(error?.response?.data?.error || "Failed to create job");
+    }
   };
+  
+  
 
   return (
     <div className='w-full flex flex-col justify-center items-center'>
       <Card className='w-[60%] mt-20 p-6'>
         <div className='flex justify-between'>
           <Typography variant='h4'>Job Details</Typography>
-          <Button variant='text' color='red' onClick={() => Navigate("/jobtitle")}>Cancel</Button>
+          <Button variant='text' color='red' onClick={() => navigate("/jobtitle")}>Cancel</Button>
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-6 mt-4">
-          <div className='flex justify-between gap-6'>
-            <div className='flex flex-col gap-4 w-1/2'>
-              <Select label="Location Type" value={jobDetails.workplace} onChange={(val) => setJobDetails(prev => ({ ...prev, workplace: val }))}>
-                <Option value="On-site">On-site</Option>
-                <Option value="Hybrid">Hybrid</Option>
-                <Option value="Remote">Remote</Option>
-              </Select>
+          <Input
+            label="Job Title"
+            name="title"
+            value={jobDetails.title}
+            onChange={handleChange}
+            disabled
+          />
 
-              <Select label="Employment Type" value={jobDetails.type} onChange={(val) => setJobDetails(prev => ({ ...prev, type: val }))}>
-                <Option value="Full-time">Full-time</Option>
-                <Option value="Part-time">Part-time</Option>
-                <Option value="Internship">Internship</Option>
-                <Option value="Contract">Contract</Option>
-              </Select>
-            </div>
+        
 
-            <div className='w-1/2'>
-              <Input label="Job Location" name="location" value={jobDetails.location} onChange={handleChange} />
-            </div>
-          </div>
-
-          <div className='flex flex-col gap-2'>
-            <Typography variant='h6'>Job Description</Typography>
-            <Textarea
-              name="description"
-              value={jobDetails.description}
+          <div className='flex gap-6'>
+            <Input
+              label="Location"
+              name="location"
+              value={jobDetails.location}
               onChange={handleChange}
-              rows={6}
-              placeholder="Job description..."
+            />
+            <Input
+              type="number"
+              label="Salary (USD)"
+              name="salary"
+              value={jobDetails.salary}
+              onChange={handleChange}
             />
           </div>
 
+          <div className='flex gap-6'>
+            <Select
+              label="Employment Type"
+              value={jobDetails.employment_type}
+              onChange={(val) => setJobDetails(prev => ({ ...prev, employment_type: val }))}
+            >
+              <Option value="full-time">Full-time</Option>
+              <Option value="part-time">Part-time</Option>
+              <Option value="internship">Internship</Option>
+              <Option value="contract">Contract</Option>
+            </Select>
+
+            <Select
+              label="Workplace Type"
+              value={jobDetails.workplace_type}
+              onChange={(val) => setJobDetails(prev => ({ ...prev, workplace_type: val }))}
+            >
+              <Option value="on-site">On-site</Option>
+              <Option value="Remote">Remote</Option>
+              <Option value="hybrid">Hybrid</Option>
+            </Select>
+          </div>
+
+          <div className='flex gap-6'>
+            <Select
+              label="Experience Level"
+              value={jobDetails.experience_level}
+              onChange={(val) => setJobDetails(prev => ({ ...prev, experience_level: val }))}
+            >
+              <Option value="entry">Entry</Option>
+              <Option value="mid">Mid-level</Option>
+              <Option value="senior">Senior</Option>
+              <Option value="executive">Executive</Option>
+            </Select>
+
+            <Input
+              label="Industry"
+              name="industry"
+              value={jobDetails.industry}
+              onChange={handleChange}
+            />
+          </div>
+
+          <Input
+            type="date"
+            label="Expires At"
+            name="expires_at"
+            value={jobDetails.expires_at}
+            onChange={handleChange}
+          />
+
+<Textarea
+            name="description"
+            value={jobDetails.description}
+            onChange={handleChange}
+            rows={4}
+            label="Job Description"
+            placeholder="Describe the responsibilities, requirements, etc."
+          />
+
+
           <Button type="submit" color="blue" className="self-end">
-            Save (Disabled - No PUT Support)
+            Create Job
           </Button>
         </form>
       </Card>

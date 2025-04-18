@@ -443,3 +443,66 @@ export const getPostEngagement= async (postId) =>
         throw error;
       }
 }
+const API_URL = `http://localhost:5000/api`;
+
+export const fetchPendingConnections = async (token) => {
+  try {
+    const response = await axios.get(`${API_URL}/connections/pending`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    console.log("API Response:", response.data); // Debug
+
+    let connections = [];
+    if (Array.isArray(response.data)) {
+      connections = response.data;
+    } else if (response.data?.data && Array.isArray(response.data.data)) {
+      connections = response.data.data;
+    } else if (response.data?.connections && Array.isArray(response.data.connections)) {
+      connections = response.data.connections;
+    } else if (response.data) {
+      connections = [response.data];
+    }
+
+    const enrichedConnections = await Promise.all(
+      connections.map(async (conn) => {
+        try {
+          const userId = conn.senderId || conn.userId;
+          const userRes = await axios.get(`${API_URL}/users/${userId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+
+          const user = userRes.data;
+
+          return {
+            id: conn.id || conn._id,
+            name: user.name || `${user.first_name} ${user.last_name}` || user.user_name || "Unknown User",
+            username: user.user_name || "unknown",
+            title: user.title || user.headline || "No title",
+            avatar: user.profilePicture || user.avatar || "",
+            mutualConnections: conn.mutualConnections || 0
+          };
+        } catch (error) {
+          console.error("Error fetching user details:", error);
+          return {
+            id: conn.id || conn._id,
+            name: "Unknown User",
+            username: "unknown",
+            title: "No title",
+            avatar: "",
+            mutualConnections: 0
+          };
+        }
+      })
+    );
+
+    return enrichedConnections;
+  } catch (error) {
+    console.error("API Error Details:", {
+      status: error.response?.status,
+      data: error.response?.data,
+      config: error.config
+    });
+    throw error;
+  }
+};

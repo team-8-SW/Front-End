@@ -13,6 +13,8 @@ import LoginPage from './pages/login/LoginPage';
 import SignUp from './pages/signup/SignUp';
 import ResetPassword from "./pages/login/ResetPassword";
 import ProtectedRoute from "./ProtectedRoute";
+import PendingConnectionsBar from "./pages/network/PendingBar";
+import PendingConnectionsPage from "./pages/network/PendingConnections";
 
 import EmailManagement from "./pages/UpdateEmail/EmailManagement";
 
@@ -82,6 +84,7 @@ function App() {
         <Route path="/jobdetails" element={<JobDetailsForm loggedUser={loggedUser} />} />
         <Route path="/notifications" element={<NotificationsPage loggedUser={loggedUser} />} />
         <Route path="/EmailManagement" element={<EmailManagement />} />
+        <Route path="/network/pending" element={<PendingConnectionsPage />} />
        
         <Route path="/companyform" element={<CreateCompanyForm loggedUser={loggedUser} />} />
         <Route path="/SearchResults" element={<SearchResults token = {token}/>} />
@@ -91,5 +94,4 @@ function App() {
     </div>
   );
 }
-
 export default App;

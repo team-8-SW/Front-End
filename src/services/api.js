@@ -115,13 +115,6 @@ export const fetchMyPosts = async (token) => {
   }
 };
 
-export const forgotPassword = (data) => {
-  return axios.post('http://localhost:5000/api/auth/forgot-password', data);
-};
-
-export const resetPassword = (data) => {
-  return axios.post('http://localhost:5000/api/auth/reset-password', data);
-};
 
 export const sendSignupEmail = async (email) => {
   try {
@@ -493,6 +486,7 @@ export const fetchPendingConnections = async (token) => {
   }
 };
 
+
 const api = axios.create({
   baseURL: API_URL,
   timeout: 10000,
@@ -508,7 +502,25 @@ api.interceptors.request.use(
   },
   (error) => Promise.reject(error)
 );
+export const forgotPassword = (data) => {
+  return axios.post('http://localhost:5000/api/auth/forgot-password', data, {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+};
 
+export const resetPassword = (data) => {
+  return axios.post('http://localhost:5000/api/auth/reset-password', {
+    token: data.token,
+    newPassword: data.newPassword,
+    confirmPassword: data.confirmPassword
+  }, {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+};
 api.interceptors.response.use(
   (response) => response,
   (error) => {

@@ -3,6 +3,8 @@ import axios from "axios";
 import { fetchUser } from "./profile";
 import { MdVisibility } from "react-icons/md";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+
 export const useProfilePicture = (userId) => {
   const userData=useUserData(userId);
   const profilePicture=userData?.profilePicture;
@@ -24,7 +26,7 @@ export const fetchProfilePicture = async (userId) => {
 
 const fetchUserId = async (setUserId) => {
   try {
-    const response = await axios.get("http://localhost:3000/currentUser");
+    const response = await axios.get(`${API_BASE_URL}/currentUser`);
     setUserId(response.data.id);
   } catch (error) {
     console.error("Error fetching user ID:", error);
@@ -58,7 +60,7 @@ export const useName = (userId) => {
 
 const fetchOtherUserData = async (userId, setUser) => {
   try {
-    const response = await axios.get(`http://localhost:3000/users/${userId}`);
+    const response = await axios.get(`${API_BASE_URL}/users/${userId}`);
     setUser(response.data);
   } catch (error) {
     console.error("Error fetching user data:", error);
@@ -66,7 +68,7 @@ const fetchOtherUserData = async (userId, setUser) => {
 };
 const fetchUserData = async (userId, setUser,token) => {
   try {
-    const response = await axios.get(`http://localhost:3000/users/${userId}`, {
+    const response = await axios.get(`${API_BASE_URL}/users/${userId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -92,7 +94,7 @@ export const useUserData = (userId,token) => {
 
 export const fetchPosts = async (token) => {
   try {
-    const response = await axios.get(`http://localhost:3000/api/posts/me/feed`, {
+    const response = await axios.get(`${API_BASE_URL}/api/posts/me/feed`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -105,7 +107,7 @@ export const fetchPosts = async (token) => {
 };
 export const resetPassword = async (email) => {
   try {
-    const response = await axios.get(`http://localhost:3000/users?email=${email}`);
+    const response = await axios.get(`${API_BASE_URL}/users?email=${email}`);
     
     if (response.data.length === 0) {
       throw new Error("Email not found.");
@@ -119,7 +121,7 @@ export const resetPassword = async (email) => {
 
 export const sendSignupEmail = async (email) => {
   try {
-    const response = await axios.post(`http://localhost:3000/users?email=${email}`);
+    const response = await axios.post(`${API_BASE_URL}/api/auth/verify-email`);
     return response.data.message;
   } catch (error) {
     console.error("Error sending signup email:", error);
@@ -132,7 +134,7 @@ export const checkEmail = async (email, password) => {
     const normalizedEmail = email.trim().toLowerCase();
 
     // Fetch all users and manually filter
-    const response = await axios.get("http://localhost:3000/users");
+    const response = await axios.get(`${API_BASE_URL}/users`);
     const users = response.data;
 
     // Check if any user has the same email
@@ -143,8 +145,8 @@ export const checkEmail = async (email, password) => {
     }
 
     // Proceed with user registration
-    const newUser = { email: normalizedEmail, password ,skills:[],education:[],experience:[]};
-    await axios.post("http://localhost:3000/users", newUser);
+    const newUser = { email: normalizedEmail, password, skills:[], education:[], experience:[] };
+    await axios.post(`${API_BASE_URL}/users`, newUser);
 
     return { success: true, message: "Signup successful! Redirecting to login..." };
   } catch (error) {
@@ -152,12 +154,12 @@ export const checkEmail = async (email, password) => {
   }
 };
 
-export const signIn = async (email, password,setLoggedUser) => {
+export const signIn = async (email, password, setLoggedUser) => {
   try {
     console.log("Logging in with:", email, password);
 
     // Fetch all users from db.json
-    const response = await axios.get("http://localhost:3000/users");
+    const response = await axios.get(`${API_BASE_URL}/users`);
 
     // Filter users by email
     const users = response.data.filter((user) => user.email === email);
@@ -189,10 +191,10 @@ export const signIn = async (email, password,setLoggedUser) => {
 };
 const likePost = async (postId, userId) => {
   try {
-    const response = await axios.get(`http://localhost:3000/posts/${postId}`);
+    const response = await axios.get(`${API_BASE_URL}/posts/${postId}`);
     const post = response.data;
     post.likes.push(userId);
-    await axios.put(`http://localhost:3000/posts/${postId}`, post);
+    await axios.put(`${API_BASE_URL}/posts/${postId}`, post);
   } catch (error) {
     console.error("Error liking the post:", error);
   }
@@ -200,10 +202,10 @@ const likePost = async (postId, userId) => {
 
 const unlikePost = async (postId, userId) => {
   try {
-    const response = await axios.get(`http://localhost:3000/posts/${postId}`);
+    const response = await axios.get(`${API_BASE_URL}/posts/${postId}`);
     const post = response.data;
     post.likes = post.likes.filter((id) => id !== userId);
-    await axios.put(`http://localhost:3000/posts/${postId}`, post);
+    await axios.put(`${API_BASE_URL}/posts/${postId}`, post);
   } catch (error) {
     console.error("Error unliking the post:", error);
   }
@@ -224,10 +226,10 @@ export const handleLikePost = async (postId, userId, liked, setLiked, setLikesCo
 
 const repostPost = async (postId, userId) => {
   try {
-    const response = await axios.get(`http://localhost:3000/posts/${postId}`);
+    const response = await axios.get(`${API_BASE_URL}/posts/${postId}`);
     const post = response.data;
     post.reposts.push(userId);
-    await axios.put(`http://localhost:3000/posts/${postId}`, post);
+    await axios.put(`${API_BASE_URL}/posts/${postId}`, post);
   } catch (error) {
     console.error("Error sharing the post:", error);
   }
@@ -235,10 +237,10 @@ const repostPost = async (postId, userId) => {
 
 const unrepostPost = async (postId, userId) => {
   try {
-    const response = await axios.get(`http://localhost:3000/posts/${postId}`);
+    const response = await axios.get(`${API_BASE_URL}/posts/${postId}`);
     const post = response.data;
     post.reposts = post.reposts.filter((id) => id !== userId);
-    await axios.put(`http://localhost:3000/posts/${postId}`, post);
+    await axios.put(`${API_BASE_URL}/posts/${postId}`, post);
   } catch (error) {
     console.error("Error unsharing the post:", error);
   }
@@ -255,25 +257,23 @@ export const handlerepostPost = async (postId, userId, reposted, setreposted, se
   }
 }
 
-export const handleAddNewComment = async (postId,newComment, token) => {
+export const handleAddNewComment = async (postId, newComment, token) => {
   try {
-    // Prepare the payload for the API request
     const payload = {
       post_id: postId,
       content: newComment,
       visibility: "public",
     };
 
-    // Make the POST request to the given endpoint with the token
-    await axios.post("http://localhost:3000/api/posts/me/comment", payload, {
+    await axios.post(`${API_BASE_URL}/api/posts/me/comment`, payload, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
-  }
-  catch (error) {
+  } catch (error) {
     console.error("Error posting comment:", error);
-  }};
+  }
+};
 
 
 
@@ -283,59 +283,57 @@ export const handleLoadMoreComments = (setVisibleComments) => {
 
 export const sendPin = async (email) => {
   try {
-      console.log('Sending PIN to:', email);
-      const response = await axios.post(`http://localhost:3000/users?email=${email}`);
-      console.log('Response from sendPin:', response.data); 
-      return response.data; 
+    console.log('Sending PIN to:', email);
+    const response = await axios.post(`${API_BASE_URL}/users?email=${email}`);
+    console.log('Response from sendPin:', response.data); 
+    return response.data; 
   } catch (error) {
-      console.error('Error sending PIN:', error.message);
-      throw new Error('Error sending PIN: ' + error.message);
+    console.error('Error sending PIN:', error.message);
+    throw new Error('Error sending PIN: ' + error.message);
   }
 };
 
 export const verifyEmailCode = async (pin) => {
   try {
-      console.log('Verifying PIN:', pin); 
-      const response = await axios.post(`http://localhost:3000/users?email=${pin}`);
-      console.log('Response from verifyEmailCode:', response.data); 
-      return response.data; 
+    console.log('Verifying PIN:', pin); 
+    const response = await axios.post(`${API_BASE_URL}/users?email=${pin}`);
+    console.log('Response from verifyEmailCode:', response.data); 
+    return response.data; 
   } catch (error) {
-      console.error('Error verifying email:', error.message); 
-      throw new Error('Error verifying email: ' + error.message);
+    console.error('Error verifying email:', error.message); 
+    throw new Error('Error verifying email: ' + error.message);
   }
 };
 
 export const fetchNotifications = async (token) => {
   try {
-    await axios.get(`https://localhost:3000/api/notifications/me`
-    , {
+    const response = await axios.get(`${API_BASE_URL}/api/notifications/me`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }
-    );
+    });
+    return response.data;
   } catch (error) {
     console.error("Error fetching notifications:", error);
     throw new Error("Network response was not ok");
   }
 };
 
-export const markNotificationAsRead = async (notificationId,token) => {
+export const markNotificationAsRead = async (notificationId, token) => {
   try {
-    await axios.patch(`https://localhost:3000/api/notifications/me/${notificationId}/markasread`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+    await axios.patch(`${API_BASE_URL}/api/notifications/me/${notificationId}/markasread`, null, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
   } catch (error) {
     console.error("Error marking notification as read:", error);
   }
 };
 
-export const unReadCount= async (token) => {
+export const unReadCount = async (token) => {
   try {
-    const response = await axios.get(`https://localhost:3000/api/notifications/me/unread-count`, {
+    const response = await axios.get(`${API_BASE_URL}/api/notifications/me/unread-count`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -348,7 +346,7 @@ export const unReadCount= async (token) => {
 };
 export const googleLogin = async (idToken) => {
   try {
-    const response = await axios.post("http://localhost:3000/google-login", {
+    const response = await axios.post(`${API_BASE_URL}/google-login`, {
       idToken,
     });
 
@@ -365,7 +363,7 @@ export const googleLogin = async (idToken) => {
 
 export const handleConnectionRequest = async (userId) => {
   try {
-    const response = await axios.post(`http://localhost:3000/api/connections/users/${userId} `);
+    const response = await axios.post(`${API_BASE_URL}/api/connections/users/${userId}`);
     return response.data;
   } catch (error) {
     console.error("API request failed:", error);
@@ -376,7 +374,7 @@ export const handleConnectionRequest = async (userId) => {
 export const searchUsers = async (query, token) => {
   try {
     const response = await axios.get(
-      `https://localhost:3000/api/users/me/search?query=${query}`,
+      `${API_BASE_URL}/api/users/me/search?query=${query}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -391,7 +389,7 @@ export const searchUsers = async (query, token) => {
 };
 export const getConnections = async () => {
   try {
-    const response = await apiClient().get('https://localhost:3000/api/connections/');
+    const response = await axios.get(`${API_BASE_URL}/api/connections/`);
     return response.data;
   } catch (error) {
     console.error('Error fetching connections:', error);
@@ -400,33 +398,33 @@ export const getConnections = async () => {
 };
 export const acceptConnection = async (userId) => {
   try {
-      const response = await axios.post(`https://localhost:3000/api/connections/${userId}/accept`);
-      return response.data; 
+    const response = await axios.post(`${API_BASE_URL}/api/connections/${userId}/accept`);
+    return response.data; 
   } catch (error) {
-      throw new Error('Failed to accept connection request: ' + error.message);
+    throw new Error('Failed to accept connection request: ' + error.message);
   }
 };
 
 export const declineConnection = async (userId) => {
   try {
-      const response = await axios.delete(`https://localhost:3000/api/connections/${userId}/decline`);
-      return response.data; 
+    const response = await axios.delete(`${API_BASE_URL}/api/connections/${userId}/decline`);
+    return response.data; 
   } catch (error) {
-      throw new Error('Failed to decline connection request: ' + error.message);
+    throw new Error('Failed to decline connection request: ' + error.message);
   }
 };
 export const removeConnection = async (connectionId) => {
   try {
-    const response = await axios.delete(`${API_URL}/${connectionId}`);
+    const response = await axios.delete(`${API_BASE_URL}/api/connections/${connectionId}`);
     return response.data; 
   } catch (error) {
-    throw error; ``
+    throw error;
   }
 };
 
 export const deletePost = async (postId) => {
   try {
-    const response = await axios.delete(`http://localhost:3000/api/posts/me/deletepost`,postId);
+    const response = await axios.delete(`${API_BASE_URL}/api/posts/me/deletepost`, { data: { postId } });
     return response.data;
   } catch (error) {
     console.error("Error deleting post:", error);
@@ -434,14 +432,12 @@ export const deletePost = async (postId) => {
   }
 };
 
-export const getPostEngagement= async (postId) =>
-{
-      try{
-        const response = await axios.get(`http://localhost:3000/api/posts/me/postengagement`,postId);
-        return response.data;
-      }
-      catch(error){
-        console.error("Error fetching post engagement:", error);
-        throw error;
-      }
-}
+export const getPostEngagement = async (postId) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/api/posts/me/postengagement`, { params: { postId } });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching post engagement:", error);
+    throw error;
+  }
+};

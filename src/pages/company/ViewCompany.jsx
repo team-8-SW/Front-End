@@ -3,6 +3,10 @@ import { Card, Typography, Button, Tab, Tabs, TabsHeader, Avatar } from "@materi
 import { fetchPosts } from "../../services/api";
 import CompanyPostsDetails from "./CompanyPostsDetails";
 import ConnectButton from "../network/ConnectButton";
+<<<<<<< Updated upstream
+=======
+import CompanyPostsDetails from "./CompanyPostsDetails";
+>>>>>>> Stashed changes
 
 const ViewCompany = ({ loggedUser }) => {
   const company = loggedUser?.company;

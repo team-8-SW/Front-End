@@ -1,6 +1,12 @@
+<<<<<<< Updated upstream
 import React from 'react'
 import DetailedskillsCard from './DetailedskillsCard'
 import SecondSide from '../profile/SecondSide'
+=======
+import React from "react";
+import DetailedSkillsCard from "./DetailedskillsCard";
+import SecondSide from "../profile/SecondSide";
+>>>>>>> Stashed changes
 
 
 const DetailedSkills = ({loggedUser}) => {

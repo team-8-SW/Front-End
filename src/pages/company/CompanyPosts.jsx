@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import CompanyCreatePost from "./CompanyCreatePost";
+<<<<<<< Updated upstream
 import CompanyPostsDetails from "./companypostsDetails";
+=======
+import CompanyPostsDetails from "./CompanyPostsDetails";
+>>>>>>> Stashed changes
 import { fetchPosts, useUserId } from "../../services/api";
 
 const CompanyPosts = ({ loggedUser }) => {

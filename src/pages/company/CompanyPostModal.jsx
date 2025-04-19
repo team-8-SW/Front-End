@@ -5,7 +5,7 @@ import axios from "axios";
 const CompanyPostModal = ({
   isOpen,
   toggleModal,
-  companyId,
+  companyid,
   companyName,
   setPosts,
 }) => {
@@ -35,7 +35,7 @@ const CompanyPostModal = ({
       };
 
       const response = await axios.post(
-        `http://localhost:5000/api/company/${companyId}/update`,
+        `http://localhost:5000/api/company/${companyid}/update`,
         payload,
         {
           headers: {

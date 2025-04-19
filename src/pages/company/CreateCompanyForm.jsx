@@ -16,12 +16,10 @@ const CreateCompanyForm = ({ setCompanyData }) => {
     size: "",
     location: "",
     about: "",
-    cover_photo_url: "",
-    logo_url: "", // logo URL as string input
   });
 
   const navigate = useNavigate();
-  let companyid=0;
+  let companyid = 0;
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -33,22 +31,29 @@ const CreateCompanyForm = ({ setCompanyData }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
-    console.log("Form data being sent:", formData); 
+
+    if (!token) {
+      alert("You are not authenticated. Please log in.");
+      return;
+    }
+
+    const payload = {
+      ...formData,
+      // Send fake URLs to satisfy backend
+      logo_url: "https://fake.logo.com/logo.png",
+      cover_photo_url: "https://fake.cover.com/cover.jpg",
+    };
 
     try {
-    // Debugging line
-      const res = await axios.post("http://localhost:5000/api/company", formData, {
+      const res = await axios.post("http://localhost:5000/api/company", payload, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json"
         }
       });
 
-
       alert("Company created successfully!");
-      console.log("Company created:", res.data);
-      companyid=res.data.company.id
-      console.log("Company ID navigated to:", companyid);
+      companyid = res.data.company.id;
       localStorage.setItem("companyData", JSON.stringify(res.data));
       if (setCompanyData) setCompanyData(res.data);
       navigate(`/company/${companyid}/dashboard`);
@@ -102,8 +107,6 @@ const CreateCompanyForm = ({ setCompanyData }) => {
 
             <Input label="Location" name="location" value={formData.location} onChange={handleChange} />
             <Input label="About" name="about" value={formData.about} onChange={handleChange} />
-            <Input label="Cover Photo URL" name="cover_photo_url" value={formData.cover_photo_url} onChange={handleChange} />
-            <Input label="Logo URL" name="logo_url" value={formData.logo_url} onChange={handleChange} />
 
             <div className="flex justify-end gap-4">
               <Button variant="outlined" color="blue" onClick={() => setOpen(true)}>Preview</Button>
@@ -115,7 +118,7 @@ const CreateCompanyForm = ({ setCompanyData }) => {
         <Card className="w-full shadow-lg p-6">
           <Typography variant="h5" className="mb-4 text-center">Preview Card</Typography>
           <div className="flex flex-col gap-1">
-            <img src={formData.logo_url || "default-avatar.png"} alt="Logo" className="w-40 h-40 object-contain" />
+            <img src={"https://fake.logo.com/logo.png"} alt="Logo" className="w-40 h-40 object-contain" />
             <Typography variant="h6">{formData.name || "Company Name"}</Typography>
             <Typography className="text-sm text-gray-500">{formData.industry || "Industry"}</Typography>
             <Typography className="text-sm">Location: {formData.location}</Typography>
@@ -123,7 +126,7 @@ const CreateCompanyForm = ({ setCompanyData }) => {
             <Typography className="text-sm">Type: {formData.organization_type}</Typography>
             <Typography className="text-sm">Size: {formData.size}</Typography>
             <Typography className="text-sm">About: {formData.about}</Typography>
-            <img src={formData.cover_photo_url || "default-cover.jpg"} alt="Cover" className="w-full h-32 object-cover mt-2" />
+            <img src={"https://fake.cover.com/cover.jpg"} alt="Cover" className="w-full h-32 object-cover mt-2" />
           </div>
         </Card>
       </div>
@@ -131,7 +134,11 @@ const CreateCompanyForm = ({ setCompanyData }) => {
       <Dialog open={open} handler={() => setOpen(false)}>
         <div className="p-6">
           <Typography variant="h5">Full Preview</Typography>
-          <pre className="text-sm mt-2">{JSON.stringify(formData, null, 2)}</pre>
+          <pre className="text-sm mt-2">{JSON.stringify({
+            ...formData,
+            logo_url: "https://fake.logo.com/logo.png",
+            cover_photo_url: "https://fake.cover.com/cover.jpg"
+          }, null, 2)}</pre>
         </div>
       </Dialog>
     </div>

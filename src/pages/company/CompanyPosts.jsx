@@ -11,6 +11,7 @@ const CompanyPosts = ({ loggedUser }) => {
   const companyId = loggedUser?.company?.id;
   const companyLogo = loggedUser?.company?.logo;
   const {companyid}=useParams()
+  const [companyData, setCompanyData] = useState("");
   console.log("Company ID in CompanyPosts:", companyid); // ✅ Log loggedUser
 
   useEffect(() => {
@@ -37,6 +38,29 @@ const CompanyPosts = ({ loggedUser }) => {
 
      fetchCompanyPosts();
   }, []);
+  useEffect(() => {
+    const fetchLatestCompany = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await axios.get(`http://localhost:5000/api/company/${companyid}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const companies = res.data;
+        
+        
+          // Get the last created company (optionally sort if backend doesn’t return ordered)
+          
+          setCompanyData(companies);
+          console.log("Latest company data in posts:", companies);
+        
+      } catch (err) {
+        console.error("Failed to fetch company:", err);
+      }
+    };
+
+    fetchLatestCompany();
+  }, []);
 
   return (
     <div className="space-y-4">
@@ -48,7 +72,7 @@ const CompanyPosts = ({ loggedUser }) => {
           <CompanyPostsDetails
             key={post.id}
             post={post}
-            companyLogo={companyLogo}
+            companyLogo={companyData.logo_url}
             companyid={companyid}
           />
         ))

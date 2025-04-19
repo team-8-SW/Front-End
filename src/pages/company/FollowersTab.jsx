@@ -3,7 +3,7 @@ import { Bar } from "react-chartjs-2";
 import FollowerModal from "./FollowerModal";
 import axios from "axios";
 
-const FollowersTab = ({ companyId }) => {
+const FollowersTab = ({ companyid }) => {
   const [analyticsData, setAnalyticsData] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
@@ -14,7 +14,7 @@ const FollowersTab = ({ companyId }) => {
         const token = localStorage.getItem("token");
         console.log("token in followers analytics:", token);  
         const res = await axios.get(
-          `http://localhost:5000/api/company/${companyId}/followers-analytics`,
+          `http://localhost:5000/api/company/${companyid}/followers-analytics`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }

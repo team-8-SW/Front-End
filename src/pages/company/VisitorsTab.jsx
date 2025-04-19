@@ -12,7 +12,7 @@ import {
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
-const VisitorsTab = ({ companyId }) => {
+const VisitorsTab = ({ companyid }) => {
   const [data, setData] = useState([]);
   const [totalViews, setTotalViews] = useState(1);
 
@@ -22,7 +22,7 @@ const VisitorsTab = ({ companyId }) => {
                 const companyId="20f970d2-7933-41db-af9e-9fb987a11a1e"
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          `http://localhost:5000/api/company/${companyId}/visitors`,
+          `http://localhost:5000/api/company/${companyid}/visitors`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }

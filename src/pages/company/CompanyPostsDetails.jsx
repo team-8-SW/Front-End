@@ -11,8 +11,38 @@ import {
   HandThumbUpIcon as SolidThumbUpIcon,
   ArrowPathRoundedSquareIcon as SolidrepostIcon,
 } from "@heroicons/react/24/solid";
+import axios from "axios";
 
-const CompanyPostsDetails = ({ post, companyLogo }) => {
+
+const CompanyPostsDetails = ({ post, companyLogo,companyid }) => {
+
+const [companyData, setCompanyData] = useState("null");
+
+  useEffect(() => {
+    console.log("Company ID in CompanyPostsDetails:", companyid); // ✅ Log companyid
+    const fetchLatestCompany = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await axios.get(`http://localhost:5000/api/company/${companyid}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const companies = res.data;
+        
+        
+          // Get the last created company (optionally sort if backend doesn’t return ordered)
+          
+          setCompanyData(companies);
+          console.log("Latest company data in posts:", companies);
+        
+      } catch (err) {
+        console.error("Failed to fetch company:", err);
+      }
+    };
+
+    fetchLatestCompany();
+  }, []);
+
   return (
     <div className="bg-white border border-gray-300 rounded-lg shadow-sm p-4 mb-4 relative max-w-xl mx-auto">
       {/* Header */}
@@ -25,7 +55,7 @@ const CompanyPostsDetails = ({ post, companyLogo }) => {
           />
         </div>
         <div className="ml-3">
-          <h2 className="font-semibold text-gray-900">Company Post</h2>
+          <h2 className="font-semibold text-gray-900">{companyData.name}</h2>
           <p className="text-sm text-gray-500">
             {post.created_at ? new Date(post.created_at).toLocaleString() : "Just now"}
           </p>

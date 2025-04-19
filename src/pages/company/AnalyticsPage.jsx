@@ -2,10 +2,13 @@ import React, { useEffect, useState } from "react";
 import ContentTab from "./ContentTab";
 import VisitorsTab from "./VisitorsTab";
 import FollowersTab from "./FollowersTab";
+import { useParams } from "react-router-dom";
 
 const AnalyticsPage = ({ loggedUser }) => {
   const [analyticsData, setAnalyticsData] = useState({});
   const [activeTab, setActiveTab] = useState("content");
+  const {companyid}=useParams()
+  console.log("Company ID in main Analytics:", companyid); // ✅ Log loggedUser
 
   useEffect(() => {
     if (loggedUser?.company?.analytics) {
@@ -16,11 +19,11 @@ const AnalyticsPage = ({ loggedUser }) => {
   const renderTabComponent = () => {
     switch (activeTab) {
       case "visitors":
-        return <VisitorsTab data={analyticsData.visitors} months={analyticsData.content?.months} />;
+        return <VisitorsTab data={analyticsData.visitors} months={analyticsData.content?.months} companyid={companyid} />;
       case "followers":
-        return <FollowersTab analyticsData={analyticsData} />; // ✅ FIXED: pass full object
+        return <FollowersTab analyticsData={analyticsData} companyid={companyid}/>; // ✅ FIXED: pass full object
       default:
-        return <ContentTab data={analyticsData.content} />;
+        return <ContentTab data={analyticsData.content} companyid={companyid} />;
     }
   };
 

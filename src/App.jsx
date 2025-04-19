@@ -28,6 +28,7 @@ import SearchResults from "./pages/network/SearchResults";
 import ConnectionsList from "./pages/network/ConnectionList";
 import ViewCompany from "./pages/company/ViewCompany";
 import CompanyJobsTab from "./pages/company/CompanyJobsTab";
+import EditCompanyForm from "./pages/company/EditCompanyPage";
 
 function App() {
   const [loggedUser, setLoggedUser] = useState(null);
@@ -86,19 +87,20 @@ function App() {
         <Route path="/education" element={<DetailsEducation loggedUser={loggedUser} />} />
         <Route path="/experience" element={<DetailsExperience loggedUser={loggedUser} />} />
         <Route path="/skills" element={<DetailedSkills loggedUser={loggedUser} />} />
-        <Route path="/company/*" element={<Company loggedUser={loggedUser} />} />
+        <Route path="/company/:companyid/*" element={<Company loggedUser={loggedUser} />} />
         <Route path="/network" element={<NetworkPage />} />
         <Route path="/login" element={<LoginPage setLoggedUser={setLoggedUser} />} />
         <Route path="/signup" element={<SignUp />} />
-        <Route path="/jobtitle" element={<JobTitle loggedUser={loggedUser} />} />
-        <Route path="/jobdetails" element={<JobDetailsForm loggedUser={loggedUser} />} />
+        <Route path="/jobtitle/:companyid" element={<JobTitle loggedUser={loggedUser} />} />
+        <Route path="/jobdetails/:companyid" element={<JobDetailsForm loggedUser={loggedUser} />} />
         <Route path="/notifications" element={<NotificationsPage loggedUser={loggedUser} />} />
         <Route path="/EmailManagement" element={<EmailManagement />} />
         <Route path="/VerifyEmail" element={<VerifyEmail />} />
         <Route path="/companyform" element={<CreateCompanyForm loggedUser={loggedUser} />} />
+        {/* <Route path="/updatecompany/:companyid" element={<EditCompanyForm  />} /> */}
         <Route path="/SearchResults" element={<SearchResults />} />
         <Route path="/ConnectionList" element={<ConnectionsList />} />
-        <Route path="/viewcompany/*" element={<ViewCompany loggedUser={loggedUser} />} />
+        <Route path="/viewcompany/:companyid" element={<ViewCompany loggedUser={loggedUser} />} />
         <Route path="companyjobs" element={<CompanyJobsTab/>} />
       </Routes>
     </div>

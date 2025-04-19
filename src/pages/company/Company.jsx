@@ -1,4 +1,4 @@
-import React from "react";
+import React, { use } from "react";
 import { Routes, Route } from "react-router-dom";
 import Leftside from "./Leftside";
 import CompanyPosts from "./CompanyPosts";
@@ -9,9 +9,14 @@ import Nav from "../../components/Nav";
 import AnalyticsPage from "./AnalyticsPage";
 import CompanyCreatePost from "./CompanyCreatePost";
 import ViewCompany from "./ViewCompany";
+import EditCompanyForm from "./EditCompanyPage";
+import { useParams } from "react-router-dom";
 
 
 const Company = ({ loggedUser }) => {
+  const {companyid}=useParams()
+  
+  console.log("Company ID in Company:", companyid); // ✅ Log loggedUser
   return (
     <div>
 {/* <Nav/> */}
@@ -40,6 +45,10 @@ const Company = ({ loggedUser }) => {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="job" element={<Jobs loggedUser={loggedUser}/>} />
           <Route path="analytics" element={<AnalyticsPage loggedUser={loggedUser} />} />
+          <Route path="viewcompany" element={<ViewCompany loggedUser={loggedUser} />} />
+          <Route path="updatecompany" element={<EditCompanyForm loggedUser={loggedUser} />} />
+
+      
           
           
           

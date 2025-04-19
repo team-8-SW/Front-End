@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Avatar, Typography, Button } from "@material-tailwind/react";
 import { Link, useLocation } from "react-router-dom";
 import axios from "axios";
+import { useParams } from "react-router-dom";
 
 const Leftside = () => {
   const location = useLocation();
@@ -14,21 +15,23 @@ const Leftside = () => {
     organization_type: "",
     location: "",
   });
-
+const {companyid}=useParams()
   useEffect(() => {
     const fetchLatestCompany = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:5000/api/company", {
+        const res = await axios.get(`http://localhost:5000/api/company/${companyid}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
         const companies = res.data;
-        if (companies.length > 0) {
+        
+        
           // Get the last created company (optionally sort if backend doesn’t return ordered)
-          const latestCompany = companies[companies.length - 1];
-          setCompanyData(latestCompany);
-        }
+          
+          setCompanyData(companies);
+          console.log("Latest company data:", companies);
+        
       } catch (err) {
         console.error("Failed to fetch company:", err);
       }
@@ -38,17 +41,18 @@ const Leftside = () => {
   }, []);
 
   const navItems = [
-    { label: "Dashboard", to: "/company/dashboard" },
-    { label: "Page posts", to: "/company/companyposts" },
-    { label: "Analytics", to: "/company/analytics" },
+    { label: "Dashboard", to: `/company/${companyid}/dashboard` },
+    { label: "Page posts", to: `/company/${companyid}/companyposts` },
+    { label: "Analytics", to: `/company/${companyid}/analytics` },
     { label: "Feed", to: "/feed" },
     { label: "Activity", to: "/activity" },
     { label: "Inbox", to: "/inbox" },
-    { label: "Edit page", to: "/companyform" },
+    { label: "Edit page", to: `/company/${companyid}/updatecompany` },
     { type: "divider" },
-    { label: "Jobs", to: "/company/job" },
+    { label: "Jobs", to: `/company/${companyid}/job` },
     { type: "divider" },
-  ];
+  ];``
+  
 
   return (
     <div className="w-full bg-white font-[system-ui] text-[16px]">
@@ -79,7 +83,7 @@ const Leftside = () => {
         <Button className="rounded-full bg-blue-700 px-4 py-1 text-[14px] font-semibold shadow hover:bg-blue-800 transition">
           + Create
         </Button>
-        <Link to="/viewcompany">
+        <Link to={`/viewcompany/${companyid}`}>
         <Button
           variant="outlined"
           className="rounded-full border px-4 py-1 text-[14px] font-medium hover:bg-gray-100 transition flex items-center gap-1"

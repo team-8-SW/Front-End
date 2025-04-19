@@ -12,29 +12,31 @@ import {
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
-const ContentTab = ({ companyId }) => {
+const ContentTab = ({ companyid }) => {
   const [data, setData] = useState([]);
   const [selectedMetric, setSelectedMetric] = useState("impressions");
+  console.log("Company ID in analytics:", companyid);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const companyId="d4f71cd9-d8fd-41b3-825a-120b4491b012"
         const token = localStorage.getItem("token");
+        
         const response = await axios.get(
-          `http://localhost:5000/api/company/${companyId}/content`,
+          `http://localhost:5000/api/company/${companyid}/content`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }
         );
+        console.log("Content Data hiii:", response.data);
         const contentData = Array.isArray(response.data) ? response.data : [];
         setData(contentData);
-        console.log("Content data:", contentData);
+         // Debugging line
       } catch (error) {
         console.error("Failed to fetch content data:", error);
-        setData([]); // fallback
+        setData([]);
       }
     };
 
@@ -68,11 +70,11 @@ const ContentTab = ({ companyId }) => {
   };
 
   return (
-    <div>
-      {/* Summary Cards */}
-      <div className="bg-white border rounded-md p-4 mb-6">
-        <h2 className="text-md font-semibold mb-1">Content Highlights</h2>
-        <div className="grid grid-cols-4 gap-6 text-center text-sm">
+    <div className="w-full">
+      {/* Summary Section */}
+      <div className="bg-white border rounded-md p-4 mb-6 shadow-sm">
+        <h2 className="text-md font-semibold mb-3">Content Highlights</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center text-sm">
           <div>
             <p className="text-xl font-bold">{total("impressions")}</p>
             <p className="text-gray-500">Impressions</p>
@@ -92,14 +94,14 @@ const ContentTab = ({ companyId }) => {
         </div>
       </div>
 
-      {/* Chart */}
-      <div className="bg-white border rounded-md p-4">
-        <div className="flex justify-between items-center mb-2">
+      {/* Chart Section */}
+      <div className="bg-white border rounded-md p-4 shadow-sm">
+        <div className="flex justify-between items-center mb-4">
           <p className="text-[15px] font-semibold">Content Metrics</p>
           <select
             value={selectedMetric}
             onChange={(e) => setSelectedMetric(e.target.value)}
-            className="bg-[#004b3c] text-white text-sm px-3 py-1 rounded-full"
+            className="bg-blue-600 text-white text-sm px-3 py-1 rounded-full"
           >
             <option value="impressions">Impressions</option>
             <option value="reactions">Reactions</option>

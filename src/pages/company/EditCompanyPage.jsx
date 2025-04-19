@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card, Typography, Button, Dialog, Input, Select, Option
 } from "@material-tailwind/react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
-const CreateCompanyForm = ({ setCompanyData }) => {
+const EditCompanyForm = ({ companyId, setCompanyData }) => {
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -17,11 +18,29 @@ const CreateCompanyForm = ({ setCompanyData }) => {
     location: "",
     about: "",
     cover_photo_url: "",
-    logo_url: "", // logo URL as string input
+    logo_url: "",
   });
 
   const navigate = useNavigate();
-  let companyid=0;
+  const {companyid}=useParams()
+
+  useEffect(() => {
+    const fetchCompany = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await axios.get(`http://localhost:5000/api/company/${companyid}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        setFormData(res.data);
+      } catch (error) {
+        console.error("Failed to fetch company data:", error);
+      }
+    };
+
+    fetchCompany();
+  }, [companyId]);
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -33,28 +52,22 @@ const CreateCompanyForm = ({ setCompanyData }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
-    console.log("Form data being sent:", formData); 
 
     try {
-    // Debugging line
-      const res = await axios.post("http://localhost:5000/api/company", formData, {
+      const res = await axios.put(`http://localhost:5000/api/company/${companyid}`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json"
         }
       });
 
-
-      alert("Company created successfully!");
-      console.log("Company created:", res.data);
-      companyid=res.data.company.id
-      console.log("Company ID navigated to:", companyid);
+      
       localStorage.setItem("companyData", JSON.stringify(res.data));
       if (setCompanyData) setCompanyData(res.data);
-      navigate(`/company/${companyid}/dashboard`);
+      navigate(`/company/${companyid}`);
     } catch (error) {
-      console.error("Error creating company:", error);
-      alert(error.response?.data?.error || error.message || "Failed to create company");
+      console.error("Error updating company:", error);
+      
     }
   };
 
@@ -63,9 +76,7 @@ const CreateCompanyForm = ({ setCompanyData }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
         <Card className="w-full shadow-lg p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
-            <Typography variant="h4" color="blue-gray">
-              Create Company Page
-            </Typography>
+            <Typography variant="h4" color="blue-gray">Edit Company</Typography>
 
             <Input label="Company Name" name="name" value={formData.name} onChange={handleChange} required />
             <Input label="Description" name="description" value={formData.description} onChange={handleChange} />
@@ -107,7 +118,7 @@ const CreateCompanyForm = ({ setCompanyData }) => {
 
             <div className="flex justify-end gap-4">
               <Button variant="outlined" color="blue" onClick={() => setOpen(true)}>Preview</Button>
-              <Button color="blue" type="submit">Create Company</Button>
+              <Button color="blue" type="submit">Update Company</Button>
             </div>
           </form>
         </Card>
@@ -138,4 +149,4 @@ const CreateCompanyForm = ({ setCompanyData }) => {
   );
 };
 
-export default CreateCompanyForm;
+export default EditCompanyForm;

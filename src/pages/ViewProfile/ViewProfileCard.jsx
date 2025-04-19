@@ -9,7 +9,7 @@ import AcceptConnection from "../network/AcceptConnection";
 import DeclineConnection from "../network/DeclineConnection";
 import { removeConnection, blockUser, unblockUser, followUser, unfollowUser } from "../../services/api";
 
-const ViewProfileCard = ({ profile, userid, token ,connectionStatus}) => {
+const ViewProfileCard = ({ profile, userid, token ,connectionStatus,connectionId}) => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [openContact, setOpenContact] = useState(false);
@@ -20,7 +20,7 @@ const ViewProfileCard = ({ profile, userid, token ,connectionStatus}) => {
   if (!profile) return <p className="text-center mt-10">Loading...</p>;
 
   const toggleDropdown = () => setIsOpen(!isOpen);
-  const connectionId = profile?.connectionId;
+  // const connectionId = profile?.connectionId;
 
   const handleRemoveConnection = async () => {
     try {
@@ -110,11 +110,14 @@ const ViewProfileCard = ({ profile, userid, token ,connectionStatus}) => {
       setIsLoading(false);
     }
   };
+
+  console.log("Connection status:", connectionStatus);
+  console.log("connectionId:", connectionId);
   return (
     <Card className="relative w-full mx-auto shadow-lg rounded-lg">
       <CardHeader floated={false} shadow={false} className="relative h-40">
         <img
-          src={profile.coverPhotoUrl || "/default-cover.jpg"}
+          src={profile.coverPhotoUrl || "/photos/55k1z8997gh8dwtihm11aajyq.svg"}
           alt="cover"
           className="w-full h-full object-cover"
         />
@@ -151,6 +154,7 @@ const ViewProfileCard = ({ profile, userid, token ,connectionStatus}) => {
       </CardBody>
 
       <CardFooter className="flex items-center gap-4 flex-wrap md:flex-nowrap pb-6 mt-4 relative">
+        
         {connectionStatus === "connected" && (
           <>
             <Button color="blue" className="rounded-full w-[120px]">Message</Button>

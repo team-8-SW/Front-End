@@ -2,6 +2,7 @@ import React from 'react';
 import { acceptConnection } from '../../services/api';
 
 const AcceptConnection = ({ userId, onSuccess }) => {
+    console.log('AcceptConnection component rendered with userId:', userId);
     const handleAccept = async () => {
         try {
             const connection = await acceptConnection(userId);

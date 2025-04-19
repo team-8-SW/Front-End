@@ -263,47 +263,52 @@ export const updateEmail = async (newEmail, userId) => {
   }
 };
 
+import axios from 'axios';
+
 export const fetchNotifications = async (token) => {
   try {
-    await axios.get(`https://localhost:5000/api/notifications/me`
-    , {
+    const response = await axios.get(`https://localhost:5000/api/notifications/me`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }
-    );
+    });
+    return response.data; // <-- Now returning the notifications
   } catch (error) {
     console.error("Error fetching notifications:", error);
     throw new Error("Network response was not ok");
   }
 };
 
-export const markNotificationAsRead = async (notificationId,token) => {
+export const markNotificationAsRead = async (notificationId, token) => {
   try {
-    await axios.patch(`https://localhost:5000/api/notifications/me/${notificationId}/markasread`,
+    await axios.patch(
+      `https://localhost:5000/api/notifications/me/${notificationId}/markasread`,
+      {},
       {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      });
+      }
+    );
   } catch (error) {
     console.error("Error marking notification as read:", error);
   }
 };
 
-export const unReadCount= async (token) => {
+export const unReadCount = async (token) => {
   try {
     const response = await axios.get(`https://localhost:5000/api/notifications/me/unread-count`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
-    return response.data.length;
+    return response.data.count; // Adjust according to your backend response structure
   } catch (error) {
     console.error("Error fetching unread notifications count:", error);
     throw new Error("Network response was not ok");
   }
 };
+
 export const googleLogin = async (idToken) => {
   try {
     const response = await axios.post("http://localhost:5000/api/auth/social/google", {

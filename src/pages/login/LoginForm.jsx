@@ -84,7 +84,7 @@ const LoginForm = () => {
           >
             Sign In
           </button>
-          <Link to="/ResetPassword" className="text-blue-600 hover:underline">
+          <Link to="/forgot-password" className="text-blue-600 hover:underline">
             Forgot password?
           </Link>
         </form>

@@ -11,11 +11,12 @@ const View = ({loggedUser}) => {
   return (
     <div className='bg-[#F3F2EF] '>
 
-    <Nav />
+
     <div className='flex flex-col items-center'>
     <div className='flex justify-center gap-10 mt-2 w-screen '>
       <div className='w-[50%]'>
       <ViewMain loggedUser={loggedUser} /> 
+
       </div>
       
        {/* <div className='w-[20%]'>

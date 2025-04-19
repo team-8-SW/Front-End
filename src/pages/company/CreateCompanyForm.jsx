@@ -30,17 +30,37 @@ const CreateCompanyForm = ({ setCompanyData }) => {
     }));
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData((prev) => ({ ...prev, logo_url: reader.result }));
-        setLogoPreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  const handleFileChange = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const token = localStorage.getItem("token");
+  const form = new FormData();
+  form.append("logo", file);
+
+  try {
+    // NOTE: Replace this with your companyId if already known
+    const companyId = "95df32c6-97fd-47a9-bb50-299abe69435d";
+    const res = await axios.post(
+      `http://localhost:5000/api/company/${companyId}/logo`,
+      form,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    const uploadedLogoUrl = res.data.coverPhotoUrl;
+    setFormData((prev) => ({ ...prev, logo_url: uploadedLogoUrl }));
+    setLogoPreview(uploadedLogoUrl);
+  } catch (err) {
+    console.error("Logo upload failed:", err);
+    alert("Failed to upload logo.");
+  }
+};
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();

@@ -1,30 +1,26 @@
-import React from 'react';
+// src/pages/company/CompanyJobsTab.jsx
+import React from "react";
 import { Card, Typography } from "@material-tailwind/react";
 
-const ClosedJobsTab = ({ jobsData, loggedUser }) => {
-  if (!jobsData || jobsData.length === 0) {
-    return (
-      <div className='w-full'>
-        <Card className='w-full'>
-          <div className='flex flex-col items-center justify-center w-full gap-5 m-5'>
-            <img src="https://static.licdn.com/aero-v1/sc/h/d8l4ifwwtlke7cr82jyegqony" alt="No jobs" className='w-80 h-80' />
-            <Typography variant="h4" className="text-center">
-              You have no jobs yet
-            </Typography>
-            <Typography variant="small" className="text-center text-gray-600">
-              When you post a job, it will appear here.
-            </Typography>
-          </div>
-        </Card>
-      </div>
-    );
-  }
+const CompanyJobsTab = ({ jobs }) => {
+  const today = new Date();
+
+  const filteredJobs = jobs.filter((job) => {
+    const expiry = new Date(job.expires_at);
+    return expiry >= today;
+  });
 
   return (
-    <div className="w-full">
-      <Card className="w-full p-5">
+    <Card className="p-6 bg-white shadow-sm">
+      <Typography variant="h6" className="mb-4">Open Positions</Typography>
+
+      {filteredJobs.length === 0 ? (
+        <Typography className="text-center text-gray-500">
+          No active job listings.
+        </Typography>
+      ) : (
         <div className="flex flex-col gap-6">
-          {jobsData.map((job) => (
+          {filteredJobs.map((job) => (
             <div key={job.id} className="border-b pb-4">
               <Typography variant="h6" className="text-blue-900">
                 {job.title || "Untitled Job"}
@@ -56,9 +52,9 @@ const ClosedJobsTab = ({ jobsData, loggedUser }) => {
             </div>
           ))}
         </div>
-      </Card>
-    </div>
+      )}
+    </Card>
   );
 };
 
-export default ClosedJobsTab;
+export default CompanyJobsTab;

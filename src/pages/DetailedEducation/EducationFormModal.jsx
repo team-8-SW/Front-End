@@ -66,6 +66,7 @@ const EducationFormModal = ({ onClose, onSave }) => {
       if (res.data?.education) {
         onSave(res.data.education);
         onClose();
+        window.location.reload(); // Refresh the page to reflect changes
       } else {
         alert("Unexpected server response.");
       }

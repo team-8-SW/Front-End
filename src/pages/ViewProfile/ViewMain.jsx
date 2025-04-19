@@ -27,6 +27,7 @@ const ViewMain = ({ loggedUser, setLoggedUser }) => {
 
         setProfileData(res.data);     
         console.log("profile dataaaa",res.data)     // set entire response
+        console.log("Connection Status:", res.data.connectionStatus);
         setVisibility(res.data.public);    // extract and store visibility
 
       } catch (err) {

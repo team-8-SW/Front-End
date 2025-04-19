@@ -5,43 +5,48 @@ import {
   ChatBubbleOvalLeftEllipsisIcon,
   ArrowPathRoundedSquareIcon as OutlinerepostIcon,
   PaperAirplaneIcon as ShareIcon,
-  PencilIcon,
 } from "@heroicons/react/24/outline";
-import {
-  HandThumbUpIcon as SolidThumbUpIcon,
-  ArrowPathRoundedSquareIcon as SolidrepostIcon,
-} from "@heroicons/react/24/solid";
 import axios from "axios";
 
-
-const CompanyPostsDetails = ({ post, companyLogo,companyid }) => {
-
-const [companyData, setCompanyData] = useState("null");
+const CompanyPostsDetails = ({ post, companyLogo, companyid }) => {
+  const [companyData, setCompanyData] = useState(null);
+  const [isLiked, setIsLiked] = useState(false); // Optional UI state
 
   useEffect(() => {
-    console.log("Company ID in CompanyPostsDetails:", companyid); // ✅ Log companyid
-    const fetchLatestCompany = async () => {
+    const fetchCompany = async () => {
       try {
         const token = localStorage.getItem("token");
         const res = await axios.get(`http://localhost:5000/api/company/${companyid}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-
-        const companies = res.data;
-        
-        
-          // Get the last created company (optionally sort if backend doesn’t return ordered)
-          
-          setCompanyData(companies);
-          console.log("Latest company data in posts:", companies);
-        
+        setCompanyData(res.data);
       } catch (err) {
         console.error("Failed to fetch company:", err);
       }
     };
 
-    fetchLatestCompany();
-  }, []);
+    fetchCompany();
+  }, [companyid]);
+
+  const handleLike = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.post(
+        `http://localhost:5000/api/company/${post.id}/impressions`,
+        { type: "like" },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setIsLiked(true);
+      console.log("Liked post:", post.id);
+    } catch (err) {
+      console.error("Error liking post:", err);
+    }
+  };
 
   return (
     <div className="bg-white border border-gray-300 rounded-lg shadow-sm p-4 mb-4 relative max-w-xl mx-auto">
@@ -55,7 +60,7 @@ const [companyData, setCompanyData] = useState("null");
           />
         </div>
         <div className="ml-3">
-          <h2 className="font-semibold text-gray-900">{companyData.name}</h2>
+          <h2 className="font-semibold text-gray-900">{companyData?.name}</h2>
           <p className="text-sm text-gray-500">
             {post.created_at ? new Date(post.created_at).toLocaleString() : "Just now"}
           </p>
@@ -67,9 +72,14 @@ const [companyData, setCompanyData] = useState("null");
 
       {/* Action Buttons */}
       <div className="flex items-center justify-start space-x-4 text-gray-600 text-sm font-semibold mb-4">
-        <Button variant="text" color="blue" className="flex items-center gap-1 hover:text-blue-600">
+        <Button
+          variant="text"
+          color={isLiked ? "blue" : "gray"}
+          className="flex items-center gap-1 hover:text-blue-600"
+          onClick={handleLike}
+        >
           <OutlineThumbUpIcon className="h-5 w-5" />
-          Like
+          {isLiked ? "Liked" : "Like"}
         </Button>
         <Button variant="text" color="blue" className="flex items-center gap-1 hover:text-blue-600">
           <ChatBubbleOvalLeftEllipsisIcon className="h-5 w-5" />

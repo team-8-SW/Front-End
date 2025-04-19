@@ -18,9 +18,9 @@ const DeclineConnection = ({ userId, onSuccess }) => {
   return (
     <button
       onClick={handleDecline}
-      className="bg-white text-gray-700 px-4 py-2 rounded hover:bg-gray-200 focus:outline-none"
+      className="text-gray-600 font-semibold text-sm px-4 py-1.5 rounded-full border border-gray-300 hover:bg-gray-50"
     >
-      Decline
+      Ignore
     </button>
   );
 };

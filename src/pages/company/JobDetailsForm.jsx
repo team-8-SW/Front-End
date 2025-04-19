@@ -86,7 +86,7 @@ const JobDetailsForm = ({ loggedUser }) => {
       <Card className='w-[60%] mt-20 p-6'>
         <div className='flex justify-between'>
           <Typography variant='h4'>Job Details</Typography>
-          <Button variant='text' color='red' onClick={() => navigate("/jobtitle")}>Cancel</Button>
+          <Button variant='text' color='red' onClick={() => navigate(`/company/${companyid}/dashboard`)}>Cancel</Button>
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-6 mt-4">

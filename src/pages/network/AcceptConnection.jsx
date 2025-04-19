@@ -18,7 +18,7 @@ const AcceptConnection = ({ userId, onSuccess }) => {
     return (
         <button
             onClick={handleAccept}
-            className="bg-white text-blue px-4 py-2 rounded hover:bg-green-600 focus:outline-none"
+            className="text-blue-600 font-semibold text-sm px-4 py-1.5 rounded-full border border-blue-600 hover:bg-blue-50"
         >
             Accept
         </button>

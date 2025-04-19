@@ -365,16 +365,20 @@ export const searchUsers = async (token, params) => {
   });
   return data;
 };
-export const getConnections = async () => { 
+export const getConnections = async () => {
   try {
-    const response = await apiClient().get('http://localhost:5000/api/connections/');
-    return response.data.connections; 
+    const token = localStorage.getItem('token'); 
+    const response = await axios.get('http://localhost:5000/api/connections/', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data; 
   } catch (error) {
     console.error('Error fetching connections:', error);
-    throw error; 
+    throw error;
   }
 };
-
 export const acceptConnection = async (connectionId) => {
   const token = localStorage.getItem('token'); 
   try {
@@ -413,12 +417,18 @@ export const declineConnection = async (connectionId) => {
 };
 
 export const removeConnection = async (connectionId) => {
+  const token = localStorage.getItem("token");
   try {
-    const response = await axios.delete(`http://localhost:5000/api/connections/${connectionId}`);
-    return response.data; 
+    const response = await axios.delete(`http://localhost:5000/api/connections/${connectionId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.data;
   } catch (error) {
     console.error('Remove connection error:', error);
-    throw error; 
+    throw error;
   }
 };
 
@@ -582,6 +592,33 @@ export const declineMessageRequest = async (id) => {
   }
 };
 
+// Block a user
+// Updated Block/Unblock API functions
+export const blockUser = async (userId, token) => {
+  return axios.post(
+    `http://localhost:5000/api/users/${userId}/block`,
+    {}, // Empty body as per your endpoint
+    {
+      headers: { 
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    }
+  );
+};
+
+export const unblockUser = async (userId, token) => {
+  return axios.delete(
+    `http://localhost:5000/api/users/${userId}/block`, // Note: Same endpoint as blocking
+    {
+      headers: { 
+        'Authorization': `Bearer ${token}`
+      }
+    }
+  );
+};
+
+
 export const getComments = async (postId, token) => {
   try {
     const response = await axios.get(`http://localhost:5000/api/posts/me/comments`, {
@@ -596,3 +633,4 @@ export const getComments = async (postId, token) => {
     throw error;
   }
 }
+

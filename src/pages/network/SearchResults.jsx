@@ -4,11 +4,12 @@ import ConnectButton from './ConnectButton';
 import { searchUsers } from '../../services/api';
 import {useNavigate} from 'react-router-dom';
 
-const SearchResults = ({ token }) => {
+const SearchResults = () => {
     const [results, setResults] = useState([]);
     const location = useLocation();
     const query = new URLSearchParams(location.search).get('query');
     const navigate = useNavigate(); 
+    const token = localStorage.getItem("token"); 
 
     useEffect(() => {
         const fetchResults = async () => {

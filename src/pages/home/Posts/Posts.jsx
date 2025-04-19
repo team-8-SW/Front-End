@@ -10,7 +10,7 @@ const Posts = ({ loggedUser }) => {
   useEffect(() => {
     const fetchAllPosts = async () => {
       try {
-        const allPosts = await fetchMyPosts(token);
+        const allPosts = await fetchPosts(token);
         setPosts(allPosts);
       } catch (error) {
         console.error("Error fetching posts:", error);

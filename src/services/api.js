@@ -570,3 +570,28 @@ export const declineMessageRequest = async (id) => {
     throw error;
   }
 };
+// Block a user
+// Updated Block/Unblock API functions
+export const blockUser = async (userId, token) => {
+  return axios.post(
+    `http://localhost:5000/api/users/${userId}/block`,
+    {}, // Empty body as per your endpoint
+    {
+      headers: { 
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    }
+  );
+};
+
+export const unblockUser = async (userId, token) => {
+  return axios.delete(
+    `http://localhost:5000/api/users/${userId}/block`, // Note: Same endpoint as blocking
+    {
+      headers: { 
+        'Authorization': `Bearer ${token}`
+      }
+    }
+  );
+};

@@ -76,7 +76,7 @@ function App() {
 
   return (
     <div className="bg-backGroundColor min-h-screen">
-      <Nav />
+      {/* <Nav /> */}
       <Routes>
 
       <Route path="/reset-password" element={<ResetPassword />} />

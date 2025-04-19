@@ -12,14 +12,10 @@ const NetworkPage = () => {
       </div>
 
       {/* Main Content */}
-      <div className="w-2/4 p-4">
-        <h1 className="text-2xl font-semibold mb-4">Your Network</h1>
-        {/* You can place your main network content here */}
-        <p className="text-gray-600">Connections and suggestions will show here...</p>
-      </div>
+     
 
       {/* Right Pending Bar */}
-      <div className="w-1/4 p-4">
+      <div className="w-3/4 p-4">
         <Pendingbar />
       </div>
     </div>

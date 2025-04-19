@@ -8,6 +8,7 @@ import ConnectButton from "../network/ConnectButton";
 import AcceptConnection from "../network/AcceptConnection";
 import DeclineConnection from "../network/DeclineConnection";
 import { removeConnection } from "../../services/api";
+import UserActionButtons from "../network/UserActionButtons"; // Import the new component
 
 const ViewProfileCard = ({ profile, userid, token ,connectionStatus,connectionId}) => {
   console.log("connectionId received in ViewProfileCard:", connectionId);
@@ -28,8 +29,7 @@ const ViewProfileCard = ({ profile, userid, token ,connectionStatus,connectionId
     }
   };
 
-  
-console.log("Connection Status:", connectionStatus);
+  console.log("Connection Status:", connectionStatus);
 
   return (
     <Card className="relative w-full mx-auto shadow-lg rounded-lg">
@@ -75,6 +75,11 @@ console.log("Connection Status:", connectionStatus);
 
       {/* ACTION BUTTONS */}
       <CardFooter className="flex items-center gap-4 flex-wrap md:flex-nowrap pb-6 mt-4 relative">
+        {/* Add UserActionButtons at the start of the button group */}
+        <UserActionButtons 
+          userId={userid} 
+          initialIsBlocked={profile.isBlocked} 
+        />
 
         {connectionStatus === "connected" && (
           <>
@@ -106,17 +111,24 @@ console.log("Connection Status:", connectionStatus);
 
         {connectionStatus === "no connection" && (
           <>
-            <ConnectButton userId={userid} token={token}  />
+            <ConnectButton userId={userid} token={token} />
             <Button color="blue" variant="outlined" className="rounded-full w-[120px]">Message</Button>
             <MoreDropdown onRemove={handleRemoveConnection} isOpen={isOpen} toggle={toggleDropdown} />
           </>
         )}
       </CardFooter>
+
+      {openContact && (
+        <ViewContactInfo 
+          contactInfo={profile.contactInfo} 
+          onClose={() => setOpenContact(false)} 
+        />
+      )}
     </Card>
   );
 };
 
-// More Dropdown Button
+// More Dropdown Button (keep the existing implementation)
 const MoreDropdown = ({ isOpen, toggle, onRemove }) => (
   <>
     <button

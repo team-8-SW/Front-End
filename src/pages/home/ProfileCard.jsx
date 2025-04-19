@@ -17,10 +17,10 @@ import {
 
 const ProfileCard = ({loggedUser}) => {
   const token = localStorage.getItem("token");
-  const profilePicture = useProfilePicture(0, token);
-  const coverPhoto = useCoverPhoto(0, token);
-  const name = useName(0, token);
-  const userData = useUserData(0, token);
+  const profilePicture = useProfilePicture(null, token);
+  const coverPhoto = useCoverPhoto(null, token);
+  const name = useName(null, token);
+  const userData = useUserData(null, token);
   
   return (
     <Link to={`/profile`}>

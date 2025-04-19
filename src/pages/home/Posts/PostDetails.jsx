@@ -31,8 +31,8 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
   const posterProfilePicture = useProfilePicture(post.user_id,token);
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
-  const commenterName = useName(0, token);
-  const commenterProfilePicture = useProfilePicture(0, token);
+  const commenterName = useName(null, token);
+  const commenterProfilePicture = useProfilePicture(null, token);
   const [comments, setComments] = useState(allComments || []);
   const [showComments, setShowComments] = useState(false);
   const [repostsCount, setRepostsCount] = useState(0);

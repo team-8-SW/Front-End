@@ -7,7 +7,6 @@ const PostModal = ({ isOpen, toggleModal,loggedUser }) => {
   const [postContent, setPostContent] = useState("");
   const [error, setError] = useState("");
   const token = localStorage.getItem("token");
-  const name = useName(0,token);
   
   if (!isOpen) return null;
  

@@ -33,11 +33,11 @@ const PendingConnectionsBar = () => {
     <div key={user.id} className="flex items-start p-4 hover:bg-gray-50">
       <div className="flex-shrink-0 mr-4">
         <img
-          src={user.avatar || "https://via.placeholder.com/56"}
+          src={user.avatar /*|| "https://via.placeholder.com/56"*/}
           alt={user.name}
           className="w-14 h-14 rounded-full object-cover"
           onError={(e) => {
-            e.target.src = "https://via.placeholder.com/56";
+            //e.target.src = "https://via.placeholder.com/56";
             e.target.onerror = null;
           }}
         />

@@ -3,7 +3,7 @@ import CompanyPostModal from "./CompanyPostModal";
 import CompanyPostBar from "./CompanyPostBar";
 //import { useProfilePicture } from "../../services/api";
 
-const CompanyCreatePost = ({ companyId, companyName,setPosts, companyLogo }) => {
+const CompanyCreatePost = ({ companyid, companyName,setPosts, companyLogo }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   //const profilePhoto = useProfilePicture(companyId);
 
@@ -15,7 +15,7 @@ const CompanyCreatePost = ({ companyId, companyName,setPosts, companyLogo }) => 
       <CompanyPostModal
         isOpen={isModalOpen}
         toggleModal={toggleModal}
-        companyId={companyId}
+        companyid={companyid}
         companyName={companyName} // ✅ passing the correct name
         setPosts={setPosts}
       />

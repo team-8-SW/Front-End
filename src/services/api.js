@@ -5,7 +5,7 @@ import { MdVisibility } from "react-icons/md";
 
 export const useProfilePicture = (userId,token) => {
   const userData = useUserData(userId, token);
-  return userData?.profilePicture || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3bHGb_Zk4zWeD4jw9ew8HboAT2zQIUZhYNA&s";
+  return userData?.profile?.profilePictureUrl || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3bHGb_Zk4zWeD4jw9ew8HboAT2zQIUZhYNA&s";
 };
 
 
@@ -15,16 +15,20 @@ export const useUserId = (token) => {
   return userId;
 };
 
+export const useUserName=(userId,token)=>{
+  const userData=useUserData(userId,token);
+  return userData?.profile?.userName;
+};
 
 export const useCoverPhoto = (userId, token) => {
   const userData = useUserData(userId, token);
-  return userData?.coverPhoto || "https://thingscareerrelated.com/wp-content/uploads/2021/10/default-background-image.png?w=862";
+  return userData?.profile?.coverPhotoUrl || "https://thingscareerrelated.com/wp-content/uploads/2021/10/default-background-image.png?w=862";
 };
 
 export const useName = (userId, token) => {
   const userData = useUserData(userId, token);
   if (!userData) return "";
-  return `${userData.firstName} ${userData.lastName}`;
+  return `${userData.profile.firstName} ${userData.profile.lastName}`;
 };
 
 export const useUserData = (userId, token) => {
@@ -158,7 +162,7 @@ const likePost = async (postId, token) => {
   try {
     await axios.post(
       `http://localhost:5000/api/posts/me/like`,
-      {postId},
+      {post_id: postId},
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -173,7 +177,7 @@ const likePost = async (postId, token) => {
 const unlikePost = async (postId, token) => {
   try {
     await axios.delete(
-      `http://localhost:5000/api/posts/me/unlike`,{postId},
+      `http://localhost:5000/api/posts/me/unlike`,{post_id: postId},
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -208,7 +212,7 @@ const repostPost = async (postId, token) => {
   try {
     await axios.post(
       `http://localhost:5000/api/posts/me/share`,
-      { postId },
+      { post_id:postId },
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -423,7 +427,9 @@ export const deletePost = async (postId, token) => {
     const response = await axios.delete(
       `http://localhost:5000/api/posts/me/deletepost`,
       {
-        params: { postId },
+        post_id:postId // Send post_id in the request body
+      },
+      {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -438,10 +444,10 @@ export const deletePost = async (postId, token) => {
 
 export const getPostEngagement = async (postId, token) => {
   try {
-    const response = await axios.get(
+    const response = await axios.post(
       `http://localhost:5000/api/posts/me/postengagement`,
+      { post_id: postId }, // Send post_id in the request body
       {
-        params: { postId },
         headers: {
           Authorization: `Bearer ${token}`,
         },

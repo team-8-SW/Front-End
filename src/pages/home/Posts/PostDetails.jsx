@@ -7,7 +7,8 @@ import {
   deletePost,
   getPostEngagement,
   getComments,
-  useUserId,
+  useUserName,
+  useUserData,
 } from "../../../services/api";
 import { Button } from "@material-tailwind/react";
 import {
@@ -27,7 +28,8 @@ import CommentsSection from "./CommentsSection";
 const PostDetails = ({ post, loggedUser, onRemovePost }) => {
   if (!post) return null;
   const token = localStorage.getItem("token");
-  const allComments= getComments(post.id,token);
+  // const allComments= getComments(post.id,token);
+  const allComments=[];
   const posterProfilePicture = useProfilePicture(post.user_id,token);
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
@@ -38,7 +40,6 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
   const [repostsCount, setRepostsCount] = useState(0);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [commentsCount, setCommentsCount] = useState(0);
-  const loggedUserId = useUserId(token);
   useEffect(() => {
     if (post.liked) {
       setLiked(true);
@@ -61,8 +62,27 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
     fetchEngagement();
   }, [post.id, token]);
   
+  console.log(post.user_id, "post.user_id");
+  const [posterData, setPosterData] = useState(null);
 
+  useEffect(() => {
+    const fetchPosterData = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/profiles/me/${post.user_id}`);
+        console.log(response, "posterData");
+        setPosterData(response?.data?.profile || null);
+      } catch (error) {
+        console.error("Error fetching poster data:", error);
+      }
+    };
 
+    if (post?.user_id) {
+      fetchPosterData();
+    }
+  }, [post?.user_id]);
+
+  console.log(posterData, "posterData");
+  const posterName = posterData?.profile?.userName;
   const handleDeletePost = async () => {
     try {
       await deletePost(post.id, token);
@@ -72,11 +92,13 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
       console.error("Failed to delete post:", error);
     }
   };
-
+  
+  console.log(posterName);
+  console.log(loggedUser?.profile?.userName);
   return (
     <div className="bg-white border border-gray-300 rounded-lg shadow-sm p-4 mb-4 relative">
       {/* Edit and Delete Buttons (only visible to the author) */}
-      { loggedUserId === post.user_id && ( 
+      { loggedUser?.profile?.userName === posterName && ( 
         <div className="absolute top-2 right-2 flex space-x-2">
           <button
             className="text-gray-500 hover:text-gray-700"
@@ -185,6 +207,7 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
           }
           data-testid="repost-icon"
         >
+          <SolidrepostIcon className="h-5 w-5" />
           Repost {repostsCount}
         </Button>
 

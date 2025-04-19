@@ -46,7 +46,7 @@ const ProfileCard = ({loggedUser}) => {
             {userData?.bio || " "}
           </Typography>
           <Typography className="text-gray-600 text-sm">
-            {userData?.location}
+            {userData?.location || " "}
           </Typography>
         
           <Typography className="text-black text-sm font-small">

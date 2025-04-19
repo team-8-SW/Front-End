@@ -29,7 +29,7 @@ const Notifications = ({ loggedUser }) => {
       setNotifications((prev) =>
         prev.map((notification) =>
           selectedNotifications.includes(notification.id)
-            ? { ...notification, isRead: true }
+            ? { ...notification, is_read: true }
             : notification
         )
       );
@@ -57,7 +57,7 @@ const Notifications = ({ loggedUser }) => {
           <div
             key={notification.id}
             className={`flex items-center w-full p-6 mb-4 shadow-md rounded-lg border border-gray-200 ${
-              notification.isRead ? 'bg-white' : 'bg-blue-100'
+              notification.is_read ? 'bg-white' : 'bg-blue-100'
             }`}
           >
             <input
@@ -67,9 +67,9 @@ const Notifications = ({ loggedUser }) => {
               onChange={() => handleCheckboxChange(notification.id)}
             />
             <div>
-              <p className="text-gray-800 font-medium">{notification.message}</p>
+              <p className="text-gray-800 font-medium">{notification.content}</p>
               <p className="text-sm text-gray-500">
-                {new Date(notification.timestamp).toLocaleString()}
+                {new Date(notification.created_at).toLocaleString()}
               </p>
             </div>
           </div>

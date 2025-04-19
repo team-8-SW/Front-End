@@ -15,7 +15,7 @@ const ConnectionsList = () => {
     try {
       setLoading(true);
       const data = await getConnections();
-      setConnections(data);
+      setConnections(data.connections);
       setLoading(false);
     } catch (error) {
       console.error('Failed to fetch connections:', error);

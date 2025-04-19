@@ -10,7 +10,9 @@ import DeclineConnection from "../network/DeclineConnection";
 import { removeConnection } from "../../services/api";
 import UserActionButtons from "../network/UserActionButtons"; // Import the new component
 
-const ViewProfileCard = ({ profile, userid, token ,connectionStatus}) => {
+const ViewProfileCard = ({ profile, userid, token ,connectionStatus,connectionId}) => {
+  console.log("connectionId received in ViewProfileCard:", connectionId);
+
   const [isOpen, setIsOpen] = useState(false);
   const [openContact, setOpenContact] = useState(false);
 
@@ -20,7 +22,7 @@ const ViewProfileCard = ({ profile, userid, token ,connectionStatus}) => {
 
   const handleRemoveConnection = async () => {
     try {
-      const data = await removeConnection(profile.user_id);
+      const data = await removeConnection(connectionId);
       console.log("Connection removed:", data);
     } catch (error) {
       console.error("Error removing connection:", error);

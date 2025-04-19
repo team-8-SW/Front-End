@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Input } from "@material-tailwind/react";
-import { handleAddNewComment,getPostEngagement } from "../../../services/api";
+import { handleAddNewComment, getPostEngagement } from "../../../services/api";
+
 const CommentsSection = ({
   postId,
   token,
@@ -10,8 +11,21 @@ const CommentsSection = ({
 }) => {
   const [newComment, setNewComment] = useState("");
   const [visibleComments, setVisibleComments] = useState(2);
-  
-  const comments_count= getPostEngagement(postId).comment_count;
+  const [commentsCount, setCommentsCount] = useState(0);
+
+  // Fetch post engagement (comments count)
+  useEffect(() => {
+    const fetchEngagement = async () => {
+      try {
+        const engagement = await getPostEngagement(postId, token);
+        setCommentsCount(engagement.comment_count);
+      } catch (error) {
+        console.error("Error fetching post engagement:", error);
+      }
+    };
+
+    fetchEngagement();
+  }, [postId, token]);
 
   return (
     <div className="mt-4">
@@ -33,11 +47,8 @@ const CommentsSection = ({
           variant="filled"
           color="blue"
           onClick={() =>
-                          handleAddNewComment(
-                            postId,
-                            newComment,
-                            token
-                          )}
+            handleAddNewComment(postId, newComment, token)
+          }
           className="flex-shrink-0"
           data-testid="post-comment-btn"
         >
@@ -45,7 +56,7 @@ const CommentsSection = ({
         </Button>
       </div>
 
-      {/* Display Comments */}
+      {/* Display Comments 
       {comments.slice(0, visibleComments).map((comment) => (
         <div
           key={comment.id}
@@ -56,10 +67,10 @@ const CommentsSection = ({
           </div>
           <p>{comment.content}</p>
         </div>
-      ))}
+      ))}*/}
 
-      {/* Load More Button */}
-      {visibleComments < comments_count && (
+      {/* Load More Button 
+      {visibleComments < commentsCount && (
         <Button
           variant="text"
           color="blue"
@@ -69,7 +80,7 @@ const CommentsSection = ({
         >
           Load More Comments
         </Button>
-      )}
+      )}*/}
     </div>
   );
 };

@@ -6,16 +6,19 @@ import { GiStarShuriken } from 'react-icons/gi';
 import { useNavigate } from 'react-router-dom';
 import JobTitleBottom from './JobTitleBottom';
 
-const JobTitleTop = () => {
+
+
+const JobTitleTop = ({companyid}) => {
   const [newJobTitle, setNewJobTitle] = useState('');
   const navigate = useNavigate();
+   // Assuming you have access to companyid from the URL
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (newJobTitle.trim() === '') return;
 
     localStorage.setItem('latestJobTitle', newJobTitle);
-    navigate('/jobdetails');
+    navigate(`/jobdetails/${companyid}`);
   };
 
   return (

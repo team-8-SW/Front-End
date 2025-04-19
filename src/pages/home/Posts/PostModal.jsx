@@ -6,8 +6,6 @@ import axios from "axios";
 const PostModal = ({ isOpen, toggleModal,loggedUser }) => {
   const [postContent, setPostContent] = useState("");
   const [error, setError] = useState("");
-  const [lastPostId, setLastPostId] = useState(null);
-  const name = useName(loggedUser.id);
   const token = localStorage.getItem("token");
   
   if (!isOpen) return null;

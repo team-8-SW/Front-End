@@ -13,6 +13,7 @@ const ViewExp = ({ experiences }) => {
   }, [experiences]);
 
   return (
+
     <div className="flex justify-center mt-6">
       <Card className="border border-gray-300 shadow-sm rounded-lg p-4 w-full bg-white max-w-4xl">
         {/* Header */}

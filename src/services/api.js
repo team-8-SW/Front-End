@@ -652,11 +652,11 @@ export const getBlockedUsers = async (token) => {
   });
 };
 
-//
+
 export const getComments = async (postId, token) => {
   try {
-    const response = await axios.get(`http://localhost:5000/api/posts/me/comments`, {
-      params: { postId },
+    const response = await axios.get(`http://localhost:5000/api/posts/me/postcomments`, {
+      params: { post_id: postId },
       headers: {
         Authorization: `Bearer ${token}`,
       },

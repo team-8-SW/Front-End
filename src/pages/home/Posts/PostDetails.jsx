@@ -24,18 +24,17 @@ import {
   ArrowPathRoundedSquareIcon as SolidrepostIcon,
 } from "@heroicons/react/24/solid";
 import CommentsSection from "./CommentsSection";
+import axios from "axios";
 
 const PostDetails = ({ post, loggedUser, onRemovePost }) => {
   if (!post) return null;
   const token = localStorage.getItem("token");
-  // const allComments= getComments(post.id,token);
-  const allComments=[];
   const posterProfilePicture = useProfilePicture(post.user_id,token);
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
   const commenterName = useName(null, token);
   const commenterProfilePicture = useProfilePicture(null, token);
-  const [comments, setComments] = useState(allComments || []);
+  const [comments, setComments] = useState([]);
   const [showComments, setShowComments] = useState(false);
   const [repostsCount, setRepostsCount] = useState(0);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
@@ -93,6 +92,23 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
     }
   };
   
+
+useEffect(() => {
+  const fetchComments = async () => {
+    try {
+      const data = await getComments(post.id, token);
+      setComments(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+      setComments([]); // fallback to empty array on error
+    }
+  };
+
+  if (post?.id) {
+    fetchComments();
+  }
+}, [post.id, token]);
+
   console.log(posterName);
   console.log(loggedUser?.profile?.userName);
   return (

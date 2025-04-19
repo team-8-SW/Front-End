@@ -56,7 +56,7 @@ const CommentsSection = ({
         </Button>
       </div>
 
-      {/* Display Comments 
+      {/* Display Comments  */}
       {comments.slice(0, visibleComments).map((comment) => (
         <div
           key={comment.id}
@@ -67,9 +67,9 @@ const CommentsSection = ({
           </div>
           <p>{comment.content}</p>
         </div>
-      ))}*/}
+      ))}
 
-      {/* Load More Button 
+      {/* Load More Button  */}
       {visibleComments < commentsCount && (
         <Button
           variant="text"
@@ -80,7 +80,7 @@ const CommentsSection = ({
         >
           Load More Comments
         </Button>
-      )}*/}
+      )}
     </div>
   );
 };

@@ -11,29 +11,9 @@ export const useProfilePicture = (token) => {
   } else return profilePicture;
 };
 
-export const fetchProfilePicture = async (userId,token) => {
-  
-  const userData=await useUserData(userId,token);
-  const profilePicture = userData?.profilePicture;
-  if (profilePicture === "") {
-    return "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3bHGb_Zk4zWeD4jw9ew8HboAT2zQIUZhYNA&s";
-  } else return profilePicture;
-};
-
-const fetchUserId = async (setUserId) => {
-  try {
-    const response = await axios.get("http://localhost:5000/currentUser");
-    setUserId(response.data.id);
-  } catch (error) {
-    console.error("Error fetching user ID:", error);
-  }
-};
-
-export const useUserId = () => {
-  const [userId, setUserId] = useState(null);
-  useEffect(() => {
-    fetchUserId(setUserId);
-  }, []);
+export const useUserId = (token) => {
+  const userData=useUserData(0,token);
+  const userId=userData?.id;
   return userId;
 };
 
@@ -90,7 +70,7 @@ export const useUserData = (userId,token) => {
 
 export const fetchPosts = async (token) => {
   try {
-    const response = await axios.get(`http://localhost:5000/api/posts/me`, {
+    const response = await axios.get(`http://localhost:5000/api/posts/me/feed`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -188,7 +168,8 @@ export const signIn = async (email, password,setLoggedUser) => {
 };
 const likePost = async (postId, token) => {
   try {
-    await axios.post(`http://localhost:5000/api/posts/me/like`, postId, {
+    await axios.post(`http://localhost:5000/api/posts/me/like`, {
+      params:{postId,}, 
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -200,7 +181,7 @@ const likePost = async (postId, token) => {
 
 const unlikePost = async (postId, token) => {
   try {
-    await axios.delete(`http://localhost:5000/api/posts/me/unlike`,postId, {
+    await axios.delete(`http://localhost:5000/api/posts/me/unlike`,{postId,}, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -227,7 +208,7 @@ export const handleLikePost = async (postId, token, liked, setLiked, setLikesCou
 
 const repostPost = async (postId, userId,token) => {
   try {
-    await axios.post(`http://localhost:5000/api/posts/me/share`),postId, {
+    await axios.post(`http://localhost:5000/api/posts/me/share`),{postId,}, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -254,11 +235,11 @@ export const handleAddNewComment = async (postId,newComment, token) => {
     };
 
     // Make the POST request to the given endpoint with the token
-    await axios.post("http://localhost:5000/api/posts/me/comment", payload, {
+    await axios.post("http://localhost:5000/api/posts/me/comment",{params:{ payload,}, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    });
+    }});
   }
   catch (error) {
     console.error("Error posting comment:", error);
@@ -579,3 +560,18 @@ export const declineMessageRequest = async (id) => {
     throw error;
   }
 };
+
+export const getComments = async (postId, token) => {
+  try {
+    const response = await axios.get(`http://localhost:5000/api/posts/me/comments`, {
+      params: { postId },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching comments:", error);
+    throw error;
+  }
+}

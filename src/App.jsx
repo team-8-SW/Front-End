@@ -11,9 +11,11 @@ import DetailsEducation from "./pages/DetailedEducation/DetailsEducation";
 import DetailsExperience from "./pages/Detailedexperience/DetailsExperience";
 import DetailedSkills from "./pages/DetailedSkills/DetailedSkills";
 import LoginPage from './pages/login/LoginPage';
+import BlockedUsersList from "./pages/network/BlockedUsersList";
 
 import SignUp from './pages/signup/SignUp';
 import ResetPassword from "./pages/login/ResetPassword";
+import PendingConnections from "./pages/network/PendingConnections";
 import ProtectedRoute from "./ProtectedRoute";
 
 import EmailManagement from "./pages/UpdateEmail/EmailManagement";
@@ -87,6 +89,11 @@ function App() {
         <Route path="/skills" element={<DetailedSkills loggedUser={loggedUser} />} />
         <Route path="/company/:companyid/*" element={<Company loggedUser={loggedUser} />} />
         <Route path="/network" element={<NetworkPage />} />
+        <Route path="/network/pending" element={<PendingConnections loggedUser={loggedUser} />} />
+        <Route path="/network/blocked" element={<BlockedUsersList loggedUser={loggedUser} />} />
+
+
+
         <Route path="/login" element={<LoginPage setLoggedUser={setLoggedUser} />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/jobtitle/:companyid" element={<JobTitle loggedUser={loggedUser} />} />

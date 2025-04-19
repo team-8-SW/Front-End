@@ -28,6 +28,7 @@ import SearchResults from "./pages/network/SearchResults";
 import ConnectionsList from "./pages/network/ConnectionList";
 import ViewCompany from "./pages/company/ViewCompany";
 import CompanyJobsTab from "./pages/company/CompanyJobsTab";
+import EditCompanyForm from "./pages/company/EditCompanyPage";
 
 function App() {
   const [loggedUser, setLoggedUser] = useState(null);
@@ -36,20 +37,21 @@ function App() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     console.log("Token:", token);
-  
-    
-    const publicRoutes = [
-      "/signup", 
-      "/login", 
-      "/forgot-password",
-      "/reset-password"  // Added reset password as public
-    ];
-  
-      axios.get("http://localhost:5000/api/profiles/", {
+
+    const publicRoutes = ["/signup", "/login", "/forgot-password", "/reset-password"];
+
+    // Check if the current route is public
+    if (publicRoutes.includes(window.location.pathname)) {
+      return; // Skip token validation for public routes
+    }
+
+    // Validate token for protected routes
+    axios
+      .get("http://localhost:5000/api/profiles/", {
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       })
       .then((res) => {
         setLoggedUser({
@@ -68,37 +70,35 @@ function App() {
           navigate("/login");
         }
       });
-    }
-  , [navigate]);
-  
-  
+  }, [navigate]);
 
   return (
     <div className="bg-backGroundColor min-h-screen">
       <Nav />
       <Routes>
 
-      <Route path="/reset-password" element={<ResetPassword />} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/profile" element={<Profile loggedUser={loggedUser} />} />
         <Route path="/view/:id" element={<View loggedUser={loggedUser} />} />
         <Route path="/" element={<Home loggedUser={loggedUser} />} />
         <Route path="/education" element={<DetailsEducation loggedUser={loggedUser} />} />
         <Route path="/experience" element={<DetailsExperience loggedUser={loggedUser} />} />
         <Route path="/skills" element={<DetailedSkills loggedUser={loggedUser} />} />
-        <Route path="/company/*" element={<Company loggedUser={loggedUser} />} />
+        <Route path="/company/:companyid/*" element={<Company loggedUser={loggedUser} />} />
         <Route path="/network" element={<NetworkPage />} />
         <Route path="/login" element={<LoginPage setLoggedUser={setLoggedUser} />} />
         <Route path="/signup" element={<SignUp />} />
-        <Route path="/jobtitle" element={<JobTitle loggedUser={loggedUser} />} />
-        <Route path="/jobdetails" element={<JobDetailsForm loggedUser={loggedUser} />} />
+        <Route path="/jobtitle/:companyid" element={<JobTitle loggedUser={loggedUser} />} />
+        <Route path="/jobdetails/:companyid" element={<JobDetailsForm loggedUser={loggedUser} />} />
         <Route path="/notifications" element={<NotificationsPage loggedUser={loggedUser} />} />
         <Route path="/EmailManagement" element={<EmailManagement />} />
         <Route path="/VerifyEmail" element={<VerifyEmail />} />
         <Route path="/companyform" element={<CreateCompanyForm loggedUser={loggedUser} />} />
+        {/* <Route path="/updatecompany/:companyid" element={<EditCompanyForm  />} /> */}
         <Route path="/SearchResults" element={<SearchResults />} />
         <Route path="/ConnectionList" element={<ConnectionsList />} />
-        <Route path="/viewcompany/*" element={<ViewCompany loggedUser={loggedUser} />} />
+        <Route path="/viewcompany/:companyid" element={<ViewCompany loggedUser={loggedUser} />} />
         <Route path="companyjobs" element={<CompanyJobsTab/>} />
       </Routes>
     </div>

@@ -17,11 +17,10 @@ import {
 
 const ProfileCard = ({loggedUser}) => {
   const token = localStorage.getItem("token");
-  const loggedId = localStorage.getItem("userId");
-  const profilePicture = useProfilePicture(loggedId, token);
-  const coverPhoto = useCoverPhoto(loggedId, token);
-  const name = useName(loggedId, token);
-  const userData = useUserData(loggedId, token);
+  const profilePicture = useProfilePicture(null, token);
+  const coverPhoto = useCoverPhoto(null, token);
+  const name = useName(null, token);
+  const userData = useUserData(null, token);
   
   return (
     <Link to={`/profile`}>
@@ -47,12 +46,11 @@ const ProfileCard = ({loggedUser}) => {
             {userData?.bio || " "}
           </Typography>
           <Typography className="text-gray-600 text-sm">
-            {userData?.location?.city || " "},{" "}
-            {userData?.location?.country || ""}
+            {userData?.location}
           </Typography>
         
           <Typography className="text-black text-sm font-small">
-            {userData?.education?.[0]?.school||" "}
+            {userData?.education?.[0]?.universityName||" "}
           </Typography>
         </CardBody>
       </Card>

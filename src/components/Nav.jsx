@@ -10,12 +10,17 @@ import { FaBell } from "react-icons/fa";
 import { unReadCount } from "../services/api";
 import UserSearch from "../pages/network/UserSearch";
 
+
 const Nav = () => {
+  const location = useLocation();
+  const hiddenPaths = ["/login", "/signup"];
+  if (hiddenPaths.includes(location.pathname)) return null;
   const [isAppsDropdownOpen, setIsAppsDropdownOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(null);
-  const location = useLocation();
+  
   const navigate = useNavigate();
+  
 
   const token = localStorage.getItem("token"); // ✅ FIXED: Declare token
 

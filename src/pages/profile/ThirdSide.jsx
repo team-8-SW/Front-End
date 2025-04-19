@@ -3,29 +3,40 @@ import axios from 'axios';
 import { Card, Typography, Radio, Button } from "@material-tailwind/react";
 
 const ThirdSide = ({ loggedUser }) => {
-  const [userData, setUserData] = useState(null);
-  const [open, setOpen] = useState(false); // For modal or confirmation if needed
+  const [visibility, setVisibility] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (loggedUser) {
-      setUserData(loggedUser);
+      // Assuming loggedUser contains current visibility
+      setVisibility(loggedUser.visibility || "public");
     }
   }, [loggedUser]);
 
-  if (!userData) return <p>Loading...</p>;
-
   const handlePrivacyChange = (e) => {
-    setUserData({ ...userData, privacy: e.target.value });
+    setVisibility(e.target.value);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
+    const token = localStorage.getItem("token");
     try {
-      await axios.patch(`http://localhost:3000/users/${loggedUser.id}`, userData);
-      setOpen(false);
-      alert("Privacy settings updated successfully!");
+      setLoading(true);
+      await axios.put(
+        "http://localhost:5000/api/profiles/me/visibility",
+        { visibility },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      alert("Visibility updated successfully!");
     } catch (error) {
-      console.error("Error updating profile:", error);
+      console.error("Error updating visibility:", error);
+      alert("Failed to update visibility.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -33,7 +44,7 @@ const ThirdSide = ({ loggedUser }) => {
     <div>
       <Card className="p-4">
         <Typography variant="h6" color="blue-gray">
-          Privacy Settings:
+          Profile Visibility
         </Typography>
 
         <div className="flex flex-col gap-2 mt-4">
@@ -41,20 +52,31 @@ const ThirdSide = ({ loggedUser }) => {
             name="privacy"
             label="Public"
             value="public"
-            checked={userData.privacy === "public"}
+            checked={visibility === "public"}
             onChange={handlePrivacyChange}
           />
           <Radio
             name="privacy"
             label="Private"
             value="private"
-            checked={userData.privacy === "private"}
+            checked={visibility === "private"}
+            onChange={handlePrivacyChange}
+          />
+          <Radio
+            name="privacy"
+            label="Connections Only"
+            value="connections"
+            checked={visibility === "connections"}
             onChange={handlePrivacyChange}
           />
         </div>
 
-        <Button className="mt-4" onClick={handleSubmit}>
-          Save Changes
+        <Button
+          className="mt-4"
+          onClick={handleSubmit}
+          disabled={loading}
+        >
+          {loading ? "Saving..." : "Save Changes"}
         </Button>
       </Card>
     </div>

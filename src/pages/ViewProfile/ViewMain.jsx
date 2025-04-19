@@ -58,8 +58,11 @@ const ViewMain = ({ loggedUser, setLoggedUser }) => {
         userid={userid}
         token={localStorage.getItem("token")}
         connectionStatus={profileData.connectionStatus.status}
+        connectionId={profileData.connectionStatus.connectionId}
        
       />
+
+  
 
       {visibility ? (
         <>

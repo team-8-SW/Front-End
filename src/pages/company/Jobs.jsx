@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Typography, Button } from "@material-tailwind/react";
 import axios from 'axios';
+import { useParams } from 'react-router-dom';
 
 const Jobs = ({ loggedUser }) => {
   const [jobsData, setJobsData] = useState([]);
+  const {companyid} = useParams(); // Assuming you have the company ID in the URL
 
   useEffect(() => {
     const fetchJobs = async () => {
       try {
         const token = localStorage.getItem("token");
         const res = await axios.get(
-          `http://localhost:5000/api/company/20f970d2-7933-41db-af9e-9fb987a11a1e/getalljob`,
+          `http://localhost:5000/api/company/${companyid}/getalljob`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -49,7 +51,7 @@ const Jobs = ({ loggedUser }) => {
               <Button
                 variant="outlined"
                 className="rounded-full text-[16px] text-blue-800 p-2 border-blue-800"
-                onClick={() => window.open("/jobtitle", "_blank")}
+                onClick={() => window.open(`/jobtitle/${companyid}`, "_blank")}
               >
                 Post a job
               </Button>

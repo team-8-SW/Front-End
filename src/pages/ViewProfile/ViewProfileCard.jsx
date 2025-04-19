@@ -10,7 +10,7 @@ import DeclineConnection from "../network/DeclineConnection";
 import { removeConnection } from "../../services/api";
 import UserActionButtons from "../network/UserActionButtons"; // Import the new component
 
-const ViewProfileCard = ({ profile, userid, token, connectionStatus }) => {
+const ViewProfileCard = ({ profile, userid, token ,connectionStatus}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [openContact, setOpenContact] = useState(false);
 
@@ -31,6 +31,7 @@ const ViewProfileCard = ({ profile, userid, token, connectionStatus }) => {
 
   return (
     <Card className="relative w-full mx-auto shadow-lg rounded-lg">
+
       <CardHeader floated={false} shadow={false} className="relative h-40">
         <img
           src={profile.coverPhotoUrl || "/default-cover.jpg"}
@@ -40,6 +41,7 @@ const ViewProfileCard = ({ profile, userid, token, connectionStatus }) => {
       </CardHeader>
 
       <div className="absolute top-28 left-[20%] transform -translate-x-1/2">
+
         <Avatar
           src={profile.profilePictureUrl || "/default-avatar.png"}
           size="xxl"
@@ -79,8 +81,11 @@ const ViewProfileCard = ({ profile, userid, token, connectionStatus }) => {
 
         {connectionStatus === "connected" && (
           <>
+
             <Button color="blue" className="rounded-full w-[120px]">Message</Button>
             <MoreDropdown onRemove={handleRemoveConnection} isOpen={isOpen} toggle={toggleDropdown} />
+
+            
           </>
         )}
 

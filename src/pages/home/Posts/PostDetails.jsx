@@ -6,6 +6,8 @@ import {
   handleLikePost,
   deletePost,
   getPostEngagement,
+  getComments,
+  useUserId,
 } from "../../../services/api";
 import { Button } from "@material-tailwind/react";
 import {
@@ -23,23 +25,41 @@ import {
 import CommentsSection from "./CommentsSection";
 
 const PostDetails = ({ post, loggedUser, onRemovePost }) => {
+  if (!post) return null;
   const token = localStorage.getItem("token");
-  const postEngagement = getPostEngagement(post.id);
-  const posterProfilePicture = useProfilePicture(post.userId,token);
+  const allComments= getComments(post.id,token);
+  const posterProfilePicture = useProfilePicture(post.user_id,token);
   const [liked, setLiked] = useState(false);
-  const [likesCount, setLikesCount] = useState(postEngagement.like_count || 0);
-  const commenterName = useName(0, token);
-  const commenterProfilePicture = useProfilePicture(0, token);
-  const [comments, setComments] = useState(post.comments || []);
+  const [likesCount, setLikesCount] = useState(0);
+  const commenterName = useName(null, token);
+  const commenterProfilePicture = useProfilePicture(null, token);
+  const [comments, setComments] = useState(allComments || []);
   const [showComments, setShowComments] = useState(false);
-  const [repostsCount, setrepostsCount] = useState(postEngagement.repost_count || 0);
+  const [repostsCount, setRepostsCount] = useState(0);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
-  
+  const [commentsCount, setCommentsCount] = useState(0);
+  const loggedUserId = useUserId(token);
   useEffect(() => {
     if (post.liked) {
       setLiked(true);
     }
   }, [post.liked]);
+  useEffect(() => {
+    if (!post?.id) return;
+
+    const fetchEngagement = async () => {
+      try {
+        const data = await getPostEngagement(post.id,token);
+        setLikesCount(data.like_count || 0);
+        setCommentsCount(data.comment_count || 0);
+        setRepostsCount(data.repost_count || 0);
+      } catch (error) {
+        console.error("Error loading engagement data:", error);
+      }
+    };
+  
+    fetchEngagement();
+  }, [post.id, token]);
   
 
 
@@ -56,7 +76,7 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
   return (
     <div className="bg-white border border-gray-300 rounded-lg shadow-sm p-4 mb-4 relative">
       {/* Edit and Delete Buttons (only visible to the author) */}
-      {loggedUser.id === post.authorId && (
+      { loggedUserId === post.user_id && ( 
         <div className="absolute top-2 right-2 flex space-x-2">
           <button
             className="text-gray-500 hover:text-gray-700"
@@ -108,13 +128,13 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
         <div className="w-10 h-10 rounded-full bg-gray-200 flex-shrink-0">
           <img
             src={posterProfilePicture}
-            alt={`${post.authorName}'s profile`}
+            alt={`${commenterName}'s profile`}
             className="w-full h-full rounded-full object-cover"
           />
         </div>
         <div className="ml-3">
-          <h2 className="font-semibold text-gray-900">{post.authorName}</h2>
-          <p className="text-sm text-gray-500">{post.timestamp || "Just now"}</p>
+          <h2 className="font-semibold text-gray-900">{commenterName}</h2>
+          <p className="text-sm text-gray-500">{post.created_at || "Just now"}</p>
         </div>
       </div>
 
@@ -152,7 +172,7 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
           data-testid="comment-icon"
         >
           <ChatBubbleOvalLeftEllipsisIcon className="h-5 w-5" />
-          Comment {comments.length}
+          Comment {commentsCount}
         </Button>
 
         {/* Repost Button */}
@@ -161,7 +181,7 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
           color="blue"
           className="flex items-center gap-1 hover:text-blue-600"
           onClick={() =>
-            handlerepostPost(post.id, token , setrepostsCount)
+            handlerepostPost(post.id, token , setRepostsCount)
           }
           data-testid="repost-icon"
         >

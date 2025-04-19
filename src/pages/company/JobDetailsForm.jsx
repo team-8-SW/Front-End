@@ -10,6 +10,7 @@ import {
 } from '@material-tailwind/react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 const JobDetailsForm = ({ loggedUser }) => {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ const JobDetailsForm = ({ loggedUser }) => {
     salary: '',
     expires_at: ''
   });
+  const {companyid}=useParams()
 
   useEffect(() => {
     const storedTitle = localStorage.getItem("latestJobTitle");
@@ -59,7 +61,7 @@ const JobDetailsForm = ({ loggedUser }) => {
           industry: jobDetails.industry,
           salary: parseInt(jobDetails.salary),
           expires_at: new Date(jobDetails.expires_at).toISOString(),
-          company_id:"20f970d2-7933-41db-af9e-9fb987a11a1e" ,
+          company_id:`${companyid}` ,
         },
         {
           headers: { Authorization: `Bearer ${token}` },

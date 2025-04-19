@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Button, Input } from "@material-tailwind/react";
-import { useUserId } from "../../services/api";
 import axios from "axios";
 
 const CompanyPostModal = ({
@@ -14,31 +13,34 @@ const CompanyPostModal = ({
 
   const [postContent, setPostContent] = useState("");
   const [postTitle, setPostTitle] = useState("");
-  const [mediaFile, setMediaFile] = useState(null);
+  const [mediaUrl, setMediaUrl] = useState(""); // <- Now using URL instead of File
   const [error, setError] = useState("");
 
   const handlePost = async () => {
-    if (postContent.trim() === "") {
-      setError("Post content cannot be empty.");
+    if (postTitle.trim() === "" || postContent.trim() === "") {
+      setError("Post title and content cannot be empty.");
       return;
     }
 
-    setError("");
-
-    const formData = new FormData();
-    formData.append("title", postTitle);
-    formData.append("content", postContent);
-    if (mediaFile) formData.append("media", mediaFile);
-
     try {
+      setError("");
       const token = localStorage.getItem("token");
+       const companyId="20f970d2-7933-41db-af9e-9fb987a11a1e"
+
+
+      const payload = {
+        title: postTitle,
+        content: postContent,
+        media_url: mediaUrl || "", // leave empty string if none provided
+      };
+
       const response = await axios.post(
         `http://localhost:5000/api/company/${companyId}/update`,
-        formData,
+        payload,
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
+            "Content-Type": "application/json",
           },
         }
       );
@@ -47,12 +49,14 @@ const CompanyPostModal = ({
         setPosts((prev) => [response.data, ...prev]);
       }
 
-      toggleModal();
+      // Reset & close
       setPostContent("");
       setPostTitle("");
-      setMediaFile(null);
+      setMediaUrl("");
+      toggleModal();
     } catch (error) {
       console.error("Error posting:", error);
+      setError("Failed to create post. Please try again.");
     }
   };
 
@@ -69,7 +73,7 @@ const CompanyPostModal = ({
         className="bg-white p-4 rounded-lg shadow-lg max-w-md w-full"
         onClick={handleModalClick}
       >
-        <h2 className="text-xl font-bold mb-4">Post as Company</h2>
+        <h2 className="text-xl font-bold mb-4">Post as {companyName}</h2>
 
         <Input
           label="Post Title"
@@ -86,11 +90,11 @@ const CompanyPostModal = ({
           onChange={(e) => setPostContent(e.target.value)}
         />
 
-        <input
-          type="file"
-          accept="image/*"
+        <Input
+          label="Media URL (optional)"
           className="mb-3"
-          onChange={(e) => setMediaFile(e.target.files[0])}
+          value={mediaUrl}
+          onChange={(e) => setMediaUrl(e.target.value)}
         />
 
         {error && <p className="text-red-500 text-sm mt-2">{error}</p>}

@@ -13,45 +13,64 @@ import axios from "axios";
 import ConnectButton from "../network/ConnectButton";
 import CompanyPostsDetails from "./companyPostsDetails";
 import CompanyJobsTab from "./CompanyJobsTab"; // ✅ NEW IMPORT
+import { useParams } from "react-router-dom";
 
 const ViewCompany = ({ loggedUser }) => {
   const [companyData, setCompanyData] = useState(null);
   const [posts, setPosts] = useState([]);
   const [companyJobs, setCompanyJobs] = useState([]);
   const [activeTab, setActiveTab] = useState("home");
+  const {companyid}=useParams()
+  const [adminId, setAdminId] = useState(1);
+  const [AdminData, setAdminData] = useState("");
+
+  
 
   useEffect(() => {
     const fetchCompanyDetails = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get(`http://localhost:5000/api/company`, {
+        const res = await axios.get(`http://localhost:5000/api/company/${companyid}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setCompanyData(res.data[0]);
+        setCompanyData(res.data);
+        console.log("Company data:", res.data); 
+        // Log the response data
+        setAdminId(res.data.admin_user_id); // Assuming the response contains adminId
+        console.log("Admin ID:", res.data.admin_user_id); // Log the adminId
+
       } catch (err) {
         console.error("Failed to fetch company details:", err);
       }
     };
     fetchCompanyDetails();
-  }, [loggedUser]);
+  }, []);
 
   useEffect(() => {
-    const fetchCompanyPosts = async () => {
-      const allPosts = await fetchPosts();
-      const filtered = allPosts.filter(
-        (post) => post.companyId === loggedUser?.id
-      );
-      setPosts(filtered.reverse());
+    if (!adminId) return;
+    const fetchAdminDetails = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await axios.get(`http://localhost:5000/api/profiles/me/${adminId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setAdminData(res.data);
+      } catch (err) {
+        console.error("Failed to fetch admin details:", err);
+      }
     };
-    if (loggedUser) fetchCompanyPosts();
-  }, [loggedUser]);
+    fetchAdminDetails();
+  }, [adminId]);
+  
+
+  
 
   useEffect(() => {
     const fetchJobs = async () => {
       try {
         const token = localStorage.getItem("token");
         const res = await axios.get(
-          `http://localhost:5000/api/company/20f970d2-7933-41db-af9e-9fb987a11a1e/getalljob`,
+          `http://localhost:5000/api/company/${companyid}/getalljob`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -64,6 +83,30 @@ const ViewCompany = ({ loggedUser }) => {
 
     if (companyData?.id) fetchJobs();
   }, [companyData]);
+   useEffect(() => {
+      const fetchCompanyPosts = async () => {
+        try {
+          const companyId="20f970d2-7933-41db-af9e-9fb987a11a1e"
+          const token = localStorage.getItem("token");
+          const res = await axios.get(
+            `http://localhost:5000/api/company/${companyid}/updates`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          setPosts(res.data);
+          console.log("Company posts data:", res.data); // Log the response data
+          
+          console.log("Company posts:", posts);
+        } catch (error) {
+          console.error("Error fetching company posts:", error);
+        }
+      };
+  
+       fetchCompanyPosts();
+    }, []);
 
   if (!companyData) return <p>Loading company data...</p>;
 
@@ -94,7 +137,7 @@ const ViewCompany = ({ loggedUser }) => {
               {companyData.name}
             </Typography>
             <Typography variant="small" className="text-gray-600">
-              {companyData.industry} · 31 followers · {companyData.size}
+              {companyData.industry} · {companyData.follower_count} followers · {companyData.size}
             </Typography>
             <Typography variant="small" className="text-gray-500">
               {companyData.website || "N/A"}
@@ -192,14 +235,31 @@ const ViewCompany = ({ loggedUser }) => {
         {activeTab === "jobs" && (
           <CompanyJobsTab jobs={companyJobs} />
         )}
+{activeTab === "people" && (
+  <Card className="p-6 bg-white shadow-sm">
+    <Typography variant="h6" className="mb-4">Team Members</Typography>
 
-        {activeTab === "people" && (
-          <Card className="p-6 bg-white shadow-sm">
-            <Typography className="text-sm text-gray-700">
-              People who work here will be listed here.
-            </Typography>
-          </Card>
-        )}
+    <div className="flex items-center gap-4">
+      <Avatar
+        src={AdminData?.profile?.profilePictureUrl || "/default-avatar.png"}
+        size="xl"
+        className="border border-gray-300 shadow"
+      />
+      <div>
+        <Typography className="font-medium text-lg">
+          {AdminData?.profile?.firstName} {AdminData?.profile?.lastName}
+        </Typography>
+        <Typography className="text-gray-600 text-sm">
+          {AdminData?.profile?.bio || "No headline available"}
+        </Typography>
+        <Typography className="text-gray-500 text-sm">
+          {AdminData?.profile?.location || ""}
+        </Typography>
+      </div>
+    </div>
+  </Card>
+)}
+
       </div>
     </div>
   );

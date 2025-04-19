@@ -264,12 +264,10 @@ export const updateEmail = async (newEmail, userId) => {
     });
     return response.data;
   } catch (error) {
-    console.error('Error updating email:', error.message);
-    throw new Error('Error updating email: ' + error.message);
+    console.error('Error updating email:', error.response || error.message);
+    throw error; 
   }
 };
-
-
 
 export const fetchNotifications = async (token) => {
   try {

@@ -2,20 +2,22 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; 
 import { updateEmail } from '../../services/api';
 
-const EmailManagement = ({ primaryEmail, userId }) => {
+const EmailManagement = ({ email, userId }) => {
+  
     const [newEmail, setEmail] = useState('');
     const navigate = useNavigate(); 
 
     const handleUpdateEmail = async () => {
       try {
-        const response = await updateEmail(newEmail , userId);
-        alert(response.message || 'Email updated successfully!');
+        const response = await updateEmail(newEmail, userId);
+        alert(response?.message || 'Email updated successfully!');
         navigate(-1); 
-    } catch (error) {
+      } catch (error) {
         console.error('Error updating email:', error);
         alert('Failed to update email. Please try again.');
-    }
+      }
     };
+    
     const handleBack = () => {
       navigate(-1); 
     };
@@ -40,7 +42,7 @@ const EmailManagement = ({ primaryEmail, userId }) => {
        
         <div className="mt-6 mb-6">
           <p className="text-gray-700 font-medium mb-2">Primary email</p>
-          <p className="text-gray-900">{primaryEmail}</p>
+          <p className="text-gray-900">{email}</p>
         </div>
         
         <input

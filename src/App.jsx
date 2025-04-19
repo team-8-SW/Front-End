@@ -99,7 +99,8 @@ function App() {
         <Route path="/jobtitle/:companyid" element={<JobTitle loggedUser={loggedUser} />} />
         <Route path="/jobdetails/:companyid" element={<JobDetailsForm loggedUser={loggedUser} />} />
         <Route path="/notifications" element={<NotificationsPage loggedUser={loggedUser} />} />
-        <Route path="/EmailManagement" element={<EmailManagement />} />
+        <Route path="/EmailManagement" element={<EmailManagement  email={loggedUser?.profile?.email}
+        userId={loggedUser?.id} />} />
         <Route path="/VerifyEmail" element={<VerifyEmail />} />
         <Route path="/companyform" element={<CreateCompanyForm loggedUser={loggedUser} />} />
         {/* <Route path="/updatecompany/:companyid" element={<EditCompanyForm  />} /> */}

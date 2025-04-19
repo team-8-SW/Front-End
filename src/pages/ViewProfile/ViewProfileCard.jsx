@@ -9,8 +9,7 @@ import AcceptConnection from "../network/AcceptConnection";
 import DeclineConnection from "../network/DeclineConnection";
 import { removeConnection, blockUser, unblockUser, followUser, unfollowUser } from "../../services/api";
 
-const ViewProfileCard = ({ profile, userid, token ,connectionStatus,connectionId}) => {
-  console.log("connectionId received in ViewProfileCard:", connectionId);
+const ViewProfileCard = ({ profile, userid, token ,connectionStatus}) => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [openContact, setOpenContact] = useState(false);

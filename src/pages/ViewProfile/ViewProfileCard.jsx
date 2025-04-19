@@ -26,6 +26,7 @@ const ViewProfileCard = ({ profile, userid, token ,connectionStatus,connectionId
     try {
       const data = await removeConnection(connectionId);
       console.log("Connection removed:", data);
+      window.location.reload(); // Refresh the page to reflect changes
     } catch (error) {
       console.error("Error removing connection:", error);
     }

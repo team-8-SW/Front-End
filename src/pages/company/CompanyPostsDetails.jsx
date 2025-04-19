@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button } from "@material-tailwind/react";
+import { Button, Input } from "@material-tailwind/react";
 import {
   HandThumbUpIcon as OutlineThumbUpIcon,
   ChatBubbleOvalLeftEllipsisIcon,
@@ -10,12 +10,15 @@ import axios from "axios";
 
 const CompanyPostsDetails = ({ post, companyLogo, companyid }) => {
   const [companyData, setCompanyData] = useState(null);
-  const [isLiked, setIsLiked] = useState(false); // Optional UI state
+  const [isLiked, setIsLiked] = useState(false);
+  const [commentCount, setCommentCount] = useState(0);
+  const [commentText, setCommentText] = useState(""); // NEW: input state
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+
     const fetchCompany = async () => {
       try {
-        const token = localStorage.getItem("token");
         const res = await axios.get(`http://localhost:5000/api/company/${companyid}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -25,15 +28,44 @@ const CompanyPostsDetails = ({ post, companyLogo, companyid }) => {
       }
     };
 
+    const fetchCommentCount = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:5000/api/company/${post.id}/comment-count`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setCommentCount(res.data.commentCount || 0);
+      } catch (err) {
+        console.error("Failed to fetch comment count:", err);
+      }
+    };
+
     fetchCompany();
-  }, [companyid]);
+    fetchCommentCount();
+  }, [companyid, post.id]);
 
   const handleLike = async () => {
+    const token = localStorage.getItem("token");
     try {
-      const token = localStorage.getItem("token");
       await axios.post(
         `http://localhost:5000/api/company/${post.id}/impressions`,
         { type: "like" },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setIsLiked(true);
+    } catch (err) {
+      console.error("Error liking post:", err);
+    }
+  };
+
+  const handleCommentSubmit = async () => {
+    const token = localStorage.getItem("token");
+    if (!commentText.trim()) return;
+
+    try {
+      await axios.post(
+        `http://localhost:5000/api/company/${post.id}/comments`,
+        { content: commentText },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -41,15 +73,29 @@ const CompanyPostsDetails = ({ post, companyLogo, companyid }) => {
           },
         }
       );
-      setIsLiked(true);
-      console.log("Liked post:", post.id);
+      setCommentText(""); // clear input
+      setCommentCount(prev => prev + 1);
     } catch (err) {
-      console.error("Error liking post:", err);
+      console.error("Error adding comment:", err);
+    }
+  };
+
+  const handleRepost = async () => {
+    const token = localStorage.getItem("token");
+    try {
+      await axios.post(
+        `http://localhost:5000/api/company/${post.id}/reposts`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      alert("Reposted successfully!");
+    } catch (err) {
+      console.error("Error reposting:", err);
     }
   };
 
   return (
-    <div className="bg-white border border-gray-300 rounded-lg shadow-sm p-4 mb-4 relative max-w-xl mx-auto">
+    <div className="bg-white border border-gray-300 rounded-lg shadow-sm p-4 mb-6 relative max-w-xl mx-auto">
       {/* Header */}
       <div className="flex items-center mb-4">
         <div className="w-10 h-10 rounded-full bg-gray-200 flex-shrink-0">
@@ -70,28 +116,54 @@ const CompanyPostsDetails = ({ post, companyLogo, companyid }) => {
       {/* Content */}
       <p className="text-gray-800 mb-3">{post.content}</p>
 
-      {/* Action Buttons */}
+      {/* Actions */}
       <div className="flex items-center justify-start space-x-4 text-gray-600 text-sm font-semibold mb-4">
         <Button
           variant="text"
           color={isLiked ? "blue" : "gray"}
-          className="flex items-center gap-1 hover:text-blue-600"
+          className="flex items-center gap-1"
           onClick={handleLike}
         >
           <OutlineThumbUpIcon className="h-5 w-5" />
           {isLiked ? "Liked" : "Like"}
         </Button>
-        <Button variant="text" color="blue" className="flex items-center gap-1 hover:text-blue-600">
-          <ChatBubbleOvalLeftEllipsisIcon className="h-5 w-5" />
-          Comment
-        </Button>
-        <Button variant="text" color="blue" className="flex items-center gap-1 hover:text-blue-600">
+
+        <div className="flex items-center gap-1">
+          <ChatBubbleOvalLeftEllipsisIcon className="h-5 w-5 text-blue-500" />
+          <span className="text-sm text-gray-600">Comments ({commentCount})</span>
+        </div>
+
+        <Button
+          variant="text"
+          color="blue"
+          className="flex items-center gap-1"
+          onClick={handleRepost}
+        >
           <OutlinerepostIcon className="h-5 w-5" />
           Repost
         </Button>
-        <Button variant="text" color="blue" className="flex items-center gap-1 hover:text-blue-600">
+
+        <Button variant="text" color="blue" className="flex items-center gap-1">
           <ShareIcon className="h-5 w-5" />
           Share
+        </Button>
+      </div>
+
+      {/* Comment Input */}
+      <div className="mt-2 flex items-center gap-2">
+        <Input
+          label="Write a comment..."
+          value={commentText}
+          onChange={(e) => setCommentText(e.target.value)}
+          className="flex-1"
+        />
+        <Button
+          size="sm"
+          color="blue"
+          className="px-4"
+          onClick={handleCommentSubmit}
+        >
+          Post
         </Button>
       </div>
     </div>

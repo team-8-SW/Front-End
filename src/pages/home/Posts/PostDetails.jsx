@@ -23,16 +23,16 @@ import {
 import CommentsSection from "./CommentsSection";
 
 const PostDetails = ({ post, loggedUser, onRemovePost }) => {
+  if (!post) return null;
   const token = localStorage.getItem("token");
-  const postEngagement = getPostEngagement(post.id);
   const posterProfilePicture = useProfilePicture(post.userId,token);
   const [liked, setLiked] = useState(false);
-  const [likesCount, setLikesCount] = useState(postEngagement.like_count || 0);
+  const [likesCount, setLikesCount] = useState(0);
   const commenterName = useName(0, token);
   const commenterProfilePicture = useProfilePicture(0, token);
   const [comments, setComments] = useState(post.comments || []);
   const [showComments, setShowComments] = useState(false);
-  const [repostsCount, setrepostsCount] = useState(postEngagement.repost_count || 0);
+  const [repostsCount, setrepostsCount] = useState(0);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   
   useEffect(() => {
@@ -40,6 +40,21 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
       setLiked(true);
     }
   }, [post.liked]);
+  useEffect(() => {
+    if (!post?.id) return;
+
+    const fetchEngagement = async () => {
+      try {
+        const data = await getPostEngagement(post.id,token);
+        setLikesCount(data.like_count || 0);
+        setRepostsCount(data.repost_count || 0);
+      } catch (error) {
+        console.error("Error loading engagement data:", error);
+      }
+    };
+  
+    fetchEngagement();
+  }, [post.id, token]);
   
 
 
@@ -56,7 +71,7 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
   return (
     <div className="bg-white border border-gray-300 rounded-lg shadow-sm p-4 mb-4 relative">
       {/* Edit and Delete Buttons (only visible to the author) */}
-      {loggedUser.id === post.authorId && (
+      {/* {loggedUser.id === post.user_id && ( */}
         <div className="absolute top-2 right-2 flex space-x-2">
           <button
             className="text-gray-500 hover:text-gray-700"
@@ -73,7 +88,7 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
             <TrashIcon className="h-5 w-5" />
           </button>
         </div>
-      )}
+      {/* )} */}
 
       {/* Delete Confirmation Popup */}
       {showDeleteConfirmation && (
@@ -152,7 +167,7 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
           data-testid="comment-icon"
         >
           <ChatBubbleOvalLeftEllipsisIcon className="h-5 w-5" />
-          Comment {comments.length}
+          Comment 
         </Button>
 
         {/* Repost Button */}

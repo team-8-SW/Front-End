@@ -9,26 +9,6 @@ const PostModal = ({ isOpen, toggleModal,loggedUser }) => {
   const [lastPostId, setLastPostId] = useState(null);
   const name = useName(loggedUser.id);
   const token = localStorage.getItem("token");
-  const loggedUserId = localStorage.getItem("userId");
-  useEffect(() => {
-    const fetchLastPostId = async () => {
-      try {
-        const response = await axios.get("http://localhost:5000/posts");
-        const posts = response.data;
-        const maxId = posts.reduce(
-          (max, post) => (post.id > max ? post.id : max),
-          0
-        );
-        setLastPostId(maxId);
-      } catch (error) {
-        console.error("Error fetching posts:", error);
-      }
-    };
-  
-  
-
-    fetchLastPostId();
-  }, []);
   
   if (!isOpen) return null;
  

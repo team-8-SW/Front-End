@@ -90,7 +90,7 @@ export const useUserData = (userId,token) => {
 
 export const fetchPosts = async (token) => {
   try {
-    const response = await axios.get(`http://localhost:5000/api/posts/me/feed`, {
+    const response = await axios.get(`http://localhost:5000/api/posts/me`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -228,12 +228,12 @@ export const handleLikePost = async (postId, token, liked, setLiked, setLikesCou
   if (liked) {
     await unlikePost(postId, token);
     setLiked(false);
-    const likes_count=getPostEngagement(postId).like_count;
+    const likes_count=getPostEngagement(postId, token).like_count;
     setLikesCount(likes_count);
   } else {
     await likePost(postId, token);
     setLiked(true);
-    const likes_count=getPostEngagement(postId).like_count;
+    const likes_count=getPostEngagement(postId, token).like_count;
     setLikesCount(likes_count);
   }
 };
@@ -254,7 +254,7 @@ const repostPost = async (postId, userId,token) => {
 export const handlerepostPost = async (postId,token, setrepostsCount) => {
   
     await repostPost(postId,token);
-    const reposts_count=getPostEngagement(postId).repost_count;
+    const reposts_count=getPostEngagement(postId, token).repost_count;
     setrepostsCount(reposts_count);
 };
 
@@ -386,15 +386,16 @@ export const searchUsers = async (token, params) => {
   });
   return data;
 };
-export const getConnections = async () => {
+export const getConnections = async () => { 
   try {
-    const response = await apiClient().get('https://localhost:5000/api/connections/');
-    return response.data;
+    const response = await apiClient().get('http://localhost:3000/api/connections/');
+    return response.data.connections; 
   } catch (error) {
     console.error('Error fetching connections:', error);
-    throw error;
+    throw error; 
   }
 };
+
 export const acceptConnection = async (connectionId) => {
   const token = localStorage.getItem('token'); 
   try {
@@ -452,17 +453,25 @@ export const deletePost = async (postId) => {
   }
 };
 
-export const getPostEngagement= async (postId) =>
-{
-      try{
-        const response = await axios.get(`http://localhost:5000/api/posts/me/postengagement`,postId);
-        return response.data;
+export const getPostEngagement = async (postId, token) => {
+  try {
+    const response = await axios.get(
+      `http://localhost:5000/api/posts/me/postengagement`,
+      {
+        params: { postId },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }
-      catch(error){
-        console.error("Error fetching post engagement:", error);
-        throw error;
-      }
-}
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching post engagement:", error);
+    throw error;
+  }
+};
+
+
 const API_URL = `http://localhost:5000/api`;
 
 export const fetchPendingConnections = async (token) => {

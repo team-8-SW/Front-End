@@ -24,7 +24,7 @@ export const useCoverPhoto = (userId, token) => {
 export const useName = (userId, token) => {
   const userData = useUserData(userId, token);
   if (!userData) return "";
-  return `${userData.fname} ${userData.lname}`;
+  return `${userData.firstName} ${userData.lastName}`;
 };
 
 export const useUserData = (userId, token) => {
@@ -156,12 +156,15 @@ export const signIn = async (email, password,setLoggedUser) => {
 };
 const likePost = async (postId, token) => {
   try {
-    await axios.post(`http://localhost:5000/api/posts/me/like`, {
-      params:{postId,}, 
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    await axios.post(
+      `http://localhost:5000/api/posts/me/like`,
+      {postId},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
   } catch (error) {
     console.error("Error liking the post:", error);
   }
@@ -169,11 +172,14 @@ const likePost = async (postId, token) => {
 
 const unlikePost = async (postId, token) => {
   try {
-    await axios.delete(`http://localhost:5000/api/posts/me/unlike`,{postId,}, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    await axios.delete(
+      `http://localhost:5000/api/posts/me/unlike`,{postId},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
   } catch (error) {
     console.error("Error unliking the post:", error);
   }
@@ -181,26 +187,34 @@ const unlikePost = async (postId, token) => {
 
 
 export const handleLikePost = async (postId, token, liked, setLiked, setLikesCount) => {
-  if (liked) {
-    await unlikePost(postId, token);
-    setLiked(false);
-    const likes_count=getPostEngagement(postId, token).like_count;
-    setLikesCount(likes_count);
-  } else {
-    await likePost(postId, token);
-    setLiked(true);
-    const likes_count=getPostEngagement(postId, token).like_count;
-    setLikesCount(likes_count);
+  try {
+    if (liked) {
+      await unlikePost(postId, token);
+      setLiked(false);
+    } else {
+      await likePost(postId, token);
+      setLiked(true);
+    }
+
+    // Fetch updated likes count
+    const engagement = await getPostEngagement(postId, token);
+    setLikesCount(engagement.like_count);
+  } catch (error) {
+    console.error("Error handling like post:", error);
   }
 };
 
-const repostPost = async (postId, userId,token) => {
+const repostPost = async (postId, token) => {
   try {
-    await axios.post(`http://localhost:5000/api/posts/me/share`),{postId,}, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    };
+    await axios.post(
+      `http://localhost:5000/api/posts/me/share`,
+      { postId },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
   } catch (error) {
     console.error("Error sharing the post:", error);
   }
@@ -404,9 +418,17 @@ export const removeConnection = async (connectionId) => {
   }
 };
 
-export const deletePost = async (postId) => {
+export const deletePost = async (postId, token) => {
   try {
-    const response = await axios.delete(`http://localhost:5000/api/posts/me/deletepost`,postId);
+    const response = await axios.delete(
+      `http://localhost:5000/api/posts/me/deletepost`,
+      {
+        params: { postId },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     return response.data;
   } catch (error) {
     console.error("Error deleting post:", error);

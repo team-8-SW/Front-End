@@ -37,20 +37,21 @@ function App() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     console.log("Token:", token);
-  
-    
-    const publicRoutes = [
-      "/signup", 
-      "/login", 
-      "/forgot-password",
-      "/reset-password"  // Added reset password as public
-    ];
-  
-      axios.get("http://localhost:5000/api/profiles/", {
+
+    const publicRoutes = ["/signup", "/login", "/forgot-password", "/reset-password"];
+
+    // Check if the current route is public
+    if (publicRoutes.includes(window.location.pathname)) {
+      return; // Skip token validation for public routes
+    }
+
+    // Validate token for protected routes
+    axios
+      .get("http://localhost:5000/api/profiles/", {
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       })
       .then((res) => {
         setLoggedUser({
@@ -69,18 +70,15 @@ function App() {
           navigate("/login");
         }
       });
-    }
-  , [navigate]);
-  
-  
+  }, [navigate]);
 
   return (
     <div className="bg-backGroundColor min-h-screen">
       <Nav />
       <Routes>
 
-      <Route path="/reset-password" element={<ResetPassword />} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/profile" element={<Profile loggedUser={loggedUser} />} />
         <Route path="/view/:id" element={<View loggedUser={loggedUser} />} />
         <Route path="/" element={<Home loggedUser={loggedUser} />} />

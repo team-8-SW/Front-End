@@ -15,20 +15,25 @@ const UserActionButtons = ({ userId, initialIsBlocked }) => {
     setIsLoading(true);
     try {
       if (isBlocked) {
-        // Unblock user
         await unblockUser(userId, token);
         setIsBlocked(false);
         alert('User unblocked successfully');
       } else {
-        // Block user
         await blockUser(userId, token);
         setIsBlocked(true);
         alert('User blocked successfully');
       }
     } catch (error) {
-      console.error('Block/Unblock error:', error);
-      alert(error.response?.data?.message || 
-           `Failed to ${isBlocked ? 'unblock' : 'block'} user. Please try again.`);
+      if (error.response) {
+        // Handle specific status codes
+        if (error.response.status === 404) {
+          alert('User not found or already unblocked');
+        } else {
+          alert(error.response.data?.message || 'An error occurred');
+        }
+      } else {
+        alert('Network error - please try again');
+      }
     } finally {
       setIsLoading(false);
     }

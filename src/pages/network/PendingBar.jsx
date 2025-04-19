@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchPendingConnections } from "../../services/api";
+
 import { MdChevronRight } from "react-icons/md";
 
 const PendingConnectionsBar = () => {

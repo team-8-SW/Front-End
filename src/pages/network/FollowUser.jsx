@@ -6,13 +6,14 @@ const FollowUserPage = () => {
   const [followed, setFollowed] = useState({});
 
   useEffect(() => {
-    axios.get("/api/following/suggestions", {
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-    })
-    .then((res) => {
-      setUsers(res.data);
-    })
-    .catch((err) => console.error("Error fetching user suggestions", err));
+    axios
+      .get("/api/following/suggestions", {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      })
+      .then((res) => {
+        setUsers(res.data);
+      })
+      .catch((err) => console.error("Error fetching user suggestions", err));
   }, []);
 
   const handleFollow = async (userId) => {
@@ -21,7 +22,7 @@ const FollowUserPage = () => {
         `/api/following/${userId}`,
         {},
         {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
 
@@ -47,9 +48,12 @@ const FollowUserPage = () => {
               <p className="text-sm text-gray-500">{user.email}</p>
             </div>
             <button
-              className={`px-4 py-1 rounded ${
-                followed[user.id] ? "bg-gray-400" : "bg-blue-600 text-white"
-              }`}
+              className={`px-4 py-1 rounded font-medium transition-colors duration-200
+                ${
+                  followed[user.id]
+                    ? "bg-blue-600 text-white cursor-default"
+                    : "bg-blue-500 text-white hover:bg-blue-300"
+                }`}
               disabled={followed[user.id]}
               onClick={() => handleFollow(user.id)}
             >

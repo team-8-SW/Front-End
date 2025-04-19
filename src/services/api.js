@@ -578,10 +578,13 @@ export const declineMessageRequest = async (id) => {
 
 // Block a user
 // Updated Block/Unblock API functions
+
+
+// api.js
 export const blockUser = async (userId, token) => {
   return axios.post(
     `http://localhost:5000/api/users/${userId}/block`,
-    {}, // Empty body as per your endpoint
+    {},
     {
       headers: { 
         'Authorization': `Bearer ${token}`,
@@ -592,17 +595,50 @@ export const blockUser = async (userId, token) => {
 };
 
 export const unblockUser = async (userId, token) => {
-  return axios.delete(
-    `http://localhost:5000/api/users/${userId}/block`, // Note: Same endpoint as blocking
+  return axios.post(  // Changed from DELETE to POST
+    `http://localhost:5000/api/users/${userId}/unblock`,  // Changed port from 5000 to 3000
+    {}, // Empty body as shown in your API spec
     {
       headers: { 
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
       }
     }
   );
 };
+export const followUser = async (userId, token) => {
+  const response = await axios.post(
+    `http://localhost:5000/api/following/users/${userId}`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+  );
+  return response.data;
+};
+export const unfollowUser = async (userId, token) => {
+  const response = await axios.delete(
+    `http://localhost:5000/api/following/users/${userId}`,
+    {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    }
+  );
+  return response.data;
+};
+export const getBlockedUsers = async (token) => {
+  return axios.get('http://localhost:5000/api/users/me/blocked', {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  });
+};
 
-
+//
 export const getComments = async (postId, token) => {
   try {
     const response = await axios.get(`http://localhost:5000/api/posts/me/comments`, {
@@ -616,5 +652,5 @@ export const getComments = async (postId, token) => {
     console.error("Error fetching comments:", error);
     throw error;
   }
-}
+};
 

@@ -29,7 +29,8 @@ const SideLeftBar = () => {
   
   const menuItems = [
     { 
-      name: 'Connections', path:'/ConnectionList',
+      name: 'Connections', 
+      path: '/ConnectionList',
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
           <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
@@ -61,6 +62,15 @@ const SideLeftBar = () => {
       )
     },
     { 
+      name: 'Blocked Users',
+      path: '/network/blocked',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fillRule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clipRule="evenodd" />
+        </svg>
+      )
+    },
+    { 
       name: 'Pages',
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -80,14 +90,14 @@ const SideLeftBar = () => {
   ];
 
   return (
-    <Card className=" flex flex-start bg-white rounded-lg shadow border border-gray-200 w-64  border-top-left-radius-0.8
+    <Card className="flex flex-start bg-white rounded-lg shadow border border-gray-200 w-64 border-top-left-radius-0.8
         border-top-right-radius-0.8
         border-bottom-right-radius-0.8
         border-bottom-left-radius: 0.8 mt-4 ml-8">
       
-       <CardBody className="py-2">
-       < Typography variant="h6" className="text-gray-800 mt-3 mb-3">Manage my network</Typography>
-       <div className="flex items-center my-1">
+      <CardBody className="py-2">
+        <Typography variant="h6" className="text-gray-800 mt-3 mb-3">Manage my network</Typography>
+        <div className="flex items-center my-1">
           <div className="flex-grow border-t border-gray-300"></div>
           <div className="flex-grow border-t border-gray-300"></div>
         </div>
@@ -99,7 +109,9 @@ const SideLeftBar = () => {
             active={activeItem === item.name}
             onClick={() => {
               setActiveItem(item.name);
-              navigate(item.path);
+              if (item.path) {
+                navigate(item.path);
+              }
             }}
           />
         ))}

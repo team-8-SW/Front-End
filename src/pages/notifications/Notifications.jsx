@@ -5,12 +5,11 @@ const Notifications = ({ loggedUser }) => {
   const [notifications, setNotifications] = useState([]);
   const [selectedNotifications, setSelectedNotifications] = useState([]);
   const token = localStorage.getItem('token');
-  
+
   useEffect(() => {
-    // Fetch notifications when the component mounts
     fetchNotifications(token).then((data) => {
       setNotifications(data);
-    });
+    }).catch((err) => console.error(err));
   }, [token]);
 
   const handleCheckboxChange = (id) => {
@@ -24,8 +23,9 @@ const Notifications = ({ loggedUser }) => {
   const handleMarkAsRead = async () => {
     try {
       for (const id of selectedNotifications) {
-        await markNotificationAsRead(id);
+        await markNotificationAsRead(id, token);
       }
+
       setNotifications((prev) =>
         prev.map((notification) =>
           selectedNotifications.includes(notification.id)
@@ -33,7 +33,8 @@ const Notifications = ({ loggedUser }) => {
             : notification
         )
       );
-      setSelectedNotifications([]); // Clear selected notifications
+
+      setSelectedNotifications([]);
     } catch (error) {
       console.error('Error marking notifications as read:', error);
     }

@@ -221,7 +221,7 @@ useEffect(() => {
           color="blue"
           className="flex items-center gap-1 hover:text-blue-600"
           onClick={() =>
-            handlerepostPost(post.id, token , setRepostsCount,repostsCounts)
+            handlerepostPost(post.id, token , setRepostsCount,repostsCount)
           }
           data-testid="repost-icon"
         >

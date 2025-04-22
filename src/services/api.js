@@ -190,19 +190,18 @@ const unlikePost = async (postId, token) => {
 };
 
 
-export const handleLikePost = async (postId, token, liked, setLiked, setLikesCount) => {
+export const handleLikePost = async (postId, token, liked, setLiked, setLikesCount,likesCount) => {
   try {
     if (liked) {
       await unlikePost(postId, token);
+      setLikesCount(likesCount-1);
       setLiked(false);
     } else {
       await likePost(postId, token);
+      setLikesCount(likesCount+1);
       setLiked(true);
     }
 
-    // Fetch updated likes count
-    const engagement = await getPostEngagement(postId, token);
-    setLikesCount(engagement.like_count);
   } catch (error) {
     console.error("Error handling like post:", error);
   }
@@ -225,11 +224,10 @@ const repostPost = async (postId, token) => {
 };
 
 
-export const handlerepostPost = async (postId,token, setrepostsCount) => {
+export const handlerepostPost = async (postId,token, setrepostsCount,repostsCount) => {
   
     await repostPost(postId,token);
-    const reposts_count=getPostEngagement(postId, token).repost_count;
-    setrepostsCount(reposts_count);
+    setrepostsCount(repostsCount+1);
 };
 
 export const handleAddNewComment = async (postId,newComment, token) => {

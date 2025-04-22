@@ -191,7 +191,7 @@ useEffect(() => {
           color="blue"
           className="flex items-center gap-1 hover:text-blue-600"
           onClick={() =>
-            handleLikePost(post.id,token, liked, setLiked, setLikesCount)
+            handleLikePost(post.id,token, liked, setLiked, setLikesCount,likesCount)
           }
           data-testid="like-icon"
         >
@@ -221,7 +221,7 @@ useEffect(() => {
           color="blue"
           className="flex items-center gap-1 hover:text-blue-600"
           onClick={() =>
-            handlerepostPost(post.id, token , setRepostsCount)
+            handlerepostPost(post.id, token , setRepostsCount,repostsCounts)
           }
           data-testid="repost-icon"
         >

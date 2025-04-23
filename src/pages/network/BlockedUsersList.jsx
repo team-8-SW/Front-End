@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getBlockedUsers, unblockUser } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
-//import { ShieldX, Undo2 } from 'lucide-react'; // Optional icons
+import { ShieldX, Undo2 } from 'lucide-react'; // Optional icons
 
 const BlockedUsersList = () => {
   const [blockedUsers, setBlockedUsers] = useState([]);

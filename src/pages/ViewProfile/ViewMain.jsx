@@ -12,6 +12,7 @@ const ViewMain = ({ loggedUser, setLoggedUser }) => {
   const { id: userid } = useParams();
   const [visibility, setVisibility] = useState(false);
   const [profileData, setProfileData] = useState(null);
+  const [allowConnectionRequests, setAllowConnectionRequests] = useState(true);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -28,7 +29,10 @@ const ViewMain = ({ loggedUser, setLoggedUser }) => {
         setProfileData(res.data);     
         console.log("profile dataaaa",res.data)     // set entire response
         console.log("Connection Status:", res.data.connectionStatus);
-        setVisibility(res.data.public);    // extract and store visibility
+        setVisibility(res.data.public);  
+          // extract and store visibility
+          console.log("allowConnectionRequesttttt", res.data.allowConnectionRequests);
+          setAllowConnectionRequests(res.data.allowConnectionRequests); // extract and store allowConnectionRequests
 
       } catch (err) {
         console.error("Failed to fetch profile data:", err);
@@ -60,6 +64,7 @@ const ViewMain = ({ loggedUser, setLoggedUser }) => {
         token={localStorage.getItem("token")}
         connectionStatus={profileData.connectionStatus.status}
         connectionId={profileData.connectionStatus.connectionId}
+        allowConnectionRequests={allowConnectionRequests} // Pass the allowConnectionRequests state
        
       />
 

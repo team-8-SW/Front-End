@@ -64,6 +64,7 @@ function App() {
           ...res.data,
           id: res.data.profile.id,
         });
+        console.log("User data:", res.data);
       })
       .catch((err) => {
         console.error("Failed to fetch user:", err);

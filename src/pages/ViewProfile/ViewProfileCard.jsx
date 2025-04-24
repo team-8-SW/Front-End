@@ -9,8 +9,7 @@ import AcceptConnection from "../network/AcceptConnection";
 import DeclineConnection from "../network/DeclineConnection";
 import { removeConnection, blockUser, unblockUser, followUser, unfollowUser } from "../../services/api";
 
-const ViewProfileCard = ({ profile, userid, token ,connectionStatus,connectionId}) => {
-
+const ViewProfileCard = ({ profile, userid, token, connectionStatus, connectionId, allowConnectionRequests }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [openContact, setOpenContact] = useState(false);
   const [isBlocked, setIsBlocked] = useState(profile?.isBlocked || false);
@@ -20,13 +19,12 @@ const ViewProfileCard = ({ profile, userid, token ,connectionStatus,connectionId
   if (!profile) return <p className="text-center mt-10">Loading...</p>;
 
   const toggleDropdown = () => setIsOpen(!isOpen);
-  // const connectionId = profile?.connectionId;
 
   const handleRemoveConnection = async () => {
     try {
       const data = await removeConnection(connectionId);
       console.log("Connection removed:", data);
-      window.location.reload(); // Refresh the page to reflect changes
+      window.location.reload();
     } catch (error) {
       console.error("Error removing connection:", error);
     }
@@ -47,7 +45,6 @@ const ViewProfileCard = ({ profile, userid, token ,connectionStatus,connectionId
       alert(error.response?.data?.message || `Failed to ${isBlocked ? 'unblock' : 'block'} user`);
     }
   };
-  
 
   const handleFollowWithoutConnecting = async () => {
     setIsLoading(true);
@@ -63,57 +60,12 @@ const ViewProfileCard = ({ profile, userid, token ,connectionStatus,connectionId
       }
     } catch (error) {
       console.error("Follow/Unfollow error:", error);
-      alert(
-        error.response?.data?.message || 
-        error.message || 
-        `Failed to ${isFollowing ? 'unfollow' : 'follow'} user`
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  const handleFollow = async () => {
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) throw new Error('Authentication required');
-  
-      if (isFollowing) {
-        const response = await axios.delete(
-          `http://localhost:5000/api/following/users/${userId}`,
-          {
-            headers: { 'Authorization': `Bearer ${token}` }
-          }
-        );
-        if (response.status === 200) {
-          setIsFollowing(false);
-        }
-      } else {
-        const response = await axios.post(
-          `http://localhost:5000/api/following/users/${userId}`,
-          {},
-          { headers: { 'Authorization': `Bearer ${token}` } }
-        );
-        if (response.data.message === "User followed successfully") {
-          setIsFollowing(true);
-        }
-      }
-    } catch (err) {
-      console.error("API Error:", err.response?.data || err.message);
-      setError(
-        err.response?.data?.message || 
-        err.message || 
-        `Failed to ${isFollowing ? 'unfollow' : 'follow'} user`
-      );
+      alert(error.response?.data?.message || error.message || `Failed to ${isFollowing ? 'unfollow' : 'follow'} user`);
     } finally {
       setIsLoading(false);
     }
   };
 
-  console.log("Connection status:", connectionStatus);
-  console.log("connectionId:", connectionId);
   return (
     <Card className="relative w-full mx-auto shadow-lg rounded-lg">
       <CardHeader floated={false} shadow={false} className="relative h-40">
@@ -155,7 +107,7 @@ const ViewProfileCard = ({ profile, userid, token ,connectionStatus,connectionId
       </CardBody>
 
       <CardFooter className="flex items-center gap-4 flex-wrap md:flex-nowrap pb-6 mt-4 relative">
-        
+
         {connectionStatus === "connected" && (
           <>
             <Button color="blue" className="rounded-full w-[120px]">Message</Button>
@@ -201,16 +153,18 @@ const ViewProfileCard = ({ profile, userid, token ,connectionStatus,connectionId
 
         {connectionStatus === "no connection" && (
           <>
-            <ConnectButton userId={userid} token={token} />
-            <Button 
-  onClick={handleFollowWithoutConnecting}
-  disabled={isLoading}
-  color={isFollowing ? "gray" : "blue"} 
-  variant={isFollowing ? "filled" : "outlined"} 
-  className="rounded-full w-[120px]"
->
-  {isLoading ? 'Processing...' : isFollowing ? 'Following' : 'Follow'}
-</Button>
+            {allowConnectionRequests && (
+              <ConnectButton userId={userid} token={token} />
+            )}
+            <Button
+              onClick={handleFollowWithoutConnecting}
+              disabled={isLoading}
+              color={isFollowing ? "gray" : "blue"}
+              variant={isFollowing ? "filled" : "outlined"}
+              className="rounded-full w-[120px]"
+            >
+              {isLoading ? 'Processing...' : isFollowing ? 'Following' : 'Follow'}
+            </Button>
             <MoreDropdown
               isOpen={isOpen}
               toggle={toggleDropdown}

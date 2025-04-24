@@ -31,6 +31,7 @@ import ConnectionsList from "./pages/network/ConnectionList";
 import ViewCompany from "./pages/company/ViewCompany";
 import CompanyJobsTab from "./pages/company/CompanyJobsTab";
 import EditCompanyForm from "./pages/company/EditCompanyPage";
+import MessagesPage from "./pages/messages/MessagesPage";
 
 function App() {
   const [loggedUser, setLoggedUser] = useState(null);
@@ -108,6 +109,7 @@ function App() {
         <Route path="/ConnectionList" element={<ConnectionsList />} />
         <Route path="/viewcompany/:companyid" element={<ViewCompany loggedUser={loggedUser} />} />
         <Route path="companyjobs" element={<CompanyJobsTab/>} />
+        <Route path="/messages" element={<MessagesPage/>} />
       </Routes>
     </div>
   );

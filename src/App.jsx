@@ -32,6 +32,10 @@ import ViewCompany from "./pages/company/ViewCompany";
 import CompanyJobsTab from "./pages/company/CompanyJobsTab";
 import EditCompanyForm from "./pages/company/EditCompanyPage";
 import MessagesPage from "./pages/messages/MessagesPage";
+import MainPage from "./pages/jobs/MainPage";
+import JobHome from "./pages/jobs/JobHome";
+import MyJobs from "./pages/jobs/MyJobs";
+
 
 function App() {
   const [loggedUser, setLoggedUser] = useState(null);
@@ -110,6 +114,14 @@ function App() {
         <Route path="/viewcompany/:companyid" element={<ViewCompany loggedUser={loggedUser} />} />
         <Route path="companyjobs" element={<CompanyJobsTab/>} />
         <Route path="/messages" element={<MessagesPage/>} />
+        <Route path="/jobs" element={<JobHome />} />
+        
+        <Route path="/detailedjobs" element={<MainPage />} />
+<Route path="/detailedjobs/:jobId" element={<MainPage />} />
+
+
+
+        <Route path="/myjobs" element={<MyJobs />} />
       </Routes>
     </div>
   );

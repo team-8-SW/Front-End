@@ -13,7 +13,10 @@ import UserSearch from "../pages/network/UserSearch";
 
 const Nav = () => {
   const location = useLocation();
-  const hiddenPaths = ["/login", "/signup"];
+  const hiddenPaths = ["/login", "/signup","/detailedjobs","/detailedjobs/:jobId"];
+  // ✅ FIXED: Use useLocation to get the current path
+  
+  if (location.pathname.startsWith("/detailedjobs")) return null;
   if (hiddenPaths.includes(location.pathname)) return null;
   const [isAppsDropdownOpen, setIsAppsDropdownOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);

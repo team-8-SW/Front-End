@@ -666,24 +666,4 @@ export const getComments = async (postId, token) => {
   }
 };
 
-export const sendMessage = async ({ receiverId, content }) => {
-  try {
-    const token = localStorage.getItem('token');
-    const response = await axios.post(
-      'http://localhost:5000/api/messages',
-      { receiverId, content },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    return response.data;
-  } catch (error) {
-    console.error('Error sending message:', error);
-    throw error;
-  }
-};
-
 

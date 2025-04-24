@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { PlusCircle, Paperclip, Image, MoreHorizontal, X } from 'lucide-react';
-import { getConnections, searchUsers, sendMessage } from '../../services/api';
+import { getConnections, searchUsers} from '../../services/api';
+import socket from '../../services/socket';
 
 const ChatWindow = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -8,6 +9,39 @@ const ChatWindow = () => {
   const [selectedRecipients, setSelectedRecipients] = useState([]);
   const [messageContent, setMessageContent] = useState('');
   const [connections, setConnections] = useState([]);
+  
+  const parseJwt = (token) => {
+    try {
+      return JSON.parse(atob(token.split('.')[1]));
+    } catch (e) {
+      return null;
+    }
+  };
+  
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const userId = parseJwt(token)?.userId;
+  
+    if (!userId) return;
+  
+    const handleConnect = () => {
+      console.log('Socket connected:', socket.id);
+      socket.emit('join', userId); // match the backend event
+    };
+  
+    socket.on('connect', handleConnect);
+  
+    // Optional: reconnect on page reload
+    if (socket.connected) {
+      socket.emit('join', userId);
+    }
+  
+    return () => {
+      socket.off('connect', handleConnect);
+      // Do NOT call socket.disconnect() unless you want to fully stop it — not needed here
+    };
+  }, []);
+  
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -65,21 +99,22 @@ const ChatWindow = () => {
   const handleSendMessage = async () => {
     const trimmed = messageContent.trim();
     if (trimmed.length <= 3) return;
-
-    try {
-      for (const recipient of selectedRecipients) {
-        await sendMessage({
-          receiverId: recipient.id,
-          content: trimmed,
-        });
-      }
-      setMessageContent('');
-      setSelectedRecipients([]);
-    } catch (error) {
-      console.error('Error sending message:', error);
+  
+    const token = localStorage.getItem('token');
+    const senderId = parseJwt(token)?.userId;
+  
+    for (const recipient of selectedRecipients) {
+      socket.emit('send_text', {
+        senderId,
+        receiverId: recipient.id,
+        content: trimmed,
+      });
     }
+  
+    setMessageContent('');
+    setSelectedRecipients([]);
   };
-
+  
   const filteredConnections = searchQuery.length > 2 ? searchResults : [];
 
   return (

@@ -124,7 +124,7 @@ const JobDetailsForm = ({ loggedUser }) => {
             >
               <Option value="full-time">Full-time</Option>
               <Option value="part-time">Part-time</Option>
-              <Option value="internship">Internship</Option>
+              
               <Option value="contract">Contract</Option>
             </Select>
 
@@ -133,9 +133,9 @@ const JobDetailsForm = ({ loggedUser }) => {
               value={jobDetails.workplace_type}
               onChange={(val) => setJobDetails(prev => ({ ...prev, workplace_type: val }))}
             >
-              <Option value="on-site">On-site</Option>
+              <Option value="On-site">On-site</Option>
               <Option value="Remote">Remote</Option>
-              <Option value="hybrid">Hybrid</Option>
+              <Option value="Hybrid">Hybrid</Option>
             </Select>
           </div>
 

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import {
-  Card, CardHeader, CardBody, CardFooter, Typography, Button, Avatar
+  Card, CardHeader, CardBody, CardFooter, Typography, Button, Avatar, Dialog
 } from "@material-tailwind/react";
 import { PencilIcon } from "@heroicons/react/24/outline";
 import ViewContactInfo from "./ViewContactInfo";
@@ -8,10 +8,12 @@ import ConnectButton from "../network/ConnectButton";
 import AcceptConnection from "../network/AcceptConnection";
 import DeclineConnection from "../network/DeclineConnection";
 import { removeConnection, blockUser, unblockUser, followUser, unfollowUser } from "../../services/api";
+import ViewProfilePhotoCard from "./ViewProfilePhotoCard";
 
 const ViewProfileCard = ({ profile, userid, token, connectionStatus, connectionId, allowConnectionRequests }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [openContact, setOpenContact] = useState(false);
+  const [openPP, setOpenPP] = useState(false);
   const [isBlocked, setIsBlocked] = useState(profile?.isBlocked || false);
   const [isFollowing, setIsFollowing] = useState(profile?.isFollowing || false);
   const [isLoading, setIsLoading] = useState(false);
@@ -80,7 +82,8 @@ const ViewProfileCard = ({ profile, userid, token, connectionStatus, connectionI
         <Avatar
           src={profile.profilePictureUrl || "/default-avatar.png"}
           size="xxl"
-          className="border-4 border-white shadow-lg"
+          className="border-4 border-white shadow-lg cursor-pointer"
+          onClick={() => setOpenPP(true)}
         />
       </div>
 
@@ -176,12 +179,20 @@ const ViewProfileCard = ({ profile, userid, token, connectionStatus, connectionI
         )}
       </CardFooter>
 
-      {openContact && (
+      {/* Dialogs */}
+      <Dialog open={openContact} handler={() => setOpenContact(false)}>
         <ViewContactInfo
           contactInfo={profile.contactInfo}
           onClose={() => setOpenContact(false)}
         />
-      )}
+      </Dialog>
+
+      <Dialog open={openPP} handler={() => setOpenPP(false)}>
+        <ViewProfilePhotoCard
+          profilePictureUrl={profile.profilePictureUrl}
+          setOpen={setOpenPP}
+        />
+      </Dialog>
     </Card>
   );
 };

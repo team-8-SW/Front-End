@@ -10,22 +10,19 @@ import { FaBell } from "react-icons/fa";
 import { unReadCount } from "../services/api";
 import UserSearch from "../pages/network/UserSearch";
 
-
 const Nav = () => {
   const location = useLocation();
-  const hiddenPaths = ["/login", "/signup","/detailedjobs","/detailedjobs/:jobId"];
-  // ✅ FIXED: Use useLocation to get the current path
-  
+  const hiddenPaths = ["/login", "/signup", "/detailedjobs", "/detailedjobs/:jobId"];
+
   if (location.pathname.startsWith("/detailedjobs")) return null;
   if (hiddenPaths.includes(location.pathname)) return null;
+
   const [isAppsDropdownOpen, setIsAppsDropdownOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(null);
-  
-  const navigate = useNavigate();
-  
 
-  const token = localStorage.getItem("token"); // ✅ FIXED: Declare token
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
 
   const isActive = (path) => location.pathname === path;
 
@@ -61,7 +58,7 @@ const Nav = () => {
               </svg>
             </Typography>
           </Link>
-          <UserSearch token={token} /> {/* ✅ FIXED */}
+          <UserSearch token={token} />
         </div>
 
         <div className="flex gap-6 text-gray-600">
@@ -75,9 +72,7 @@ const Nav = () => {
             <Link key={to} to={to} className="flex flex-col items-center group">
               <div className="relative">
                 <Icon
-                  className={`h-6 w-6 ${
-                    isActive(to) ? "text-blue-700" : "text-gray-900 group-hover:text-blue-700"
-                  }`}
+                  className={`h-6 w-6 ${isActive(to) ? "text-blue-700" : "text-gray-900 group-hover:text-blue-700"}`}
                 />
                 {label === "Notifications" && unreadCount > 0 && (
                   <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
@@ -85,13 +80,7 @@ const Nav = () => {
                   </span>
                 )}
               </div>
-              <span
-                className={`text-xs mt-1 ${
-                  isActive(to)
-                    ? "text-blue-700 font-semibold"
-                    : "text-gray-500 group-hover:text-blue-700"
-                }`}
-              >
+              <span className={`text-xs mt-1 ${isActive(to) ? "text-blue-700 font-semibold" : "text-gray-500 group-hover:text-blue-700"}`}>
                 {label}
               </span>
               {isActive(to) && <div className="w-6 h-1 bg-blue-700 rounded-full mt-1"></div>}
@@ -106,9 +95,9 @@ const Nav = () => {
             </button>
             {isProfileDropdownOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-md shadow-lg py-2 z-50">
-                <Link to="/profile" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">View Profile</Link>
-                <Link to="/settings" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">Settings</Link>
-                <button onClick={()=>logout()} className="block px-4 py-2 text-gray-700 hover:bg-gray-100 w-full text-left">Logout</button>
+                <Link to="/profile" onClick={() => setIsProfileDropdownOpen(false)} className="block px-4 py-2 text-gray-700 hover:bg-gray-100">View Profile</Link>
+                <Link to="/settings" onClick={() => setIsProfileDropdownOpen(false)} className="block px-4 py-2 text-gray-700 hover:bg-gray-100">Settings</Link>
+                <button onClick={() => { setIsProfileDropdownOpen(false); logout(); }} className="block px-4 py-2 text-gray-700 hover:bg-gray-100 w-full text-left">Logout</button>
               </div>
             )}
           </div>
@@ -121,13 +110,13 @@ const Nav = () => {
             </button>
             {isAppsDropdownOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-md shadow-lg py-2 z-50">
-                <Link to="/companyform" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                <Link to="/companyform" onClick={() => setIsAppsDropdownOpen(false)} className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
                   <div className="flex items-center gap-2">
                     <Typography className="text-gray-700 text-[15px]">Create a Company Page</Typography>
                     <PlusIcon className="h-6 w-6" />
                   </div>
                 </Link>
-                <Link to="/business" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">Business Tools</Link>
+                <Link to="/business" onClick={() => setIsAppsDropdownOpen(false)} className="block px-4 py-2 text-gray-700 hover:bg-gray-100">Business Tools</Link>
               </div>
             )}
           </div>

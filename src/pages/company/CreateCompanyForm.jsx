@@ -98,11 +98,16 @@ const CreateCompanyForm = ({ setCompanyData }) => {
               onChange={(val) => setFormData((prev) => ({ ...prev, size: val }))}
               required
             >
-              <Option value="1-10 employees">1-10 employees</Option>
+              <Option value="0-1 employees">0-1 employees</Option>
+              <Option value="2-10 employees">2-10 employees</Option>
               <Option value="11-50 employees">11-50 employees</Option>
               <Option value="51-200 employees">51-200 employees</Option>
               <Option value="201-500 employees">201-500 employees</Option>
-              <Option value="500+ employees">500+ employees</Option>
+              <Option value="501-1000 employees">501-1000 employees</Option>
+              <Option value="1001-5000 employees">1001-5000 employees</Option>
+              <Option value="5001-10000 employees">5001-10,000 employees</Option>
+              <Option value="10000+ employees">10,000+ employees</Option>
+              
             </Select>
 
             <Input label="Location" name="location" value={formData.location} onChange={handleChange} />

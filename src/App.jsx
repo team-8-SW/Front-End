@@ -36,7 +36,6 @@ import MainPage from "./pages/jobs/MainPage";
 import JobHome from "./pages/jobs/JobHome";
 import MyJobs from "./pages/jobs/MyJobs";
 
-
 function App() {
   const [loggedUser, setLoggedUser] = useState(null);
   const navigate = useNavigate();
@@ -47,12 +46,10 @@ function App() {
 
     const publicRoutes = ["/signup", "/login", "/forgot-password", "/reset-password"];
 
-    // Check if the current route is public
     if (publicRoutes.includes(window.location.pathname)) {
-      return; // Skip token validation for public routes
+      return;
     }
 
-    // Validate token for protected routes
     axios
       .get("http://localhost:5000/api/profiles/", {
         headers: {
@@ -69,10 +66,6 @@ function App() {
       })
       .catch((err) => {
         console.error("Failed to fetch user:", err);
-        if (err.response) {
-          console.log("Error status:", err.response.status);
-          console.log("Error data:", err.response.data);
-        }
         if (err.response?.status === 401) {
           localStorage.removeItem("token");
           navigate("/login");
@@ -85,44 +78,47 @@ function App() {
       <Nav />
       <Routes>
 
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/profile" element={<Profile loggedUser={loggedUser} />} />
-        <Route path="/view/:id" element={<View loggedUser={loggedUser} />} />
-        <Route path="/" element={<Home loggedUser={loggedUser} />} />
-        <Route path="/education" element={<DetailsEducation loggedUser={loggedUser} />} />
-        <Route path="/experience" element={<DetailsExperience loggedUser={loggedUser} />} />
-        <Route path="/skills" element={<DetailedSkills loggedUser={loggedUser} />} />
-        <Route path="/company/:companyid/*" element={<Company loggedUser={loggedUser} />} />
-        <Route path="/network" element={<NetworkPage />} />
-        <Route path="/network/pending" element={<PendingConnections loggedUser={loggedUser} />} />
-        <Route path="/network/blocked" element={<BlockedUsersList loggedUser={loggedUser} />} />
-
-
-
+        {/* Public Routes */}
         <Route path="/login" element={<LoginPage setLoggedUser={setLoggedUser} />} />
         <Route path="/signup" element={<SignUp />} />
-        <Route path="/jobtitle/:companyid" element={<JobTitle loggedUser={loggedUser} />} />
-        <Route path="/jobdetails/:companyid" element={<JobDetailsForm loggedUser={loggedUser} />} />
-        <Route path="/notifications" element={<NotificationsPage loggedUser={loggedUser} />} />
-        <Route path="/EmailManagement" element={<EmailManagement  email={loggedUser?.profile?.email}
-        userId={loggedUser?.id} />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/VerifyEmail" element={<VerifyEmail />} />
-        <Route path="/companyform" element={<CreateCompanyForm loggedUser={loggedUser} />} />
-        {/* <Route path="/updatecompany/:companyid" element={<EditCompanyForm  />} /> */}
-        <Route path="/SearchResults" element={<SearchResults />} />
-        <Route path="/ConnectionList" element={<ConnectionsList />} />
-        <Route path="/viewcompany/:companyid" element={<ViewCompany loggedUser={loggedUser} />} />
-        <Route path="companyjobs" element={<CompanyJobsTab/>} />
-        <Route path="/messages" element={<MessagesPage/>} />
-        <Route path="/jobs" element={<JobHome />} />
-        
-        <Route path="/detailedjobs" element={<MainPage />} />
-<Route path="/detailedjobs/:jobId" element={<MainPage />} />
 
+        {/* Protected Routes */}
+        <Route path="/" element={<ProtectedRoute><Home loggedUser={loggedUser} /></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><Profile loggedUser={loggedUser} /></ProtectedRoute>} />
+        <Route path="/view/:id" element={<ProtectedRoute><View loggedUser={loggedUser} /></ProtectedRoute>} />
+        <Route path="/education" element={<ProtectedRoute><DetailsEducation loggedUser={loggedUser} /></ProtectedRoute>} />
+        <Route path="/experience" element={<ProtectedRoute><DetailsExperience loggedUser={loggedUser} /></ProtectedRoute>} />
+        <Route path="/skills" element={<ProtectedRoute><DetailedSkills loggedUser={loggedUser} /></ProtectedRoute>} />
+        <Route path="/company/:companyid/*" element={<ProtectedRoute><Company loggedUser={loggedUser} /></ProtectedRoute>} />
+        <Route path="/network" element={<ProtectedRoute><NetworkPage /></ProtectedRoute>} />
+        <Route path="/network/pending" element={<ProtectedRoute><PendingConnections loggedUser={loggedUser} /></ProtectedRoute>} />
+        <Route path="/network/blocked" element={<ProtectedRoute><BlockedUsersList loggedUser={loggedUser} /></ProtectedRoute>} />
+        <Route path="/jobtitle/:companyid" element={<ProtectedRoute><JobTitle loggedUser={loggedUser} /></ProtectedRoute>} />
+        <Route path="/jobdetails/:companyid" element={<ProtectedRoute><JobDetailsForm loggedUser={loggedUser} /></ProtectedRoute>} />
+        <Route path="/notifications" element={<ProtectedRoute><NotificationsPage loggedUser={loggedUser} /></ProtectedRoute>} />
+        <Route path="/EmailManagement" element={
+          <ProtectedRoute>
+            <EmailManagement
+              email={loggedUser?.profile?.email}
+              userId={loggedUser?.id}
+            />
+          </ProtectedRoute>
+        } />
+        <Route path="/companyform" element={<ProtectedRoute><CreateCompanyForm loggedUser={loggedUser} /></ProtectedRoute>} />
+        <Route path="/updatecompany/:companyid" element={<ProtectedRoute><EditCompanyForm /></ProtectedRoute>} />
+        <Route path="/SearchResults" element={<ProtectedRoute><SearchResults /></ProtectedRoute>} />
+        <Route path="/ConnectionList" element={<ProtectedRoute><ConnectionsList /></ProtectedRoute>} />
+        <Route path="/viewcompany/:companyid" element={<ProtectedRoute><ViewCompany loggedUser={loggedUser} /></ProtectedRoute>} />
+        <Route path="/companyjobs" element={<ProtectedRoute><CompanyJobsTab /></ProtectedRoute>} />
+        <Route path="/messages" element={<ProtectedRoute><MessagesPage /></ProtectedRoute>} />
+        <Route path="/jobs" element={<ProtectedRoute><JobHome /></ProtectedRoute>} />
+        <Route path="/detailedjobs" element={<ProtectedRoute><MainPage /></ProtectedRoute>} />
+        <Route path="/detailedjobs/:jobId" element={<ProtectedRoute><MainPage /></ProtectedRoute>} />
+        <Route path="/myjobs" element={<ProtectedRoute><MyJobs /></ProtectedRoute>} />
 
-
-        <Route path="/myjobs" element={<MyJobs />} />
       </Routes>
     </div>
   );

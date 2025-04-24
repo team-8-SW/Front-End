@@ -68,7 +68,7 @@ const JobDetailsForm = ({ loggedUser }) => {
         }
       );
   
-      alert("Job created successfully");
+      
       navigate("/jobs");
     } catch (error) {
       console.error(

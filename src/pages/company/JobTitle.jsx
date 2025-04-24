@@ -18,18 +18,7 @@ const JobTitle = ({loggedUser}) => {
   return (
     <div className='w-full flex flex-col justify-center items-center '>
        
-        <Card className='w-full h-[40px] '>
-            
-
-            <div className='flex justify-between '>
-            <Typography variant='small' className='text-center'>
-        Manage Job Posts
-    </Typography>
-    <Typography variant='small' className='text-center text-gray-600'>
-        Create and manage your job posts here.
-    </Typography>
-            </div>
-    </Card>
+      
 
 
     

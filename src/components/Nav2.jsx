@@ -36,8 +36,8 @@ const Nav2 = () => {
 
   return (
     <>
-      <div className="flex justify-between items-center bg-white shadow px-6 py-2 sticky top-0 z-50">
-        <div className="flex items-center gap-4">
+      <div className="flex justify-center gap-5 items-center bg-white shadow px-6 py-2 sticky top-0 z-50">
+        <div className="flex items-center gap-4 ">
           <Link to="/">
             <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" className="w-8" alt="logo" />
           </Link>
@@ -141,8 +141,8 @@ const Nav2 = () => {
                 <span className="text-xs">{label}</span>
               </Link>
             ))}
-          <UserCircleIcon className="h-6 w-6" />
-          <PiDotsNine className="h-6 w-6" />
+          <UserCircleIcon className="h-7 w-7" />
+          <PiDotsNine className="h-7 w-7" />
         </div>
       </div>
     </>

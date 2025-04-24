@@ -169,11 +169,9 @@ const MainPage = () => {
               <Typography variant="h5" color="gray">
                 {selectedJob.company_name}
               </Typography>
-              <Typography variant="paragraph" className="mb-4">
-                {selectedJob.location} · {selectedJob.employment_type}
-              </Typography>
+              
 
-              <Typography variant="paragraph" className="mb-4 text-gray-800">
+              <Typography variant="paragraph" className="mb-4 text-gray-600 mt-2">
                 {selectedJob.description}
               </Typography>
 

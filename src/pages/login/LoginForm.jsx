@@ -1,12 +1,14 @@
 import axios from 'axios';
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import SocialLogin from '../../components/SocialLogin';
 
-const LoginForm = () => {
+const LoginForm = ({ setLoggedUser }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -21,12 +23,16 @@ const LoginForm = () => {
       });
 
       const token = response.data.token;
-      localStorage.setItem("token", token); // Store token in localStorage
+      localStorage.setItem("token", token); 
       setMessage("Login successful!");
       setMessageType("success");
 
+      if (setLoggedUser) {
+        setLoggedUser(response.data.user);
+      }
+
       setTimeout(() => {
-        navigate("/"); // change if your dashboard route is different
+        navigate("/"); 
       }, 1000);
     } catch (error) {
       setMessage(error.response?.data?.message || "Login failed. Please try again.");
@@ -35,66 +41,69 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
-      <h2 className="text-xl font-semibold text-center mb-6 text-gray-800">
-        Welcome back to Career Hub
-      </h2>
+    <div className="w-full max-w-md">
+      {message && (
+        <p className={`text-center text-sm font-bold mb-4 ${messageType === "error" ? "text-red-500" : "text-green-500"}`}>
+          {message}
+        </p>
+      )}
 
-      <div className="bg-white shadow-lg rounded-lg px-8 pt-8 pb-10 w-full max-w-md border border-gray-200">
-        {message && (
-          <p className={`text-center text-sm font-bold mb-4 ${messageType === "error" ? "text-red-500" : "text-green-500"}`}>
-            {message}
-          </p>
-        )}
-
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2">
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="mb-6">
-            <label htmlFor="password" className="block text-gray-700 text-sm font-bold mb-2">
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg mb-3"
-          >
-            Sign In
-          </button>
-          <Link to="/forgot-password" className="text-blue-600 hover:underline">
-            Forgot password?
-          </Link>
-        </form>
-      </div>
-      <div className="mt-6 text-center text-sm text-gray-600">
-          Don't have an account?{" "}
-          <Link to="/signup" className="text-blue-600 hover:underline">
-            Join now
-          </Link>
+      {/* Your Social Login Component */}
+      <div className="mb-6">
+        <div className="flex flex-col items-center justify-center w-full">
+          < SocialLogin />
         </div>
+      </div>
+
+      <div className="flex items-center my-4">
+        <div className="flex-grow border-t border-gray-300"></div>
+        <span className="flex-shrink mx-4 text-gray-500 text-sm">or</span>
+        <div className="flex-grow border-t border-gray-300"></div>
+      </div>
+
+      <form onSubmit={handleSubmit}>
+        <div className="mb-4">
+          <input
+            type="email"
+            id="email"
+            className="border border-gray-300 rounded w-full py-3 px-3 text-gray-700 focus:outline-none focus:border-blue-500"
+            placeholder="Email or phone"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="mb-6 relative">
+          <input
+            type={showPassword ? "text" : "password"}
+            id="password"
+            className="border border-gray-300 rounded w-full py-3 px-3 text-gray-700 focus:outline-none focus:border-blue-500"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <button
+            type="button"
+            className="absolute inset-y-0 right-0 pr-3 flex items-center text-blue-600"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? "Hide" : "Show"}
+          </button>
+        </div>
+
+        <Link to="/forgot-password" className="block text-blue-600 hover:underline mb-4">
+          Forgot password?
+        </Link>
+
+        <button
+          type="submit"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-full"
+        >
+          Sign in
+        </button>
+      </form>
     </div>
   );
 };

@@ -217,23 +217,6 @@ const SignUpForm = () => {
       <div className="mt-4 text-center text-sm text-gray-600">
         Looking to create a page for a business? <a href="#" className="text-blue-600 hover:underline">Get help</a>
       </div>
-
-      <div className="mt-8 mb-4 text-xs text-gray-500 flex justify-center flex-wrap gap-2 px-4">
-        <div className="flex items-center mr-1">
-          <span className="mr-1">LinkedIn</span>
-          <span>© 2025</span>
-        </div>
-        <a href="#" className="hover:underline">About</a>
-        <a href="#" className="hover:underline">Accessibility</a>
-        <a href="#" className="hover:underline">User Agreement</a>
-        <a href="#" className="hover:underline">Privacy Policy</a>
-        <a href="#" className="hover:underline">Cookie Policy</a>
-        <a href="#" className="hover:underline">Copyright Policy</a>
-        <a href="#" className="hover:underline">Brand Policy</a>
-        <a href="#" className="hover:underline">Guest Controls</a>
-        <a href="#" className="hover:underline">Community Guidelines</a>
-        <a href="#" className="hover:underline">Language</a>
-      </div>
     </div>
   );
 };

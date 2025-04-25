@@ -35,6 +35,9 @@ import MessagesPage from "./pages/messages/MessagesPage";
 import MainPage from "./pages/jobs/MainPage";
 import JobHome from "./pages/jobs/JobHome";
 import MyJobs from "./pages/jobs/MyJobs";
+import EmployerJobTitle from "./pages/jobs/EmployerJobtitle";
+import EmployerJobDetailsForm from "./pages/jobs/EmployerJobDetailsform";
+import JobApplications from "./pages/company/JobApplications";
 
 function App() {
   const [loggedUser, setLoggedUser] = useState(null);
@@ -96,8 +99,19 @@ function App() {
         <Route path="/network" element={<ProtectedRoute><NetworkPage /></ProtectedRoute>} />
         <Route path="/network/pending" element={<ProtectedRoute><PendingConnections loggedUser={loggedUser} /></ProtectedRoute>} />
         <Route path="/network/blocked" element={<ProtectedRoute><BlockedUsersList loggedUser={loggedUser} /></ProtectedRoute>} />
+
+
+
         <Route path="/jobtitle/:companyid" element={<ProtectedRoute><JobTitle loggedUser={loggedUser} /></ProtectedRoute>} />
         <Route path="/jobdetails/:companyid" element={<ProtectedRoute><JobDetailsForm loggedUser={loggedUser} /></ProtectedRoute>} />
+
+
+
+        <Route path="/employerjobtitle" element={<ProtectedRoute><EmployerJobTitle loggedUser={loggedUser} /></ProtectedRoute>} />
+        <Route path="/employerjobdetails" element={<ProtectedRoute><EmployerJobDetailsForm loggedUser={loggedUser} /></ProtectedRoute>} />
+
+
+
         <Route path="/notifications" element={<ProtectedRoute><NotificationsPage loggedUser={loggedUser} /></ProtectedRoute>} />
         <Route path="/EmailManagement" element={
           <ProtectedRoute>
@@ -118,6 +132,13 @@ function App() {
         <Route path="/detailedjobs" element={<ProtectedRoute><MainPage /></ProtectedRoute>} />
         <Route path="/detailedjobs/:jobId" element={<ProtectedRoute><MainPage /></ProtectedRoute>} />
         <Route path="/myjobs" element={<ProtectedRoute><MyJobs /></ProtectedRoute>} />
+        
+
+<Route
+  path="/company/:companyid/job/:jobid/applications"
+  element={<ProtectedRoute><JobApplications /></ProtectedRoute>}
+/>
+
 
       </Routes>
     </div>

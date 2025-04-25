@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Typography, Button } from "@material-tailwind/react";
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 const Jobs = ({ loggedUser }) => {
   const [jobsData, setJobsData] = useState([]);
-  const {companyid} = useParams(); // Assuming you have the company ID in the URL
+  const { companyid } = useParams(); // Get company ID from URL
+  const navigate = useNavigate(); // For navigation to applications page
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -25,7 +26,7 @@ const Jobs = ({ loggedUser }) => {
     };
 
     fetchJobs();
-  }, []);
+  }, [companyid]);
 
   // Filter out expired jobs
   const today = new Date();
@@ -79,7 +80,11 @@ const Jobs = ({ loggedUser }) => {
         ) : (
           <div className="flex flex-col gap-6">
             {filteredJobs.map((job) => (
-              <div key={job.id} className="border-b pb-4">
+              <div
+                key={job.id}
+                className="border-b pb-4 cursor-pointer hover:bg-gray-50 p-3 rounded"
+                onClick={() => navigate(`/company/${companyid}/job/${job.id}/applications`)}
+              >
                 <Typography variant="h6" className="text-blue-900">
                   {job.title || "Untitled Job"}
                 </Typography>

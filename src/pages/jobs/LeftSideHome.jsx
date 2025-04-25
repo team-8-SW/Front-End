@@ -17,7 +17,7 @@ const LeftsideHome = () => {
     { label: "My Jobs", to: "/myjobs", icon: BookmarkIcon },
     { label: "My Career Insights", to: "/insights", icon: ChartBarIcon },
     { divider: true },
-    { label: "Post a free job", to: "/postjob", icon: PencilSquareIcon, color: "text-blue-600" },
+    { label: "Post a free job", to: "/employerjobtitle", icon: PencilSquareIcon, color: "text-blue-600" },
     { label: "Manage job posts", to: "/managejobs", icon: BriefcaseIcon },
   ];
 

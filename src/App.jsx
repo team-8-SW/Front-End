@@ -13,6 +13,8 @@ import DetailedSkills from "./pages/DetailedSkills/DetailedSkills";
 import LoginPage from './pages/login/LoginPage';
 import BlockedUsersList from "./pages/network/BlockedUsersList";
 
+import ConversationList from "./pages/messages/ConversationList";
+
 import SignUp from './pages/signup/SignUp';
 import ResetPassword from "./pages/login/ResetPassword";
 import PendingConnections from "./pages/network/PendingConnections";

@@ -9,6 +9,17 @@ const ChatWindow = () => {
   const [selectedRecipients, setSelectedRecipients] = useState([]);
   const [messageContent, setMessageContent] = useState('');
   const [connections, setConnections] = useState([]);
+  const [messages, setMessages] = useState([]);
+  const [currentUserId, setCurrentUserId] = useState(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const userId = parseJwt(token)?.userId;
+    setCurrentUserId(userId);
+    if (!userId) return;
+  
+    socket.emit('join', userId);
+  }, []);
   
   const parseJwt = (token) => {
     try {
@@ -21,6 +32,7 @@ const ChatWindow = () => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     const userId = parseJwt(token)?.userId;
+    setCurrentUserId(userId);
   
     if (!userId) return;
   
@@ -33,14 +45,35 @@ const ChatWindow = () => {
   
     // Optional: reconnect on page reload
     if (socket.connected) {
-      socket.emit('join', userId);
+      socket.emit('join_room', userId);
     }
   
     return () => {
       socket.off('connect', handleConnect);
-      // Do NOT call socket.disconnect() unless you want to fully stop it — not needed here
     };
   }, []);
+
+  const handleMessage = (message) => {
+    const otherUserId = message.senderId === currentUserId
+      ? message.receiverId
+      : message.senderId;
+  
+    setMessages(prev => ({
+      ...prev,
+      [otherUserId]: [...(prev[otherUserId] || []), message],
+    }));
+  };
+  
+  
+  useEffect(() => {
+  
+    socket.on('receive_message', handleMessage);
+  
+    return () => {
+      socket.off('receive_message', handleMessage);
+    };
+  }, [currentUserId]);
+  
   
 
   useEffect(() => {
@@ -53,7 +86,7 @@ const ChatWindow = () => {
         }
 
         const conn = await getConnections();
-        setConnections(conn.connections); // assumes response format: { connections: [..] }
+        setConnections(conn.connections);
       } catch (error) {
         console.error('Error fetching connections:', error);
       }
@@ -96,25 +129,24 @@ const ChatWindow = () => {
     setSelectedRecipients(selectedRecipients.filter(r => r.id !== userId));
   };
 
-  const handleSendMessage = async () => {
+  const handleSendMessage = () => {
     const trimmed = messageContent.trim();
-    if (trimmed.length <= 3) return;
+    if (trimmed.length <= 3 || selectedRecipients.length !== 1) return;
   
-    const token = localStorage.getItem('token');
-    const senderId = parseJwt(token)?.userId;
+    const recipient = selectedRecipients[0];
+    const message = {
+      senderId: currentUserId,
+      receiverId: recipient.id,
+      content: trimmed,
+      timestamp: new Date().toISOString(),
+    };
   
-    for (const recipient of selectedRecipients) {
-      socket.emit('send_text', {
-        senderId,
-        receiverId: recipient.id,
-        content: trimmed,
-      });
-    }
-  
+    socket.emit('send_text', message);
+    handleMessage(message); // manually add it for the sender
     setMessageContent('');
-    setSelectedRecipients([]);
   };
   
+ 
   const filteredConnections = searchQuery.length > 2 ? searchResults : [];
 
   return (
@@ -189,6 +221,23 @@ const ChatWindow = () => {
           ))}
         </div>
       )}
+      {/* Message list */}
+      <div className="flex-1 overflow-y-auto p-4 flex flex-col space-y-2">
+      {selectedRecipients.length === 1 &&
+    messages[selectedRecipients[0].id]?.map((msg, index) => (
+    <div
+      key={index}
+      className={`p-3 rounded-lg max-w-md ${
+        msg.senderId === currentUserId
+          ? 'bg-blue-100 self-end'
+          : 'bg-gray-100 self-start'
+      }`}
+    >
+      <div className="text-sm text-gray-800">{msg.content}</div>
+    </div>
+))}
+
+  </div>
 
       {/* Message input area */}
       <div className="mt-auto border-t">

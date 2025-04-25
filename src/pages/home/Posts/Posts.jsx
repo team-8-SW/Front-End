@@ -10,7 +10,7 @@ const Posts = ({ loggedUser }) => {
   useEffect(() => {
     const fetchAllPosts = async () => {
       try {
-        const allPosts = await fetchPosts(token);
+        const allPosts = await fetchMyPosts(token);
         setPosts(allPosts);
       } catch (error) {
         console.error("Error fetching posts:", error);
@@ -18,7 +18,7 @@ const Posts = ({ loggedUser }) => {
     };
 
     fetchAllPosts();
-  }, []);
+  }, [token]);
 
   const handleRemovePost = (postId) => {
     setPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId));

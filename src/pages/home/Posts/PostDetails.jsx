@@ -82,7 +82,7 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
   }, [post?.user_id]);
 
   console.log(posterData, "posterData");
-  const posterUserName = posterData?.profile?.userName;
+  // const posterUserName = posterData?.profile?.userName;
   const handleDeletePost = async () => {
     try {
       await deletePost(post.id, token);
@@ -110,13 +110,12 @@ useEffect(() => {
   }
 }, [post.id, token]);
 
-  console.log(posterName);
-  console.log(posterUserName, "posterUserName");
+  console.log(posterData?.profile?.userName);
   console.log(loggedUser?.profile?.userName);
   return (
     <div className="bg-white border border-gray-300 rounded-lg shadow-sm p-4 mb-4 relative">
       {/* Edit and Delete Buttons (only visible to the author) */}
-      { loggedUser?.profile?.userName === posterUserName && ( 
+      { loggedUser?.profile?.userName === posterData?.profile?.userName && ( 
         <div className="absolute top-2 right-2 flex space-x-2">
           <button
             className="text-gray-500 hover:text-gray-700"

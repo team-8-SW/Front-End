@@ -36,7 +36,7 @@ const TopProfileCard = () => {
       <Typography variant="h6">{`${profile.firstName} ${profile.lastName}`}</Typography>
       <Typography variant="small" className="text-gray-700">{profile.bio}</Typography>
       <Typography variant="small" className="text-gray-500">{profile.location}</Typography>
-      <Typography variant="small" className="text-gray-700">{education.universityName}</Typography>
+      <Typography variant="small" className="text-gray-700">{education?.universityName}</Typography>
     </div>
   );
 };

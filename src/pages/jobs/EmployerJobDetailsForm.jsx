@@ -26,7 +26,7 @@ const JobDetailsForm = ({ loggedUser }) => {
   });
 
   useEffect(() => {
-    const storedTitle = localStorage.getItem("latestJobTitle");
+    const storedTitle = localStorage.getItem("EmployerlatestJobTitle");
     if (storedTitle) {
       setJobDetails(prev => ({ ...prev, title: storedTitle }));
     }
@@ -40,14 +40,14 @@ const JobDetailsForm = ({ loggedUser }) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
 
-    if (!jobDetails.title || !loggedUser?.id) {
+    if (!jobDetails.title ) {
       return alert("Missing required fields.");
     }
 
     try {
       const payload = {
-        user_id: loggedUser.id,
-        company_name: loggedUser?.profile?.company_name || null,
+       
+        
         title: jobDetails.title,
         description: jobDetails.description,
         location: jobDetails.location,

@@ -16,10 +16,16 @@ const AppliedJobsTab = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
 
+        console.log("Applied jobs:", data);
         const applications = data.applications || [];
 
         for (const app of applications) {
-          await fetchJobDetailsWithStatus(app.job_id);
+
+          await fetchJobDetailsWithStatus(app.job_id, app.id);
+          console.log("app:", app); // Debugging line
+          console.log("Job ID:", app.job_id); // Debugging line
+          console.log("Application ID:", app.id); // Debugging line
+          // 🔥 Pass both job_id and application_id
         }
 
         setLoading(false);
@@ -32,15 +38,16 @@ const AppliedJobsTab = () => {
     fetchAppliedJobs();
   }, []);
 
-  const fetchJobDetailsWithStatus = async (jobId) => {
+  const fetchJobDetailsWithStatus = async (jobId, applicationId) => {
     try {
       const [jobRes, statusRes] = await Promise.all([
         axios.get(`http://localhost:5000/api/jobs/${jobId}`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
-        axios.get(`http://localhost:5000/api/jobs/${jobId}/status`, {
+        axios.get(`http://localhost:5000/api/jobs/${applicationId}/status`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
+        // 🔥 Changed the status API to use applicationId
       ]);
 
       const jobDetails = jobRes.data.job?.[0];

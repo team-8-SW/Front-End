@@ -28,7 +28,7 @@ const MyCompanies = () => {
   }, []);
 
   return (
-    <div className="flex flex-wrap gap-6 justify-center mt-10 px-6">
+    <div className="flex flex-wrap gap-6 justify-center mt-10 px-6 w-full">
       {companies.map((company) => (
         <Card
           key={company.id}

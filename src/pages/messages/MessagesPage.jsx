@@ -6,7 +6,7 @@ import ConversationList from './ConversationList';
 
 const MessagesPage = () => {
   const [selectedConversation, setSelectedConversation] = useState(null);
-  const currentUserId = "currentUser"; // Get from your auth system
+  const currentUserId = "currentUser"; 
 
   return (
     <div className="flex min-h-screen ">

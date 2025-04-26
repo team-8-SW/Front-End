@@ -245,23 +245,20 @@ const ChatWindow = () => {
     messages[selectedRecipients[0].id]?.map((msg, index) => (
       <div
         key={index}
-        className={`flex ${
-          msg.senderId === currentUserId ? 'justify-end' : 'justify-start'
-        }`}
+        className={`flex ${msg.isSender ? 'justify-end' : 'justify-start'}`}
       >
         <div
           className={`p-3 rounded-lg max-w-md ${
-            msg.senderId === currentUserId
-              ? 'bg-blue-100'
-              : 'bg-gray-100'
+            msg.isSender ? 'bg-blue-500 text-white' : 'bg-gray-300 text-black'
           }`}
         >
-          <div className="text-sm text-gray-800">{msg.content}</div>
+          <div className="text-sm">{msg.content}</div>
         </div>
       </div>
     ))}
   <div ref={messagesEndRef} />
 </div>
+
 
 
       <div className="mt-auto border-t">

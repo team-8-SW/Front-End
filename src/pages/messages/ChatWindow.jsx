@@ -239,27 +239,26 @@ const ChatWindow = () => {
         </div>
       )}
 
-      <div className="flex-1 overflow-y-auto p-4 flex flex-col space-y-2">
-        {selectedRecipients.length === 1 &&
-          messages[selectedRecipients[0]?.id]?.map((msg, index) => (
-            <div
-              key={`${msg.timestamp}-${index}`}
-              className={`flex ${msg.senderId === currentUserId ? 'justify-end' : 'justify-start'}`}
-            >
-              <div
-                className={`p-3 rounded-lg max-w-md ${
-                  msg.senderId === currentUserId ? 'bg-blue-500 text-white' : 'bg-gray-300 text-black'
-                }`}
-              >
-                <div className="text-sm">{msg.content}</div>
-                <div className="text-xs mt-1 opacity-70">
-                  {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                </div>
-              </div>
-            </div>
-          ))}
-        <div ref={messagesEndRef} />
+<div className="flex-1 overflow-y-auto p-4 flex flex-col space-y-2">
+  {selectedRecipients.length === 1 &&
+    messages[selectedRecipients[0].id]?.map((msg, index) => (
+      <div
+        key={index}
+        className={`flex ${msg.isSender ? 'justify-end' : 'justify-start'}`}
+      >
+        <div
+          className={`p-3 rounded-lg max-w-md ${
+            msg.isSender ? 'bg-blue-500 text-white' : 'bg-gray-300 text-black'
+          }`}
+        >
+          <div className="text-sm">{msg.content}</div>
+        </div>
       </div>
+    ))}
+  <div ref={messagesEndRef} />
+</div>
+
+
 
       <div className="mt-auto border-t">
         <textarea

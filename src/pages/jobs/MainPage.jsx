@@ -7,9 +7,11 @@ import ApplyForm from "./ApplyForm";
 
 const MainPage = () => {
   const [jobs, setJobs] = useState([]);
+  const [jobLogos, setJobLogos] = useState({});
   const [selectedJob, setSelectedJob] = useState(null);
   const [savedJobIds, setSavedJobIds] = useState([]);
-  const [applyOpen, setApplyOpen] = useState(false); // ✅ Apply dialog toggle
+  const [appliedJobIds, setAppliedJobIds] = useState([]); // ✅ Track applied jobs
+  const [applyOpen, setApplyOpen] = useState(false);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -55,6 +57,22 @@ const MainPage = () => {
 
         const jobList = data.jobs || data.job || data.filteredJob || [];
         setJobs(jobList);
+
+        // Fetch logos
+        const logos = {};
+        for (const job of jobList) {
+          try {
+            const logoRes = await axios.get(`http://localhost:5000/api/jobs/${job.id}/logo`, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            logos[job.id] = logoRes.data?.data?.logo?.logo_url || null;
+          } catch (err) {
+            console.error(`Error fetching logo for job ${job.id}`, err);
+            logos[job.id] = null;
+          }
+        }
+        setJobLogos(logos);
+
       } catch (error) {
         console.error("Error fetching jobs:", error);
         setJobs([]);
@@ -62,7 +80,7 @@ const MainPage = () => {
     };
 
     fetchJobs();
-  }, [location.search]);
+  }, [location.search, token]);
 
   useEffect(() => {
     const fetchSavedJobs = async () => {
@@ -79,7 +97,24 @@ const MainPage = () => {
     };
 
     fetchSavedJobs();
-  }, []);
+  }, [token]);
+
+  useEffect(() => {
+    const fetchAppliedJobs = async () => {
+      try {
+        const { data } = await axios.get("http://localhost:5000/api/jobs/applicantions/jobs", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const appliedIds = (data.applications || []).map((app) => app.job_id);
+        setAppliedJobIds(appliedIds);
+      } catch (err) {
+        console.error("Error fetching applied jobs:", err);
+      }
+    };
+
+    fetchAppliedJobs();
+  }, [token]);
 
   useEffect(() => {
     const fetchJobDetails = async () => {
@@ -95,7 +130,7 @@ const MainPage = () => {
     };
 
     fetchJobDetails();
-  }, [jobId]);
+  }, [jobId, token]);
 
   const handleToggleSaveJob = async (jobId) => {
     try {
@@ -146,7 +181,11 @@ const MainPage = () => {
                 className="p-4 hover:bg-gray-100 cursor-pointer border-b"
               >
                 <div className="flex items-center gap-4">
-                  <img src={job.logo_url} alt="" className="w-10 h-10" />
+                  <img
+                    src={jobLogos[job.id] || "/default-company-logo.png"}
+                    alt="logo"
+                    className="w-10 h-10 object-cover rounded-full"
+                  />
                   <div>
                     <Typography variant="h6" color="blue-gray">{job.title}</Typography>
                     <Typography variant="small" color="gray">{job.company_name}</Typography>
@@ -181,7 +220,13 @@ const MainPage = () => {
               </div>
 
               <div className="flex gap-4">
-                <Button color="blue" onClick={() => setApplyOpen(true)}>Apply</Button>
+                <Button
+                  color="blue"
+                  onClick={() => setApplyOpen(true)}
+                  disabled={appliedJobIds.includes(selectedJob.id)}
+                >
+                  {appliedJobIds.includes(selectedJob.id) ? "Applied" : "Apply"}
+                </Button>
                 <Button
                   variant="outlined"
                   color="blue"
@@ -191,7 +236,7 @@ const MainPage = () => {
                 </Button>
               </div>
 
-              {/* ✅ Apply Form Dialog */}
+              {/* Apply Form */}
               <ApplyForm
                 open={applyOpen}
                 handleClose={() => setApplyOpen(false)}

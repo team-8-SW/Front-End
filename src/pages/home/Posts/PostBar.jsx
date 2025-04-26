@@ -17,20 +17,7 @@ const PostBar = ({ photo, togglePostModal, }) => {
           <span className="font-semibold text-gray-500">Start a post</span>
         </Button>
       </div>
-      <div className="flex justify-around mt-4">
-        <Button color="blue" size="sm" className="flex items-center space-x-2 rounded-lg">
-          <CameraIcon className="h-5 w-5" />
-          <span>Media</span>
-        </Button>
-        <Button color="blue" size="sm" className="flex items-center space-x-2 rounded-lg">
-          <CalendarIcon className="h-5 w-5" />
-          <span>Event</span>
-        </Button>
-        <Button color="blue" size="sm" className="flex items-center space-x-2 rounded-lg">
-          <DocumentTextIcon className="h-5 w-5" />
-          <span>Write article</span>
-        </Button>
-      </div>
+      
     </div>
   );
 };

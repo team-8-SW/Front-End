@@ -41,6 +41,7 @@ const ApplyForm = ({ open, handleClose, jobId }) => {
             email: profile.email || "",
             country: profile.location?.split(",")[0]?.trim() || "",
             address: profile.location?.split(",")[1]?.trim() || "",
+            resumeUrl: profile.resumeUrl || "", // ✅ Added resume URL
           }));
         }
       } catch (error) {
@@ -67,7 +68,7 @@ const ApplyForm = ({ open, handleClose, jobId }) => {
           },
         }
       );
-      
+
       handleClose();
     } catch (err) {
       console.error("Apply error:", err);
@@ -79,18 +80,62 @@ const ApplyForm = ({ open, handleClose, jobId }) => {
     <Dialog open={open} handler={handleClose}>
       <DialogHeader>Apply to This Job</DialogHeader>
       <DialogBody className="grid gap-4">
-        <Input label="First Name" name="first_name" value={form.first_name} onChange={handleChange} />
-        <Input label="Last Name" name="last_name" value={form.last_name} onChange={handleChange} />
-        <Input label="Phone Number" name="phone_number" value={form.phone_number} onChange={handleChange} />
-        <Input label="Email" name="email" value={form.email} onChange={handleChange} />
-        <Input label="Country" name="country" value={form.country} onChange={handleChange} />
-        <Input label="Address" name="address" value={form.address} onChange={handleChange} />
-        <Input label="Resume URL" name="resumeUrl" value={form.resumeUrl} onChange={handleChange} />
-        <Textarea label="Cover Letter" name="coverLetter" value={form.coverLetter} onChange={handleChange} />
+        <Input
+          label="First Name"
+          name="first_name"
+          value={form.first_name}
+          onChange={handleChange}
+        />
+        <Input
+          label="Last Name"
+          name="last_name"
+          value={form.last_name}
+          onChange={handleChange}
+        />
+        <Input
+          label="Phone Number"
+          name="phone_number"
+          value={form.phone_number}
+          onChange={handleChange}
+        />
+        <Input
+          label="Email"
+          name="email"
+          value={form.email}
+          onChange={handleChange}
+        />
+        <Input
+          label="Country"
+          name="country"
+          value={form.country}
+          onChange={handleChange}
+        />
+        <Input
+          label="Address"
+          name="address"
+          value={form.address}
+          onChange={handleChange}
+        />
+        <Input
+          label="Resume URL"
+          name="resumeUrl"
+          value={form.resumeUrl}
+          onChange={handleChange}
+        />
+        <Textarea
+          label="Cover Letter"
+          name="coverLetter"
+          value={form.coverLetter}
+          onChange={handleChange}
+        />
       </DialogBody>
       <DialogFooter>
-        <Button variant="outlined" onClick={handleClose}>Cancel</Button>
-        <Button color="blue" onClick={handleSubmit}>Submit</Button>
+        <Button variant="outlined" onClick={handleClose}>
+          Cancel
+        </Button>
+        <Button color="blue" onClick={handleSubmit}>
+          Submit
+        </Button>
       </DialogFooter>
     </Dialog>
   );

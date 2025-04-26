@@ -42,6 +42,8 @@ import EmployerJobTitle from "./pages/jobs/EmployerJobtitle";
 import EmployerJobDetailsForm from "./pages/jobs/EmployerJobDetailsform";
 import JobApplications from "./pages/company/JobApplications";
 import AdminHome from "./pages/adminhome/AdminHome";
+import MyPostedJobs from "./pages/jobs/MyPostedJobs";
+import MyJobApplications from "./pages/jobs/MyJobApplications";
 import AdminJobsPage from "./pages/adminjob/AdminJobsPage";
 
 function App() {
@@ -138,6 +140,11 @@ function App() {
         <Route path="/detailedjobs" element={<ProtectedRoute><MainPage /></ProtectedRoute>} />
         <Route path="/detailedjobs/:jobId" element={<ProtectedRoute><MainPage /></ProtectedRoute>} />
         <Route path="/myjobs" element={<ProtectedRoute><MyJobs /></ProtectedRoute>} />
+        <Route path="/mypostedjobs" element={<ProtectedRoute><MyPostedJobs/></ProtectedRoute>} />
+        <Route
+  path="/mypostedjobs/:jobid/applications"
+  element={<ProtectedRoute><MyJobApplications /></ProtectedRoute>}
+/>
         <Route path="/adminhome" element={<AdminHome />} />
         <Route path="/adminjobs" element={<AdminJobsPage />} />
         

@@ -82,9 +82,10 @@ const Nav2 = () => {
                 onChange={(e) => setFilterParams({ ...filterParams, experienceLevel: e.target.value })}
               >
                 <option value="">Experience Level</option>
-                <option value="Entry-level">Entry-level</option>
+                <option value="Entry">Entry-level</option>
                 <option value="Mid-level">Mid-level</option>
-                <option value="Senior-level">Senior-level</option>
+                <option value="Senior">Senior-level</option>
+                <option value="Executive">Executive</option>
               </select>
 
               <select

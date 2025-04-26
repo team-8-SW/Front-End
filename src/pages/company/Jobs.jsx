@@ -1,25 +1,38 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Typography, Button } from "@material-tailwind/react";
+import { Card, Typography, Button, Chip } from "@material-tailwind/react";
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 
 const Jobs = ({ loggedUser }) => {
   const [jobsData, setJobsData] = useState([]);
-  const { companyid } = useParams(); // Get company ID from URL
-  const navigate = useNavigate(); // For navigation to applications page
+  const [applicantCounts, setApplicantCounts] = useState({});
+  const { companyid } = useParams();
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const token = localStorage.getItem("token");
         const res = await axios.get(
           `http://localhost:5000/api/company/${companyid}/getalljob`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
+          { headers: { Authorization: `Bearer ${token}` } }
         );
-        setJobsData(res.data.jobs || []);
-        console.log("Jobs data:", res.data.jobs);
+        const jobs = res.data.jobs || [];
+        setJobsData(jobs);
+
+        const counts = {};
+        for (const job of jobs) {
+          try {
+            const appRes = await axios.get(
+              `http://localhost:5000/api/jobs/${job.id}/applications`,
+              { headers: { Authorization: `Bearer ${token}` } }
+            );
+            counts[job.id] = appRes.data.applications?.length || 0;
+          } catch {
+            counts[job.id] = 0;
+          }
+        }
+        setApplicantCounts(counts);
       } catch (err) {
         console.error("Error fetching jobs:", err);
       }
@@ -28,42 +41,32 @@ const Jobs = ({ loggedUser }) => {
     fetchJobs();
   }, [companyid]);
 
-  // Filter out expired jobs
   const today = new Date();
-  const filteredJobs = jobsData.filter(job => {
-    const expiry = new Date(job.expires_at);
-    return expiry >= today;
-  });
+  const filteredJobs = jobsData.filter(job => new Date(job.expires_at) >= today);
 
   return (
-    <div className='flex flex-col items-center justify-center w-full gap-10'>
+    <div className='flex flex-col items-center justify-center w-full gap-10 px-8 py-6'>
 
       {/* Header */}
-      <Card className='w-full h-30'>
-        <div className='flex flex-col justify-center w-full gap-5 m-5'>
-          <div className='flex justify-between'>
-            <div className='flex flex-col justify-center m-5'>
-              <Typography variant="h4">Jobs</Typography>
-              <Typography className="text-gray-600">
-                Manage your page’s job posts.
-              </Typography>
-            </div>
-            <div className='m-5'>
-              <Button
-                variant="outlined"
-                className="rounded-full text-[16px] text-blue-800 p-2 border-blue-800"
-                onClick={() => window.open(`/jobtitle/${companyid}`, "_blank")}
-              >
-                Post a job
-              </Button>
-            </div>
+      <Card className='w-full p-6 shadow-lg'>
+        <div className='flex justify-between items-center'>
+          <div>
+            <Typography variant="h4" color="blue-gray">Jobs</Typography>
+            <Typography color="gray">Manage your page’s job posts.</Typography>
           </div>
+          <Button
+            variant="outlined"
+            className="rounded-full text-blue-800 border-blue-800"
+            onClick={() => window.open(`/jobtitle/${companyid}`, "_blank")}
+          >
+            Post a job
+          </Button>
         </div>
       </Card>
 
-      {/* Jobs Listing */}
-      <Card className="w-full p-5">
-        <Typography variant="h5" className="mb-4">Active Job Listings</Typography>
+      {/* Combined Card for All Jobs */}
+      <Card className="w-full p-6 shadow-md">
+        <Typography variant="h5" className="mb-6 text-blue-gray-700">Active Job Listings</Typography>
 
         {filteredJobs.length === 0 ? (
           <div className="text-center text-gray-500 py-10">
@@ -73,27 +76,32 @@ const Jobs = ({ loggedUser }) => {
               className='w-80 h-80 mx-auto mb-4'
             />
             <Typography variant="h6">No active jobs available</Typography>
-            <Typography variant="small" className="text-gray-600">
+            <Typography variant="small" color="gray">
               When you post a job, it will appear here until it expires.
             </Typography>
           </div>
         ) : (
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col divide-y divide-gray-200">
             {filteredJobs.map((job) => (
               <div
                 key={job.id}
-                className="border-b pb-4 cursor-pointer hover:bg-gray-50 p-3 rounded"
+                className="py-4 hover:bg-gray-50 px-2 rounded transition-all cursor-pointer"
                 onClick={() => navigate(`/company/${companyid}/job/${job.id}/applications`)}
               >
-                <Typography variant="h6" className="text-blue-900">
-                  {job.title || "Untitled Job"}
-                </Typography>
+                <div className="flex justify-between items-start mb-1">
+                  <Typography variant="h6" color="blue">{job.title || "Untitled Job"}</Typography>
+                  <Chip
+                    value={`${applicantCounts[job.id] ?? 0} Applicants`}
+                    color="blue"
+                    className="rounded-full text-xs"
+                  />
+                </div>
 
-                <Typography className="text-gray-800 font-medium mt-1">
+                <Typography className="text-gray-800 font-medium">
                   {job.industry || "Industry not set"} · {job.experience_level || "Experience level not set"}
                 </Typography>
 
-                <Typography className="text-sm text-gray-600 mt-1">
+                <Typography className="text-sm text-gray-600">
                   {job.location || "Location not set"} ({job.workplace_type || "Workplace type not set"})
                 </Typography>
 
@@ -101,7 +109,7 @@ const Jobs = ({ loggedUser }) => {
                   Employment: {job.employment_type || "N/A"} · Salary: {job.salary ? `$${job.salary}` : "Not specified"}
                 </Typography>
 
-                <Typography className="text-sm text-gray-500 mt-1">
+                <Typography className="text-sm text-gray-500">
                   Posted on: {new Date(job.created_at || job.posted_at || Date.now()).toLocaleDateString()}
                 </Typography>
 

@@ -43,6 +43,7 @@ import JobApplications from "./pages/company/JobApplications";
 import AdminHome from "./pages/adminhome/AdminHome";
 import MyPostedJobs from "./pages/jobs/MyPostedJobs";
 import MyJobApplications from "./pages/jobs/MyJobApplications";
+import AdminJobsPage from "./pages/adminjob/AdminJobsPage";
 
 function App() {
   const [loggedUser, setLoggedUser] = useState(null);
@@ -143,7 +144,7 @@ function App() {
   element={<ProtectedRoute><MyJobApplications /></ProtectedRoute>}
 />
         <Route path="/adminhome" element={<AdminHome />} />
-
+        <Route path="/adminjobs" element={<AdminJobsPage />} />
         
 
 <Route

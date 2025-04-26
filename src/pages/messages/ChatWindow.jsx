@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { PlusCircle, Paperclip, Image, MoreHorizontal, X } from 'lucide-react';
-import { getConnections, searchUsers} from '../../services/api';
+import { getConnections, searchUsers } from '../../services/api';
 import socket from '../../services/socket';
 
 const ChatWindow = () => {
@@ -9,8 +9,9 @@ const ChatWindow = () => {
   const [selectedRecipients, setSelectedRecipients] = useState([]);
   const [messageContent, setMessageContent] = useState('');
   const [connections, setConnections] = useState([]);
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState({});
   const [currentUserId, setCurrentUserId] = useState(null);
+  const messagesEndRef = useRef(null); // Added for auto-scroll
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -38,12 +39,11 @@ const ChatWindow = () => {
   
     const handleConnect = () => {
       console.log('Socket connected:', socket.id);
-      socket.emit('join', userId); // match the backend event
+      socket.emit('join', userId);
     };
   
     socket.on('connect', handleConnect);
   
-    // Optional: reconnect on page reload
     if (socket.connected) {
       socket.emit('join_room', userId);
     }
@@ -62,19 +62,34 @@ const ChatWindow = () => {
       ...prev,
       [otherUserId]: [...(prev[otherUserId] || []), message],
     }));
+
+    scrollToBottom();
   };
-  
-  
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   useEffect(() => {
-  
     socket.on('receive_message', handleMessage);
-  
+
+    // New: receive conversation history
+    socket.on('conversation_history', (history) => {
+      if (selectedRecipients.length === 1 && Array.isArray(history)) {
+        const selectedUserId = selectedRecipients[0].id;
+        setMessages(prev => ({
+          ...prev,
+          [selectedUserId]: history,
+        }));
+        scrollToBottom();
+      }
+    });
+
     return () => {
       socket.off('receive_message', handleMessage);
+      socket.off('conversation_history');
     };
-  }, [currentUserId]);
-  
-  
+  }, [currentUserId, selectedRecipients]);
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -119,7 +134,13 @@ const ChatWindow = () => {
 
   const handleSelectRecipient = (user) => {
     if (!selectedRecipients.some(r => r.id === user.userId)) {
-      setSelectedRecipients([...selectedRecipients, { id: user.userId, name: user.name }]);
+      setSelectedRecipients([{ id: user.userId, name: user.name }]); // Only allow one selection
+
+      // New: request conversation history
+      socket.emit('get_conversation', {
+        userId: currentUserId,
+        otherUserId: user.userId,
+      });
     }
     setSearchQuery('');
     setSearchResults([]);
@@ -142,11 +163,10 @@ const ChatWindow = () => {
     };
   
     socket.emit('send_text', message);
-    handleMessage(message); // manually add it for the sender
+    handleMessage(message);
     setMessageContent('');
   };
-  
- 
+
   const filteredConnections = searchQuery.length > 2 ? searchResults : [];
 
   return (
@@ -155,7 +175,6 @@ const ChatWindow = () => {
         <h2 className="font-medium">New message</h2>
       </div>
 
-      {/* Recipients area */}
       <div className="p-4 border-b flex flex-wrap items-center">
         {selectedRecipients.map((recipient) => (
           <div key={recipient.id} className="flex items-center bg-green-800 text-white px-2 py-1 rounded-full mr-2 mb-2">
@@ -179,7 +198,6 @@ const ChatWindow = () => {
         </button>
       </div>
 
-      {/* Display filtered connections based on search */}
       {filteredConnections.length > 0 && (
         <div className="flex-1 p-4 overflow-y-auto max-h-64">
           {filteredConnections.map(connection => (
@@ -198,8 +216,8 @@ const ChatWindow = () => {
                     />
                   ) : (
                     <span className="text-gray-500 text-lg">
-                    {connection.firstName ? connection.firstName.split(' ').map(n => n[0]).join('').substring(0, 2) : '??'}
-                  </span>
+                      {connection.firstName ? connection.firstName.split(' ').map(n => n[0]).join('').substring(0, 2) : '??'}
+                    </span>
                   )}
                 </div>
                 {connection.isOnline && (
@@ -221,25 +239,31 @@ const ChatWindow = () => {
           ))}
         </div>
       )}
-      {/* Message list */}
-      <div className="flex-1 overflow-y-auto p-4 flex flex-col space-y-2">
-      {selectedRecipients.length === 1 &&
+
+<div className="flex-1 overflow-y-auto p-4 flex flex-col space-y-2">
+  {selectedRecipients.length === 1 &&
     messages[selectedRecipients[0].id]?.map((msg, index) => (
-    <div
-      key={index}
-      className={`p-3 rounded-lg max-w-md ${
-        msg.senderId === currentUserId
-          ? 'bg-blue-100 self-end'
-          : 'bg-gray-100 self-start'
-      }`}
-    >
-      <div className="text-sm text-gray-800">{msg.content}</div>
-    </div>
-))}
+      <div
+        key={index}
+        className={`flex ${
+          msg.senderId === currentUserId ? 'justify-end' : 'justify-start'
+        }`}
+      >
+        <div
+          className={`p-3 rounded-lg max-w-md ${
+            msg.senderId === currentUserId
+              ? 'bg-blue-100'
+              : 'bg-gray-100'
+          }`}
+        >
+          <div className="text-sm text-gray-800">{msg.content}</div>
+        </div>
+      </div>
+    ))}
+  <div ref={messagesEndRef} />
+</div>
 
-  </div>
 
-      {/* Message input area */}
       <div className="mt-auto border-t">
         <textarea
           placeholder="Write a message..."

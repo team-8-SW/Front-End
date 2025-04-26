@@ -1,119 +1,165 @@
 import React, { useState, useEffect } from 'react';
-import { io } from 'socket.io-client';
+import socket from '../../services/socket';
 
 const ConversationList = ({ currentUserId, onSelect }) => {
   const [conversations, setConversations] = useState([]);
-  const [socket, setSocket] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Initialize Socket.IO connection
-    const newSocket = io('http://localhost:5000', {
-      auth: {
-        token: localStorage.getItem('jwtToken') // Send JWT for authentication
-      }
-    });
-    setSocket(newSocket);
+    const handleConnect = () => {
+      console.log('Socket connected for ConversationList');
+      socket.emit('get_all_conversations', currentUserId);
+    };
 
-    return () => newSocket.disconnect();
-  }, []);
+    const handleConversations = (data) => {
+      console.log('Received conversations:', data);
+      setConversations(Array.isArray(data) ? data : []);
+      setLoading(false);
+    };
 
-  useEffect(() => {
-    if (!socket) return;
+    const handleNewMessage = (message) => {
+      setConversations(prev => {
+        const updated = prev.map(conv => 
+          conv.id === message.conversationId ? {
+            ...conv,
+            lastMessage: message.content,
+            timestamp: message.timestamp,
+            unread: message.senderId !== currentUserId
+          } : conv
+        );
+        return updated;
+      });
+    };
 
-    // Join the user's room
-    socket.emit('join_room', { userId: currentUserId });
+    if (socket.connected) handleConnect();
 
-    // Request conversations when connected
-    socket.on('connect', () => {
-      socket.emit('get_all_conversations', { userId: currentUserId });
-    });
-
-    // Handle incoming conversations
-    socket.on('all_conversations', (data) => {
-      setConversations(data.conversations);
-    });
-
-    // Handle new messages that update conversations
-    socket.on('new_message', (message) => {
-      setConversations(prev => updateConversations(prev, message));
+    socket.on('connect', handleConnect);
+    socket.on('all_conversations', handleConversations);
+    socket.on('receive_message', handleNewMessage);
+    socket.on('connect_error', (err) => {
+      console.error('Connection error:', err);
+      setError('Failed to connect. Please refresh.');
+      setLoading(false);
     });
 
     return () => {
-      socket.off('connect');
-      socket.off('all_conversations');
-      socket.off('new_message');
+      socket.off('connect', handleConnect);
+      socket.off('all_conversations', handleConversations);
+      socket.off('receive_message', handleNewMessage);
+      socket.off('connect_error');
     };
-  }, [socket, currentUserId]);
+  }, [currentUserId]);
 
-  const updateConversations = (conversations, message) => {
-    return conversations.map(conv => {
-      if (conv.id === message.conversationId) {
-        return {
-          ...conv,
-          lastMessage: message.text,
-          timestamp: message.timestamp,
-          unread: message.senderId !== currentUserId
-        };
-      }
-      return conv;
-    });
-  };
+  const handleSelectConversation = (conversation) => {
+    const otherUser = conversation.participants?.find(p => p.id !== currentUserId);
+    if (!otherUser) return;
 
-  const handleConversationSelect = (conversation) => {
-    // Mark as read when selected
     socket.emit('mark_as_read', {
-      conversationId: conversation.id,
-      userId: currentUserId
+      userId: currentUserId,
+      otherUserId: otherUser.id
     });
     onSelect(conversation);
   };
 
+  if (loading) {
+    return (
+      <div className="p-4 space-y-4">
+        {[...Array(5)].map((_, i) => (
+          <div key={i} className="flex items-center space-x-3 animate-pulse">
+            <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
+            <div className="flex-1 space-y-2">
+              <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+              <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-4 text-red-500">
+        {error}
+        <button 
+          onClick={() => window.location.reload()}
+          className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  if (conversations.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full p-6 text-center">
+        <div className="mb-6">
+          <img src="/placeholder-messages.png" alt="No conversations" className="w-32 mx-auto" />
+        </div>
+        <h2 className="text-xl font-medium mb-2">No conversations yet</h2>
+        <p className="text-gray-600">Start a new conversation to begin messaging</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="w-full h-full overflow-y-auto">
-      {conversations.map((conversation) => {
-        const otherParticipant = conversation.participants.find(
-          p => p.id !== currentUserId
-        );
+    <div className="w-full h-full overflow-y-auto divide-y">
+      {conversations.map(conversation => {
+        const otherUser = conversation.participants?.find(p => p.id !== currentUserId) || {};
+        const lastMessageTime = conversation.timestamp ? 
+          new Date(conversation.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
 
         return (
           <div
             key={conversation.id}
-            onClick={() => handleConversationSelect(conversation)}
-            className={`p-4 border-b cursor-pointer hover:bg-gray-50 ${
+            onClick={() => handleSelectConversation(conversation)}
+            className={`p-4 cursor-pointer hover:bg-gray-50 transition ${
               conversation.unread ? 'bg-blue-50' : ''
             }`}
           >
-            <div className="flex items-center">
-              <div className="w-10 h-10 rounded-full bg-gray-300 mr-3 flex items-center justify-center">
-                {otherParticipant.avatarUrl ? (
-                  <img 
-                    src={otherParticipant.avatarUrl} 
-                    alt={otherParticipant.name}
-                    className="w-full h-full rounded-full object-cover"
-                  />
-                ) : (
-                  <span className="text-white text-sm">
-                    {otherParticipant.name.charAt(0)}
-                  </span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center flex-1 min-w-0">
+                <div className="w-12 h-12 rounded-full bg-gray-200 overflow-hidden mr-3 flex-shrink-0">
+                  {otherUser.avatarUrl ? (
+                    <img 
+                      src={otherUser.avatarUrl} 
+                      alt={otherUser.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.src = '/default-avatar.png';
+                        e.target.onerror = null;
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gray-300">
+                      <span className="text-gray-600 font-medium">
+                        {otherUser.name ? otherUser.name.charAt(0).toUpperCase() : '?'}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                <div className="min-w-0">
+                  <p className="font-medium truncate">{otherUser.name || 'Unknown User'}</p>
+                  <p className="text-sm text-gray-500 truncate">
+                    {conversation.lastMessage || 'No messages yet'}
+                  </p>
+                  {otherUser.title && (
+                    <p className="text-xs text-gray-400 mt-1 truncate">
+                      {otherUser.title}
+                    </p>
+                  )}
+                </div>
+              </div>
+              <div className="ml-4 flex flex-col items-end">
+                <span className="text-xs text-gray-500 whitespace-nowrap">
+                  {lastMessageTime}
+                </span>
+                {conversation.unread && (
+                  <div className="mt-1 w-2 h-2 rounded-full bg-blue-500"></div>
                 )}
               </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex justify-between">
-                  <h3 className="font-medium truncate">{otherParticipant.name}</h3>
-                  <span className="text-xs text-gray-500">
-                    {new Date(conversation.timestamp).toLocaleTimeString([], { 
-                      hour: '2-digit', 
-                      minute: '2-digit' 
-                    })}
-                  </span>
-                </div>
-                <p className="text-sm text-gray-600 truncate">
-                  {conversation.lastMessage}
-                </p>
-              </div>
-              {conversation.unread && (
-                <div className="ml-2 w-2 h-2 rounded-full bg-blue-500"></div>
-              )}
             </div>
           </div>
         );

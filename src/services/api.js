@@ -375,8 +375,9 @@ export const getConnections = async () => {
     throw error;
   }
 };
+
 export const acceptConnection = async (connectionId) => {
-  const token = localStorage.getItem('token'); 
+  const token = localStorage.getItem('token');
   try {
     const response = await axios.post(
       `http://localhost:5000/api/connections/${connectionId}/accept`,
@@ -395,11 +396,10 @@ export const acceptConnection = async (connectionId) => {
 
 export const declineConnection = async (connectionId) => {
   const token = localStorage.getItem('token');
-
   try {
     const response = await axios.post(
       `http://localhost:5000/api/connections/${connectionId}/decline`,
-      {}, 
+      {},
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -619,16 +619,17 @@ export const unblockUser = async (userId, token) => {
   );
 };
 export const followUser = async (userId, token) => {
-  const response = await axios.post(
-    `http://localhost:5000/api/following/users/${userId}`,
-    {},
-    {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    }
-  );
-  return response.data;
+  try {
+    const response = await axios.post(
+      `http://localhost:5000/api/following/users/${userId}`,
+      {},
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("API Error:", error.response?.data || error.message);
+    throw error; // Re-throw for handling in the component
+  }
 };
 export const unfollowUser = async (userId, token) => {
   const response = await axios.delete(

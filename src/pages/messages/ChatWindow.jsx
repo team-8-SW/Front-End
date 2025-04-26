@@ -1,215 +1,313 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Paperclip, Image, Send } from 'lucide-react';
+import { PlusCircle, Paperclip, Image, MoreHorizontal, X } from 'lucide-react';
+import { getConnections, searchUsers } from '../../services/api';
 import socket from '../../services/socket';
 
-
-const ChatWindow = ({ conversation, currentUserId }) => {
-  const [messages, setMessages] = useState([]);
+const ChatWindow = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [selectedRecipients, setSelectedRecipients] = useState([]);
   const [messageContent, setMessageContent] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
-  const messagesEndRef = useRef(null);
+  const [connections, setConnections] = useState([]);
+  const [messages, setMessages] = useState({});
+  const [currentUserId, setCurrentUserId] = useState(null);
+  const messagesEndRef = useRef(null); // Added for auto-scroll
 
   useEffect(() => {
-    if (!conversation || !currentUserId) return;
-
-    const otherUser = conversation.participants.find(p => p.id !== currentUserId);
-    if (!otherUser) return;
-
-    // Fetch conversation history
-    socket.emit('get_conversation', {
-      userId: currentUserId,
-      otherUserId: otherUser.id
-    });
-
-    const handleConversationHistory = (history) => {
-      if (Array.isArray(history)) {
-        setMessages(history);
-        scrollToBottom();
-      } else {
-        console.error('Invalid conversation history format:', history);
-        setMessages([]);
-      }
+    const token = localStorage.getItem('token');
+    const userId = parseJwt(token)?.userId;
+    setCurrentUserId(userId);
+    if (!userId) return;
+  
+    socket.emit('join', userId);
+  }, []);
+  
+  const parseJwt = (token) => {
+    try {
+      return JSON.parse(atob(token.split('.')[1]));
+    } catch (e) {
+      return null;
+    }
+  };
+  
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const userId = parseJwt(token)?.userId;
+    setCurrentUserId(userId);
+  
+    if (!userId) return;
+  
+    const handleConnect = () => {
+      console.log('Socket connected:', socket.id);
+      socket.emit('join', userId);
     };
-
-    const handleNewMessage = (message) => {
-      setMessages(prev => [...prev, message]);
-      scrollToBottom();
-    };
-
-    const handleTyping = () => {
-      setIsTyping(true);
-      const timer = setTimeout(() => setIsTyping(false), 2000);
-      return () => clearTimeout(timer);
-    };
-
-    socket.on('conversation_history', handleConversationHistory);
-    socket.on('receive_message', handleNewMessage);
-    socket.on('typing', handleTyping);
-
+  
+    socket.on('connect', handleConnect);
+  
+    if (socket.connected) {
+      socket.emit('join_room', userId);
+    }
+  
     return () => {
-      socket.off('conversation_history', handleConversationHistory);
-      socket.off('receive_message', handleNewMessage);
-      socket.off('typing', handleTyping);
+      socket.off('connect', handleConnect);
     };
-  }, [conversation, currentUserId]);
+  }, []);
+
+  const handleMessage = (message) => {
+    const otherUserId = message.senderId === currentUserId
+      ? message.receiverId
+      : message.senderId;
+  
+    setMessages(prev => ({
+      ...prev,
+      [otherUserId]: [...(prev[otherUserId] || []), message],
+    }));
+
+    scrollToBottom();
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const handleSendMessage = () => {
-    if (!messageContent.trim() || !conversation) return;
+  useEffect(() => {
+    socket.on('receive_message', handleMessage);
 
-    const otherUser = conversation.participants.find(p => p.id !== currentUserId);
-    if (!otherUser) return;
+    // New: receive conversation history
+    socket.on('conversation_history', (history) => {
+      if (selectedRecipients.length === 1 && Array.isArray(history)) {
+        const selectedUserId = selectedRecipients[0].id;
+        setMessages(prev => ({
+          ...prev,
+          [selectedUserId]: history,
+        }));
+        scrollToBottom();
+      }
+    });
 
-    const message = {
-      senderId: currentUserId,
-      receiverId: otherUser.id,
-      content: messageContent.trim(),
-      timestamp: new Date().toISOString()
+    return () => {
+      socket.off('receive_message', handleMessage);
+      socket.off('conversation_history');
+    };
+  }, [currentUserId, selectedRecipients]);
+
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          console.error('Token is missing');
+          return;
+        }
+
+        const conn = await getConnections();
+        setConnections(conn.connections);
+      } catch (error) {
+        console.error('Error fetching connections:', error);
+      }
     };
 
+    fetchInitialData();
+  }, []);
+
+  const handleSearchChange = async (e) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+
+    if (query.length > 2) {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await searchUsers(token, { q: query });
+
+        const filtered = response.users.filter(
+          user => connections.some(conn => conn.userId === user.userId)
+        );
+
+        setSearchResults(filtered);
+      } catch (error) {
+        console.error('Search failed:', error);
+      }
+    } else {
+      setSearchResults([]);
+    }
+  };
+
+  const handleSelectRecipient = (user) => {
+    if (!selectedRecipients.some(r => r.id === user.userId)) {
+      setSelectedRecipients([{ id: user.userId, name: user.name }]); // Only allow one selection
+
+      // New: request conversation history
+      socket.emit('get_conversation', {
+        userId: currentUserId,
+        otherUserId: user.userId,
+      });
+    }
+    setSearchQuery('');
+    setSearchResults([]);
+  };
+
+  const handleRemoveRecipient = (userId) => {
+    setSelectedRecipients(selectedRecipients.filter(r => r.id !== userId));
+  };
+
+  const handleSendMessage = () => {
+    const trimmed = messageContent.trim();
+    if (trimmed.length <= 3 || selectedRecipients.length !== 1) return;
+  
+    const recipient = selectedRecipients[0];
+    const message = {
+      senderId: currentUserId,
+      receiverId: recipient.id,
+      content: trimmed,
+      timestamp: new Date().toISOString(),
+    };
+  
     socket.emit('send_text', message);
+    handleMessage(message);
     setMessageContent('');
   };
 
-  const handleTyping = () => {
-    if (!conversation) return;
-    
-    const otherUser = conversation.participants.find(p => p.id !== currentUserId);
-    if (!otherUser) return;
-
-    socket.emit('typing', {
-      senderId: currentUserId,
-      receiverId: otherUser.id
-    });
-  };
-
-  const formatMessageTime = (timestamp) => {
-    try {
-      return format(parseISO(timestamp), 'h:mm a');
-    } catch {
-      return '';
-    }
-  };
-
-  const formatMessageDate = (timestamp) => {
-    try {
-      return format(parseISO(timestamp), 'EEEE');
-    } catch {
-      return '';
-    }
-  };
-
-  if (!conversation) {
-    return (
-      <div className="w-2/3 flex items-center justify-center bg-gray-50">
-        <div className="text-center p-6">
-          <h3 className="text-lg font-medium mb-2">Select a conversation</h3>
-          <p className="text-gray-600">Choose a chat to start messaging</p>
-        </div>
-      </div>
-    );
-  }
-
-  const otherUser = conversation.participants.find(p => p.id !== currentUserId);
+  const filteredConnections = searchQuery.length > 2 ? searchResults : [];
 
   return (
-    <div className="w-2/3 flex flex-col border-l h-full">
-      {/* Chat header */}
-      <div className="p-4 border-b flex items-center bg-white">
-        <div className="w-10 h-10 rounded-full bg-gray-300 mr-3 flex items-center justify-center overflow-hidden">
-          {otherUser?.avatarUrl ? (
-            <img 
-              src={otherUser.avatarUrl} 
-              alt={otherUser.name}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <span className="text-gray-600 font-medium">
-              {otherUser?.name?.charAt(0) || '?'}
-            </span>
-          )}
-        </div>
-        <div>
-          <h2 className="font-medium">{otherUser?.name || 'Unknown User'}</h2>
-          {isTyping && <p className="text-xs text-gray-500">typing...</p>}
-        </div>
+    <div className="w-2/3 flex flex-col">
+      <div className="p-4 border-b">
+        <h2 className="font-medium">New message</h2>
       </div>
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 bg-gray-50">
-        {messages.map((message, index) => {
-          const showDate = index === 0 || 
-            formatMessageDate(messages[index-1].timestamp) !== 
-            formatMessageDate(message.timestamp);
-
-          return (
-            <React.Fragment key={message.id}>
-              {showDate && (
-                <div className="text-center my-4">
-                  <span className="bg-gray-200 px-2 py-1 rounded-full text-xs text-gray-600">
-                    {formatMessageDate(message.timestamp)}
-                  </span>
-                </div>
-              )}
-              <div className={`mb-4 flex ${
-                message.senderId === currentUserId ? 'justify-end' : 'justify-start'
-              }`}>
-                <div
-                  className={`max-w-md p-3 rounded-lg ${
-                    message.senderId === currentUserId
-                      ? 'bg-blue-500 text-white'
-                      : 'bg-white border'
-                  }`}
-                >
-                  <p>{message.content}</p>
-                  <p className={`text-xs mt-1 ${
-                    message.senderId === currentUserId ? 'text-blue-100' : 'text-gray-500'
-                  }`}>
-                    {formatMessageTime(message.timestamp)}
-                  </p>
-                </div>
-              </div>
-            </React.Fragment>
-          );
-        })}
-        <div ref={messagesEndRef} />
-      </div>
-
-      {/* Message input */}
-      <div className="border-t p-4 bg-white">
-        <div className="flex items-center">
-          <button className="text-gray-500 hover:text-gray-700 mr-2">
-            <Paperclip className="h-5 w-5" />
-          </button>
-          <button className="text-gray-500 hover:text-gray-700 mr-2">
-            <Image className="h-5 w-5" />
-          </button>
+      <div className="p-4 border-b flex flex-wrap items-center">
+        {selectedRecipients.map((recipient) => (
+          <div key={recipient.id} className="flex items-center bg-green-800 text-white px-2 py-1 rounded-full mr-2 mb-2">
+            <span>{recipient.name}</span>
+            <button onClick={() => handleRemoveRecipient(recipient.id)} className="ml-1">
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        ))}
+        <div className="flex-1">
           <input
             type="text"
-            placeholder="Write a message..."
-            className="flex-1 p-3 border rounded-lg focus:outline-none"
-            value={messageContent}
-            onChange={(e) => {
-              setMessageContent(e.target.value);
-              handleTyping();
-            }}
-            onKeyPress={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                handleSendMessage();
-              }
-            }}
+            placeholder="Type a name or multiple names"
+            className="w-full p-2 focus:outline-none"
+            value={searchQuery}
+            onChange={handleSearchChange}
           />
-          <button
-            onClick={handleSendMessage}
-            disabled={!messageContent.trim()}
-            className="ml-2 p-2 bg-blue-500 text-white rounded-lg disabled:bg-gray-300"
-          >
-            <Send className="h-5 w-5" />
-          </button>
+        </div>
+        <button className="ml-2">
+          <PlusCircle className="h-5 w-5 text-gray-500" />
+        </button>
+      </div>
+
+      {filteredConnections.length > 0 && (
+        <div className="flex-1 p-4 overflow-y-auto max-h-64">
+          {filteredConnections.map(connection => (
+            <div
+              key={connection.userId}
+              className="flex items-center p-4 border-b cursor-pointer hover:bg-gray-50"
+              onClick={() => handleSelectRecipient(connection)}
+            >
+              <div className="relative mr-3">
+                <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
+                  {connection.avatarUrl ? (
+                    <img
+                      src={connection.avatarUrl}
+                      alt={connection.name}
+                      className="w-full h-full rounded-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-gray-500 text-lg">
+                      {connection.firstName ? connection.firstName.split(' ').map(n => n[0]).join('').substring(0, 2) : '??'}
+                    </span>
+                  )}
+                </div>
+                {connection.isOnline && (
+                  <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+                )}
+              </div>
+              <div>
+                <div className="font-medium">
+                  {connection.firstName} {connection.lastName}
+                  {connection.connectionDegree && (
+                    <span className="text-gray-500 font-normal text-sm"> · {connection.connectionDegree}</span>
+                  )}
+                </div>
+                {connection.title && (
+                  <div className="text-sm text-gray-600">{connection.title}</div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+<div className="flex-1 overflow-y-auto p-4 flex flex-col space-y-2">
+  {selectedRecipients.length === 1 &&
+    messages[selectedRecipients[0].id]?.map((msg, index) => (
+      <div
+        key={index}
+        className={`flex ${
+          msg.senderId === currentUserId ? 'justify-end' : 'justify-start'
+        }`}
+      >
+        <div
+          className={`p-3 rounded-lg max-w-md ${
+            msg.senderId === currentUserId
+              ? 'bg-blue-100'
+              : 'bg-gray-100'
+          }`}
+        >
+          <div className="text-sm text-gray-800">{msg.content}</div>
+        </div>
+      </div>
+    ))}
+  <div ref={messagesEndRef} />
+</div>
+
+
+      <div className="mt-auto border-t">
+        <textarea
+          placeholder="Write a message..."
+          className="w-full p-4 resize-none focus:outline-none h-32"
+          value={messageContent}
+          onChange={(e) => setMessageContent(e.target.value)}
+        ></textarea>
+
+        <div className="flex justify-between items-center p-3 border-t">
+          <div className="flex space-x-4">
+            <button>
+              <Image className="h-5 w-5 text-gray-600" />
+            </button>
+            <button>
+              <Paperclip className="h-5 w-5 text-gray-600" />
+            </button>
+            <button>
+              <span className="font-bold">GIF</span>
+            </button>
+            <button>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+                <line x1="9" y1="9" x2="9.01" y2="9" />
+                <line x1="15" y1="9" x2="15.01" y2="9" />
+              </svg>
+            </button>
+          </div>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={handleSendMessage}
+              className={`px-4 py-1 rounded-full ${
+                selectedRecipients.length > 0 && messageContent.trim()
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-200 text-gray-400'
+              }`}
+              disabled={selectedRecipients.length === 0 || !messageContent.trim()}
+            >
+              Send
+            </button>
+            <button>
+              <MoreHorizontal className="h-5 w-5 text-gray-600" />
+            </button>
+          </div>
         </div>
       </div>
     </div>

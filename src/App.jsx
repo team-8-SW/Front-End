@@ -41,6 +41,7 @@ import EmployerJobTitle from "./pages/jobs/EmployerJobtitle";
 import EmployerJobDetailsForm from "./pages/jobs/EmployerJobDetailsform";
 import JobApplications from "./pages/company/JobApplications";
 import AdminHome from "./pages/adminhome/AdminHome";
+import AdminJobsPage from "./pages/adminjob/AdminJobsPage";
 
 function App() {
   const [loggedUser, setLoggedUser] = useState(null);
@@ -136,6 +137,7 @@ function App() {
         <Route path="/detailedjobs/:jobId" element={<ProtectedRoute><MainPage /></ProtectedRoute>} />
         <Route path="/myjobs" element={<ProtectedRoute><MyJobs /></ProtectedRoute>} />
         <Route path="/adminhome" element={<AdminHome />} />
+        <Route path="/adminjobs" element={<AdminJobsPage />} />
         
 
 <Route

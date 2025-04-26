@@ -7,10 +7,14 @@ import {
   deletePost,
   getPostEngagement,
   getComments,
-  useUserName,
-  useUserData,
 } from "../../../services/api";
-import { Button } from "@material-tailwind/react";
+import {
+  Button,
+  Menu,
+  MenuHandler,
+  MenuList,
+  MenuItem,
+} from "@material-tailwind/react";
 import {
   HandThumbUpIcon as OutlineThumbUpIcon,
   ChatBubbleOvalLeftEllipsisIcon,
@@ -42,13 +46,14 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const posterName = useName(post.user_id, null);
   const [commentsCount, setCommentsCount] = useState(0);
-  const [bookmarked, setBookmarked] = useState(false); // State for bookmark
+  const [bookmarked, setBookmarked] = useState(false);
+
+  const [posterData, setPosterData] = useState(null);
 
   useEffect(() => {
-    if (post.liked) {
-      setLiked(true);
-    }
+    if (post.liked) setLiked(true);
   }, [post.liked]);
+
   useEffect(() => {
     if (!post?.id) return;
 
@@ -66,14 +71,10 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
     fetchEngagement();
   }, [post.id, token]);
 
-  console.log(post.user_id, "post.user_id");
-  const [posterData, setPosterData] = useState(null);
-
   useEffect(() => {
     const fetchPosterData = async () => {
       try {
         const response = await axios.get(`http://localhost:5000/api/profiles/me/${post.user_id}`);
-        console.log(response, "posterData");
         setPosterData(response?.data?.profile || null);
       } catch (error) {
         console.error("Error fetching poster data:", error);
@@ -85,7 +86,6 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
     }
   }, [post?.user_id]);
 
-  console.log(posterData, "posterData");
   const handleDeletePost = async () => {
     try {
       await deletePost(post.id, token);
@@ -98,15 +98,27 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
 
   const handleBookmarkPost = async () => {
     try {
-      // Toggle bookmark state
       setBookmarked((prev) => !prev);
-
       await axios.post('http://localhost:3000/api/posts/me/save', {
         post_id: post.id,
       });
-
     } catch (error) {
       console.error("Failed to bookmark post:", error);
+    }
+  };
+
+  const handleReportPost = async () => {
+    try {
+      await axios.post("http://localhost:5000/api/posts/me/report", {
+        post_id: post.id,
+      }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      alert("Post reported successfully.");
+      onRemovePost(post.id); // Remove the post from UI
+    } catch (error) {
+      console.error("Failed to report post:", error);
+      alert("Failed to report post. Try again.");
     }
   };
 
@@ -117,7 +129,7 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
         setComments(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Error fetching comments:", error);
-        setComments([]); // fallback to empty array on error
+        setComments([]);
       }
     };
 
@@ -126,12 +138,10 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
     }
   }, [post.id, token]);
 
-  console.log(posterData?.profile?.userName);
-  console.log(loggedUser?.profile?.userName);
   return (
     <div className="bg-white border border-gray-300 rounded-lg shadow-sm p-4 mb-4 relative">
-      {/* Edit, Delete, and Bookmark Buttons */}
-      <div className="absolute top-2 right-2 flex space-x-2">
+      {/* Top right buttons */}
+      <div className="absolute top-2 right-2 flex items-center space-x-2">
         {/* Bookmark Button */}
         <button
           className="text-gray-500 hover:text-blue-600"
@@ -145,28 +155,40 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
           )}
         </button>
 
-        {/* Edit and Delete Buttons (only visible to the author) */}
-        { loggedUser?.profile?.userName === posterData?.profile?.userName && (
-          <div className="absolute top-2 right-2 flex space-x-2">
-            <button
-              className="text-gray-500 hover:text-gray-700"
-              onClick={() => console.log("Edit post clicked")}
-              data-testid="edit-post-btn"
-            >
-              <PencilIcon className="h-5 w-5" />
+        {/* Dropdown Menu */}
+        <Menu>
+          <MenuHandler>
+            <button className="text-gray-500 hover:text-gray-700">
+              ⋮
             </button>
-            <button
-              className="text-gray-500 hover:text-red-700"
-              onClick={() => setShowDeleteConfirmation(true)}
-              data-testid="delete-post-btn"
-            >
-              <TrashIcon className="h-5 w-5" />
-            </button>
-          </div>
-        )}
+          </MenuHandler>
+          <MenuList>
+            {/* Report Button inside dropdown */}
+            <MenuItem onClick={handleReportPost} className="text-red-600">
+              Report Post
+            </MenuItem>
+
+            {/* Edit and Delete if owner */}
+            {loggedUser?.profile?.userName === posterData?.userName && (
+              <>
+                <MenuItem
+                  onClick={() => console.log("Edit post clicked")}
+                >
+                  Edit Post
+                </MenuItem>
+                <MenuItem
+                  onClick={() => setShowDeleteConfirmation(true)}
+                  className="text-red-600"
+                >
+                  Delete Post
+                </MenuItem>
+              </>
+            )}
+          </MenuList>
+        </Menu>
       </div>
 
-      {/* Delete Confirmation Popup */}
+      {/* Delete confirmation popup */}
       {showDeleteConfirmation && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg">
@@ -194,29 +216,27 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
         </div>
       )}
 
-      {/* Header Section */}
+      {/* Post Content */}
       <div className="flex items-center mb-4">
         <div className="w-10 h-10 rounded-full bg-gray-200 flex-shrink-0">
           <img
             src={posterProfilePicture}
-            alt={`${commenterName}'s profile`}
+            alt=""
             className="w-full h-full rounded-full object-cover"
           />
         </div>
         <div className="ml-3">
-          <h2 className="font-semibold text-gray-900">{commenterName}</h2>
+          <h2 className="font-semibold text-gray-900">{posterName}</h2>
           <p className="text-sm text-gray-500">{post.created_at || "Just now"}</p>
         </div>
       </div>
 
-      {/* Content Section */}
       <div className="mb-4">
         <p className="text-gray-800">{post.content}</p>
       </div>
 
-      {/* Footer Section */}
+      {/* Buttons Footer */}
       <div className="flex items-center justify-start space-x-4 text-gray-600 text-sm">
-        {/* Like Button */}
         <Button
           variant="text"
           color="blue"
@@ -224,7 +244,6 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
           onClick={() =>
             handleLikePost(post.id, token, liked, setLiked, setLikesCount, likesCount)
           }
-          data-testid="like-icon"
         >
           {liked ? (
             <SolidThumbUpIcon className="h-5 w-5 text-blue-600" />
@@ -234,19 +253,16 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
           Like {likesCount}
         </Button>
 
-        {/* Comment Button */}
         <Button
           variant="text"
           color="blue"
           className="flex items-center gap-1 hover:text-blue-600"
           onClick={() => setShowComments((prev) => !prev)}
-          data-testid="comment-icon"
         >
           <ChatBubbleOvalLeftEllipsisIcon className="h-5 w-5" />
           Comment {commentsCount}
         </Button>
 
-        {/* Repost Button */}
         <Button
           variant="text"
           color="blue"
@@ -254,25 +270,17 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
           onClick={() =>
             handlerepostPost(post.id, token, setRepostsCount, repostsCount)
           }
-          data-testid="repost-icon"
         >
           <SolidrepostIcon className="h-5 w-5" />
           Repost {repostsCount}
         </Button>
 
-        {/* Share Button */}
-        <Button
-          variant="text"
-          color="blue"
-          className="flex items-center gap-1 hover:text-blue-600"
-          data-testid="share-icon"
-        >
+        <Button variant="text" color="blue" className="flex items-center gap-1 hover:text-blue-600">
           <ShareIcon className="h-5 w-5" />
           Share
         </Button>
       </div>
 
-      {/* Comments Section */}
       {showComments && (
         <CommentsSection
           postId={post.id}

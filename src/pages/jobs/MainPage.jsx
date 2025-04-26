@@ -3,11 +3,14 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { Card, Typography, Button } from "@material-tailwind/react";
 import Nav2 from "../../components/Nav2";
+import ApplyForm from "./ApplyForm";
 
 const MainPage = () => {
   const [jobs, setJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
   const [savedJobIds, setSavedJobIds] = useState([]);
+  const [applyOpen, setApplyOpen] = useState(false); // ✅ Apply dialog toggle
+
   const location = useLocation();
   const navigate = useNavigate();
   const { jobId } = useParams();
@@ -29,7 +32,6 @@ const MainPage = () => {
     maxSalary: query.get("maxSalary") || "",
   };
 
-  // Fetch all jobs
   useEffect(() => {
     const fetchJobs = async () => {
       try {
@@ -62,11 +64,10 @@ const MainPage = () => {
     fetchJobs();
   }, [location.search]);
 
-  // Fetch saved job IDs
   useEffect(() => {
     const fetchSavedJobs = async () => {
       try {
-        const { data } = await axios.get("http://localhost:5000/api/jobs/applicant", {
+        const { data } = await axios.get("http://localhost:5000/api/jobs/applicant/jobs", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -80,7 +81,6 @@ const MainPage = () => {
     fetchSavedJobs();
   }, []);
 
-  // Fetch selected job details when jobId in URL changes
   useEffect(() => {
     const fetchJobDetails = async () => {
       if (!jobId) return;
@@ -88,7 +88,6 @@ const MainPage = () => {
         const { data } = await axios.get(`http://localhost:5000/api/jobs/${jobId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-
         setSelectedJob(data.job?.[0] || null);
       } catch (error) {
         console.error("Error fetching job details:", error);
@@ -169,8 +168,6 @@ const MainPage = () => {
               <Typography variant="h5" color="gray">
                 {selectedJob.company_name}
               </Typography>
-              
-
               <Typography variant="paragraph" className="mb-4 text-gray-600 mt-2">
                 {selectedJob.description}
               </Typography>
@@ -184,7 +181,7 @@ const MainPage = () => {
               </div>
 
               <div className="flex gap-4">
-                <Button color="blue">Apply</Button>
+                <Button color="blue" onClick={() => setApplyOpen(true)}>Apply</Button>
                 <Button
                   variant="outlined"
                   color="blue"
@@ -193,6 +190,13 @@ const MainPage = () => {
                   {savedJobIds.includes(selectedJob.id) ? "Unsave" : "Save"}
                 </Button>
               </div>
+
+              {/* ✅ Apply Form Dialog */}
+              <ApplyForm
+                open={applyOpen}
+                handleClose={() => setApplyOpen(false)}
+                jobId={selectedJob?.id}
+              />
             </div>
           ) : (
             <Typography variant="paragraph" color="gray">

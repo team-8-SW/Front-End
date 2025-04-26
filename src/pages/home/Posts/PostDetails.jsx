@@ -18,10 +18,12 @@ import {
   PaperAirplaneIcon as ShareIcon,
   PencilIcon,
   TrashIcon,
+  BookmarkIcon as OutlineBookmarkIcon,
 } from "@heroicons/react/24/outline";
 import {
   HandThumbUpIcon as SolidThumbUpIcon,
   ArrowPathRoundedSquareIcon as SolidrepostIcon,
+  BookmarkIcon as SolidBookmarkIcon,
 } from "@heroicons/react/24/solid";
 import CommentsSection from "./CommentsSection";
 import axios from "axios";
@@ -29,7 +31,7 @@ import axios from "axios";
 const PostDetails = ({ post, loggedUser, onRemovePost }) => {
   if (!post) return null;
   const token = localStorage.getItem("token");
-  const posterProfilePicture = useProfilePicture(post.user_id,token);
+  const posterProfilePicture = useProfilePicture(post.user_id, token);
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
   const commenterName = useName(null, token);
@@ -38,8 +40,10 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
   const [showComments, setShowComments] = useState(false);
   const [repostsCount, setRepostsCount] = useState(0);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
-  const posterName=useName(post.user_id,null);
+  const posterName = useName(post.user_id, null);
   const [commentsCount, setCommentsCount] = useState(0);
+  const [bookmarked, setBookmarked] = useState(false); // State for bookmark
+
   useEffect(() => {
     if (post.liked) {
       setLiked(true);
@@ -50,7 +54,7 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
 
     const fetchEngagement = async () => {
       try {
-        const data = await getPostEngagement(post.id,token);
+        const data = await getPostEngagement(post.id, token);
         setLikesCount(data.like_count || 0);
         setCommentsCount(data.comment_count || 0);
         setRepostsCount(data.repost_count || 0);
@@ -58,10 +62,10 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
         console.error("Error loading engagement data:", error);
       }
     };
-  
+
     fetchEngagement();
   }, [post.id, token]);
-  
+
   console.log(post.user_id, "post.user_id");
   const [posterData, setPosterData] = useState(null);
 
@@ -82,7 +86,6 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
   }, [post?.user_id]);
 
   console.log(posterData, "posterData");
-  // const posterUserName = posterData?.profile?.userName;
   const handleDeletePost = async () => {
     try {
       await deletePost(post.id, token);
@@ -92,47 +95,76 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
       console.error("Failed to delete post:", error);
     }
   };
-  
 
-useEffect(() => {
-  const fetchComments = async () => {
+  const handleBookmarkPost = async () => {
     try {
-      const data = await getComments(post.id, token);
-      setComments(Array.isArray(data) ? data : []);
+      // Toggle bookmark state
+      setBookmarked((prev) => !prev);
+
+      await axios.post('http://localhost:3000/api/posts/me/save', {
+        post_id: post.id,
+      });
+
     } catch (error) {
-      console.error("Error fetching comments:", error);
-      setComments([]); // fallback to empty array on error
+      console.error("Failed to bookmark post:", error);
     }
   };
 
-  if (post?.id) {
-    fetchComments();
-  }
-}, [post.id, token]);
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const data = await getComments(post.id, token);
+        setComments(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error("Error fetching comments:", error);
+        setComments([]); // fallback to empty array on error
+      }
+    };
+
+    if (post?.id) {
+      fetchComments();
+    }
+  }, [post.id, token]);
 
   console.log(posterData?.profile?.userName);
   console.log(loggedUser?.profile?.userName);
   return (
     <div className="bg-white border border-gray-300 rounded-lg shadow-sm p-4 mb-4 relative">
-      {/* Edit and Delete Buttons (only visible to the author) */}
-      { loggedUser?.profile?.userName === posterData?.profile?.userName && ( 
-        <div className="absolute top-2 right-2 flex space-x-2">
-          <button
-            className="text-gray-500 hover:text-gray-700"
-            onClick={() => console.log("Edit post clicked")}
-            data-testid="edit-post-btn"
-          >
-            <PencilIcon className="h-5 w-5" />
-          </button>
-          <button
-            className="text-gray-500 hover:text-red-700"
-            onClick={() => setShowDeleteConfirmation(true)}
-            data-testid="delete-post-btn"
-          >
-            <TrashIcon className="h-5 w-5" />
-          </button>
-        </div>
-      )}
+      {/* Edit, Delete, and Bookmark Buttons */}
+      <div className="absolute top-2 right-2 flex space-x-2">
+        {/* Bookmark Button */}
+        <button
+          className="text-gray-500 hover:text-blue-600"
+          onClick={handleBookmarkPost}
+          data-testid="bookmark-icon"
+        >
+          {bookmarked ? (
+            <SolidBookmarkIcon className="h-5 w-5 text-blue-600" />
+          ) : (
+            <OutlineBookmarkIcon className="h-5 w-5" />
+          )}
+        </button>
+
+        {/* Edit and Delete Buttons (only visible to the author) */}
+        { loggedUser?.profile?.userName === posterData?.profile?.userName && (
+          <div className="absolute top-2 right-2 flex space-x-2">
+            <button
+              className="text-gray-500 hover:text-gray-700"
+              onClick={() => console.log("Edit post clicked")}
+              data-testid="edit-post-btn"
+            >
+              <PencilIcon className="h-5 w-5" />
+            </button>
+            <button
+              className="text-gray-500 hover:text-red-700"
+              onClick={() => setShowDeleteConfirmation(true)}
+              data-testid="delete-post-btn"
+            >
+              <TrashIcon className="h-5 w-5" />
+            </button>
+          </div>
+        )}
+      </div>
 
       {/* Delete Confirmation Popup */}
       {showDeleteConfirmation && (
@@ -190,7 +222,7 @@ useEffect(() => {
           color="blue"
           className="flex items-center gap-1 hover:text-blue-600"
           onClick={() =>
-            handleLikePost(post.id,token, liked, setLiked, setLikesCount,likesCount)
+            handleLikePost(post.id, token, liked, setLiked, setLikesCount, likesCount)
           }
           data-testid="like-icon"
         >
@@ -220,7 +252,7 @@ useEffect(() => {
           color="blue"
           className="flex items-center gap-1 hover:text-blue-600"
           onClick={() =>
-            handlerepostPost(post.id, token , setRepostsCount,repostsCount)
+            handlerepostPost(post.id, token, setRepostsCount, repostsCount)
           }
           data-testid="repost-icon"
         >

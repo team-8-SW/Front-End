@@ -13,7 +13,7 @@ const SavedJobsTab = () => {
   useEffect(() => {
     const fetchSavedJobs = async () => {
       try {
-        const { data } = await axios.get("http://localhost:5000/api/jobs/applicant", {
+        const { data } = await axios.get("http://localhost:5000/api/jobs/applicant/jobs", {
           headers: { Authorization: `Bearer ${token}` },
         });
 

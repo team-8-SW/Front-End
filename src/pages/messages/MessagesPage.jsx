@@ -9,9 +9,9 @@ const MessagesPage = () => {
   const currentUserId = "currentUser"; // Get from your auth system
 
   return (
-    <div className="flex min-h-screen">
-      <div className="flex flex-col bg-white border rounded-md shadow-sm max-w-5xl mx-auto ml-12 w-full">
-        <MessagingHeader />
+    <div className="flex min-h-screen ">
+     <div className="flex flex-col bg-white border rounded-md shadow-sm max-w-5xl mx-auto ml-12">
+        <MessagingHeader/>
         <MessagingTabs />
         <div className="flex flex-1">
           {/* Conversation List - Left Side */}

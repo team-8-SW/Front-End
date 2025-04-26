@@ -16,7 +16,6 @@ const MyCompanies = () => {
         });
 
         // If it's an array
-        console.log("Companies response:", res.data);
         const companiesArray = Array.isArray(res.data) ? res.data : [res.data];
         setCompanies(companiesArray);
       } catch (err) {

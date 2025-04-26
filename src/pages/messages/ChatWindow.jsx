@@ -11,17 +11,8 @@ const ChatWindow = () => {
   const [connections, setConnections] = useState([]);
   const [messages, setMessages] = useState({});
   const [currentUserId, setCurrentUserId] = useState(null);
-  const messagesEndRef = useRef(null); // Added for auto-scroll
+  const messagesEndRef = useRef(null);
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    const userId = parseJwt(token)?.userId;
-    setCurrentUserId(userId);
-    if (!userId) return;
-  
-    socket.emit('join', userId);
-  }, []);
-  
   const parseJwt = (token) => {
     try {
       return JSON.parse(atob(token.split('.')[1]));
@@ -29,35 +20,38 @@ const ChatWindow = () => {
       return null;
     }
   };
-  
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     const userId = parseJwt(token)?.userId;
     setCurrentUserId(userId);
-  
     if (!userId) return;
-  
+
     const handleConnect = () => {
       console.log('Socket connected:', socket.id);
       socket.emit('join', userId);
     };
-  
+
     socket.on('connect', handleConnect);
-  
+
     if (socket.connected) {
       socket.emit('join_room', userId);
     }
-  
+
     return () => {
       socket.off('connect', handleConnect);
     };
   }, []);
 
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   const handleMessage = (message) => {
     const otherUserId = message.senderId === currentUserId
       ? message.receiverId
       : message.senderId;
-  
+
     setMessages(prev => ({
       ...prev,
       [otherUserId]: [...(prev[otherUserId] || []), message],
@@ -66,14 +60,8 @@ const ChatWindow = () => {
     scrollToBottom();
   };
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
   useEffect(() => {
     socket.on('receive_message', handleMessage);
-
-    // New: receive conversation history
     socket.on('conversation_history', (history) => {
       if (selectedRecipients.length === 1 && Array.isArray(history)) {
         const selectedUserId = selectedRecipients[0].id;
@@ -100,8 +88,8 @@ const ChatWindow = () => {
           return;
         }
 
-        const conn = await getConnections();
-        setConnections(conn.connections);
+        const conn = await getConnections(token);
+        setConnections(conn.connections || []);
       } catch (error) {
         console.error('Error fetching connections:', error);
       }
@@ -126,6 +114,7 @@ const ChatWindow = () => {
         setSearchResults(filtered);
       } catch (error) {
         console.error('Search failed:', error);
+        setSearchResults([]);
       }
     } else {
       setSearchResults([]);
@@ -134,9 +123,11 @@ const ChatWindow = () => {
 
   const handleSelectRecipient = (user) => {
     if (!selectedRecipients.some(r => r.id === user.userId)) {
-      setSelectedRecipients([{ id: user.userId, name: user.name }]); // Only allow one selection
+      setSelectedRecipients([{ 
+        id: user.userId, 
+        name: `${user.firstName} ${user.lastName}` 
+      }]);
 
-      // New: request conversation history
       socket.emit('get_conversation', {
         userId: currentUserId,
         otherUserId: user.userId,
@@ -153,7 +144,7 @@ const ChatWindow = () => {
   const handleSendMessage = () => {
     const trimmed = messageContent.trim();
     if (trimmed.length <= 3 || selectedRecipients.length !== 1) return;
-  
+
     const recipient = selectedRecipients[0];
     const message = {
       senderId: currentUserId,
@@ -161,7 +152,7 @@ const ChatWindow = () => {
       content: trimmed,
       timestamp: new Date().toISOString(),
     };
-  
+
     socket.emit('send_text', message);
     handleMessage(message);
     setMessageContent('');
@@ -170,7 +161,7 @@ const ChatWindow = () => {
   const filteredConnections = searchQuery.length > 2 ? searchResults : [];
 
   return (
-    <div className="w-2/3 flex flex-col">
+    <div className="w-2/3 flex flex-col h-full">
       <div className="p-4 border-b">
         <h2 className="font-medium">New message</h2>
       </div>
@@ -179,7 +170,11 @@ const ChatWindow = () => {
         {selectedRecipients.map((recipient) => (
           <div key={recipient.id} className="flex items-center bg-green-800 text-white px-2 py-1 rounded-full mr-2 mb-2">
             <span>{recipient.name}</span>
-            <button onClick={() => handleRemoveRecipient(recipient.id)} className="ml-1">
+            <button 
+              onClick={() => handleRemoveRecipient(recipient.id)} 
+              className="ml-1"
+              aria-label="Remove recipient"
+            >
               <X className="h-4 w-4" />
             </button>
           </div>
@@ -193,7 +188,7 @@ const ChatWindow = () => {
             onChange={handleSearchChange}
           />
         </div>
-        <button className="ml-2">
+        <button className="ml-2" aria-label="Add recipient">
           <PlusCircle className="h-5 w-5 text-gray-500" />
         </button>
       </div>
@@ -213,10 +208,14 @@ const ChatWindow = () => {
                       src={connection.avatarUrl}
                       alt={connection.name}
                       className="w-full h-full rounded-full object-cover"
+                      onError={(e) => {
+                        e.target.src = '/default-avatar.png';
+                        e.target.onerror = null;
+                      }}
                     />
                   ) : (
                     <span className="text-gray-500 text-lg">
-                      {connection.firstName ? connection.firstName.split(' ').map(n => n[0]).join('').substring(0, 2) : '??'}
+                      {connection.firstName ? connection.firstName[0] + (connection.lastName?.[0] || '') : '??'}
                     </span>
                   )}
                 </div>
@@ -240,29 +239,27 @@ const ChatWindow = () => {
         </div>
       )}
 
-<div className="flex-1 overflow-y-auto p-4 flex flex-col space-y-2">
-  {selectedRecipients.length === 1 &&
-    messages[selectedRecipients[0].id]?.map((msg, index) => (
-      <div
-        key={index}
-        className={`flex ${
-          msg.senderId === currentUserId ? 'justify-end' : 'justify-start'
-        }`}
-      >
-        <div
-          className={`p-3 rounded-lg max-w-md ${
-            msg.senderId === currentUserId
-              ? 'bg-blue-100'
-              : 'bg-gray-100'
-          }`}
-        >
-          <div className="text-sm text-gray-800">{msg.content}</div>
-        </div>
+      <div className="flex-1 overflow-y-auto p-4 flex flex-col space-y-2">
+        {selectedRecipients.length === 1 &&
+          messages[selectedRecipients[0]?.id]?.map((msg, index) => (
+            <div
+              key={`${msg.timestamp}-${index}`}
+              className={`flex ${msg.senderId === currentUserId ? 'justify-end' : 'justify-start'}`}
+            >
+              <div
+                className={`p-3 rounded-lg max-w-md ${
+                  msg.senderId === currentUserId ? 'bg-blue-500 text-white' : 'bg-gray-300 text-black'
+                }`}
+              >
+                <div className="text-sm">{msg.content}</div>
+                <div className="text-xs mt-1 opacity-70">
+                  {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </div>
+              </div>
+            </div>
+          ))}
+        <div ref={messagesEndRef} />
       </div>
-    ))}
-  <div ref={messagesEndRef} />
-</div>
-
 
       <div className="mt-auto border-t">
         <textarea
@@ -270,20 +267,21 @@ const ChatWindow = () => {
           className="w-full p-4 resize-none focus:outline-none h-32"
           value={messageContent}
           onChange={(e) => setMessageContent(e.target.value)}
+          onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSendMessage()}
         ></textarea>
 
         <div className="flex justify-between items-center p-3 border-t">
           <div className="flex space-x-4">
-            <button>
+            <button aria-label="Attach image">
               <Image className="h-5 w-5 text-gray-600" />
             </button>
-            <button>
+            <button aria-label="Attach file">
               <Paperclip className="h-5 w-5 text-gray-600" />
             </button>
-            <button>
+            <button aria-label="Send GIF">
               <span className="font-bold">GIF</span>
             </button>
-            <button>
+            <button aria-label="Emoji picker">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10" />
                 <path d="M8 14s1.5 2 4 2 4-2 4-2" />
@@ -301,10 +299,11 @@ const ChatWindow = () => {
                   : 'bg-gray-200 text-gray-400'
               }`}
               disabled={selectedRecipients.length === 0 || !messageContent.trim()}
+              aria-label="Send message"
             >
               Send
             </button>
-            <button>
+            <button aria-label="More options">
               <MoreHorizontal className="h-5 w-5 text-gray-600" />
             </button>
           </div>

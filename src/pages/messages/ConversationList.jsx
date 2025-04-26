@@ -5,31 +5,65 @@ const ConversationList = ({ currentUserId, onSelect }) => {
   const [conversations, setConversations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [unseenCount, setUnseenCount] = useState(0);
 
   useEffect(() => {
+    if (!currentUserId) {
+      console.error('No currentUserId provided to ConversationList');
+      setError('User ID is missing. Please try again.');
+      setLoading(false);
+      return;
+    }
+
     const handleConnect = () => {
-      console.log('Socket connected for ConversationList');
+      console.log('Socket connected for ConversationList, userId:', currentUserId);
+      socket.emit('join_room', currentUserId);
       socket.emit('get_all_conversations', currentUserId);
+      socket.emit('get_unseen_count', currentUserId);
     };
 
     const handleConversations = (data) => {
       console.log('Received conversations:', data);
-      setConversations(Array.isArray(data) ? data : []);
+      // Process the backend response format
+      const processedConversations = Array.isArray(data) 
+        ? data.map(conv => ({
+            ...conv,
+            participants: conv.participants.map(p => ({
+              id: p.id,
+              name: `${p.firstName} ${p.lastName}`,
+              userName: p.user_name,
+              // Add any other required participant fields
+            })),
+            unread: false // You might want to calculate this based on your backend
+          }))
+        : [];
+      
+      setConversations(processedConversations);
       setLoading(false);
     };
 
+    const handleUnseenCount = (data) => {
+      console.log('Received unseen count:', data);
+      setUnseenCount(data.unreadCount || 0);
+    };
+
     const handleNewMessage = (message) => {
+      console.log('Received new message:', message);
       setConversations(prev => {
-        const updated = prev.map(conv => 
-          conv.id === message.conversationId ? {
-            ...conv,
-            lastMessage: message.content,
-            timestamp: message.timestamp,
-            unread: message.senderId !== currentUserId
-          } : conv
-        );
+        const updated = prev.map(conv => {
+          const isPartOfConversation = conv.participants.some(p => p.id === message.senderId);
+          return isPartOfConversation
+            ? {
+                ...conv,
+                lastMessage: message.content,
+                timestamp: message.timestamp,
+                unread: message.senderId !== currentUserId
+              }
+            : conv;
+        });
         return updated;
       });
+      socket.emit('get_unseen_count', currentUserId);
     };
 
     if (socket.connected) handleConnect();
@@ -37,9 +71,10 @@ const ConversationList = ({ currentUserId, onSelect }) => {
     socket.on('connect', handleConnect);
     socket.on('all_conversations', handleConversations);
     socket.on('receive_message', handleNewMessage);
+    socket.on('unseen_count', handleUnseenCount);
     socket.on('connect_error', (err) => {
       console.error('Connection error:', err);
-      setError('Failed to connect. Please refresh.');
+      setError('Failed to connect to messaging service. Please refresh.');
       setLoading(false);
     });
 
@@ -47,19 +82,37 @@ const ConversationList = ({ currentUserId, onSelect }) => {
       socket.off('connect', handleConnect);
       socket.off('all_conversations', handleConversations);
       socket.off('receive_message', handleNewMessage);
+      socket.off('unseen_count', handleUnseenCount);
       socket.off('connect_error');
     };
   }, [currentUserId]);
 
   const handleSelectConversation = (conversation) => {
-    const otherUser = conversation.participants?.find(p => p.id !== currentUserId);
+    const otherUser = conversation.participants?.find((p) => p.id !== currentUserId);
     if (!otherUser) return;
 
+    console.log('Selecting conversation with:', otherUser.id);
     socket.emit('mark_as_read', {
       userId: currentUserId,
-      otherUserId: otherUser.id
+      otherUserId: otherUser.id,
     });
-    onSelect(conversation);
+
+    socket.emit('get_conversation', {
+      userId: currentUserId,
+      otherUserId: otherUser.id,
+    });
+
+    socket.once('conversation_history', (history) => {
+      console.log('Received conversation history:', history);
+      if (onSelect && typeof onSelect === 'function') {
+        onSelect({
+          ...conversation,
+          messages: Array.isArray(history) ? history : [],
+        });
+      }
+    });
+
+    socket.emit('get_unseen_count', currentUserId);
   };
 
   if (loading) {
@@ -82,7 +135,7 @@ const ConversationList = ({ currentUserId, onSelect }) => {
     return (
       <div className="p-4 text-red-500">
         {error}
-        <button 
+        <button
           onClick={() => window.location.reload()}
           className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
         >
@@ -106,10 +159,11 @@ const ConversationList = ({ currentUserId, onSelect }) => {
 
   return (
     <div className="w-full h-full overflow-y-auto divide-y">
-      {conversations.map(conversation => {
-        const otherUser = conversation.participants?.find(p => p.id !== currentUserId) || {};
-        const lastMessageTime = conversation.timestamp ? 
-          new Date(conversation.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+      {conversations.map((conversation) => {
+        const otherUser = conversation.participants?.find((p) => p.id !== currentUserId) || {};
+        const lastMessageTime = conversation.timestamp
+          ? new Date(conversation.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          : '';
 
         return (
           <div
@@ -123,8 +177,8 @@ const ConversationList = ({ currentUserId, onSelect }) => {
               <div className="flex items-center flex-1 min-w-0">
                 <div className="w-12 h-12 rounded-full bg-gray-200 overflow-hidden mr-3 flex-shrink-0">
                   {otherUser.avatarUrl ? (
-                    <img 
-                      src={otherUser.avatarUrl} 
+                    <img
+                      src={otherUser.avatarUrl}
                       alt={otherUser.name}
                       className="w-full h-full object-cover"
                       onError={(e) => {
@@ -135,27 +189,22 @@ const ConversationList = ({ currentUserId, onSelect }) => {
                   ) : (
                     <div className="w-full h-full flex items-center justify-center bg-gray-300">
                       <span className="text-gray-600 font-medium">
-                        {otherUser.name ? otherUser.name.charAt(0).toUpperCase() : '?'}
+                        {otherUser.userName ? otherUser.userName.charAt(0).toUpperCase() : '?'}
                       </span>
                     </div>
                   )}
                 </div>
                 <div className="min-w-0">
-                  <p className="font-medium truncate">{otherUser.name || 'Unknown User'}</p>
+                  <p className="font-medium truncate">
+                    {otherUser.name || otherUser.userName || 'Unknown User'}
+                  </p>
                   <p className="text-sm text-gray-500 truncate">
                     {conversation.lastMessage || 'No messages yet'}
                   </p>
-                  {otherUser.title && (
-                    <p className="text-xs text-gray-400 mt-1 truncate">
-                      {otherUser.title}
-                    </p>
-                  )}
                 </div>
               </div>
               <div className="ml-4 flex flex-col items-end">
-                <span className="text-xs text-gray-500 whitespace-nowrap">
-                  {lastMessageTime}
-                </span>
+                <span className="text-xs text-gray-500 whitespace-nowrap">{lastMessageTime}</span>
                 {conversation.unread && (
                   <div className="mt-1 w-2 h-2 rounded-full bg-blue-500"></div>
                 )}

@@ -1,30 +1,18 @@
-
-import React from 'react';
-import { Search, MoreHorizontal } from 'lucide-react';
-const MessagingHeader = () => {
+const MessagingHeader = ({ onNewMessage }) => {
   return (
-<div className="flex justify-between items-center p-4 border-b">
-        <h1 className="text-xl font-medium">Messaging</h1>
-        <div className="flex items-center space-x-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-2.5 text-gray-500 h-4 w-4" />
-            <input
-              type="text"
-              placeholder="Search messages"
-              className="pl-10 pr-4 py-2 bg-gray-100 rounded-full w-64 focus:outline-none"
-            />
-          </div>
-          <button className="text-gray-600">
-            <MoreHorizontal className="h-5 w-5" />
-          </button>
-          <button className="text-gray-600">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-            </svg>
-          </button>
-        </div>
-      </div>
-
+    <div className="p-4 border-b flex justify-between items-center">
+      <h2 className="text-xl font-semibold">Messages</h2>
+      <button
+        onClick={onNewMessage}
+        className="p-2 rounded-full hover:bg-gray-100"
+        aria-label="New message"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
+        </svg>
+      </button>
+    </div>
   );
 };
+
 export default MessagingHeader;

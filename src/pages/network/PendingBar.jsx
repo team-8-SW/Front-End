@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchPendingConnections } from "../../services/api";
+import { 
+  fetchPendingConnections,
+  acceptConnection,
+  declineConnection
+} from "../../services/api";
 
 import { MdChevronRight } from "react-icons/md";
 
@@ -10,6 +14,25 @@ const PendingConnectionsBar = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
+  const handleAccept = async (id) => {
+    try {
+      await acceptConnection(id); // Removed token parameter
+      setPending(prev => prev.filter(user => user.id !== id));
+    } catch (err) {
+      console.error("Error accepting connection:", err);
+      setError("Failed to accept connection. Please try again.");
+    }
+  };
+  
+  const handleDecline = async (id) => {
+    try {
+      await declineConnection(id); // Removed token parameter
+      setPending(prev => prev.filter(user => user.id !== id));
+    } catch (err) {
+      console.error("Error declining connection:", err);
+      setError("Failed to decline connection. Please try again.");
+    }
+  };
 
   useEffect(() => {
     const loadData = async () => {
@@ -54,12 +77,18 @@ const PendingConnectionsBar = () => {
             )}
           </div>
           <div className="flex space-x-2">
-            <button className="text-blue-600 font-semibold text-sm px-4 py-1.5 rounded-full border border-blue-600 hover:bg-blue-50">
-              Accept
-            </button>
-            <button className="text-gray-600 font-semibold text-sm px-4 py-1.5 rounded-full border border-gray-300 hover:bg-gray-50">
-              Ignore
-            </button>
+          <button
+                    onClick={() => handleAccept(user.id)}
+                    className="px-4 py-1.5 bg-blue-600 text-white rounded-full text-sm hover:bg-blue-700 transition"
+                  >
+                    Accept
+                  </button>
+                  <button
+                    onClick={() => handleDecline(user.id)}
+                    className="px-4 py-1.5 border border-gray-300 text-gray-700 rounded-full text-sm hover:bg-gray-100 transition"
+                  >
+                    Decline
+                  </button>
           </div>
         </div>
       </div>

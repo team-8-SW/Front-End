@@ -48,25 +48,26 @@ const PendingConnectionsPage = () => {
     loadData();
   }, [navigate, token]);
 
-  const handleAccept = async (id) => {
-    try {
-      await acceptConnection(id, token);
-      setPending(prev => prev.filter(user => user.id !== id));
-    } catch (err) {
-      console.error("Error accepting connection:", err);
-      setError("Failed to accept connection. Please try again.");
-    }
-  };
+  // In your PendingConnectionsPage component
+const handleAccept = async (id) => {
+  try {
+    await acceptConnection(id); // Removed token parameter
+    setPending(prev => prev.filter(user => user.id !== id));
+  } catch (err) {
+    console.error("Error accepting connection:", err);
+    setError("Failed to accept connection. Please try again.");
+  }
+};
 
-  const handleDecline = async (id) => {
-    try {
-      await declineConnection(id, token);
-      setPending(prev => prev.filter(user => user.id !== id));
-    } catch (err) {
-      console.error("Error declining connection:", err);
-      setError("Failed to decline connection. Please try again.");
-    }
-  };
+const handleDecline = async (id) => {
+  try {
+    await declineConnection(id); // Removed token parameter
+    setPending(prev => prev.filter(user => user.id !== id));
+  } catch (err) {
+    console.error("Error declining connection:", err);
+    setError("Failed to decline connection. Please try again.");
+  }
+};
 
   return (
     <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-sm border border-gray-200">

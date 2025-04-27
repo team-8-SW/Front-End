@@ -1,318 +1,431 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { PlusCircle, Paperclip, Image, MoreHorizontal, X } from 'lucide-react';
-import { getConnections, searchUsers } from '../../services/api';
 import socket from '../../services/socket';
 
-const ChatWindow = () => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
-  const [selectedRecipients, setSelectedRecipients] = useState([]);
+const ChatWindow = ({ conversation, currentUserId }) => {
+  const [messages, setMessages] = useState([]);
   const [messageContent, setMessageContent] = useState('');
-  const [connections, setConnections] = useState([]);
-  const [messages, setMessages] = useState({});
-  const [currentUserId, setCurrentUserId] = useState(null);
-  const messagesEndRef = useRef(null); // Added for auto-scroll
+  const [lastSeenMessageId, setLastSeenMessageId] = useState(null);
+  const [isTyping, setIsTyping] = useState(false); // State for typing indicator
+  const messagesEndRef = useRef(null);
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    const userId = parseJwt(token)?.userId;
-    setCurrentUserId(userId);
-    if (!userId) return;
-  
-    socket.emit('join', userId);
-  }, []);
-  
-  const parseJwt = (token) => {
-    try {
-      return JSON.parse(atob(token.split('.')[1]));
-    } catch (e) {
-      return null;
-    }
-  };
-  
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    const userId = parseJwt(token)?.userId;
-    setCurrentUserId(userId);
-  
-    if (!userId) return;
-  
-    const handleConnect = () => {
-      console.log('Socket connected:', socket.id);
-      socket.emit('join', userId);
-    };
-  
-    socket.on('connect', handleConnect);
-  
-    if (socket.connected) {
-      socket.emit('join_room', userId);
-    }
-  
-    return () => {
-      socket.off('connect', handleConnect);
-    };
-  }, []);
+  const otherUser = conversation?.participants.find((p) => p.id !== currentUserId) || {};
 
-  const handleMessage = (message) => {
-    const otherUserId = message.senderId === currentUserId
-      ? message.receiverId
-      : message.senderId;
-  
-    const isSender = message.senderId === currentUserId;
-  
-    const enrichedMessage = {
-      ...message,
-      isSender,
-    };
-  
-    setMessages(prev => ({
-      ...prev,
-      [otherUserId]: [...(prev[otherUserId] || []), enrichedMessage],
-    }));
-  
-    scrollToBottom();
-  };
-  
-
+  // Scroll to bottom function
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  // Initialize messages and set up WebSocket listeners
   useEffect(() => {
-    socket.on('receive_message', handleMessage);
+    if (conversation?.messages) {
+      const mappedMessages = conversation.messages.map((msg) => ({
+        id: msg.id,
+        senderId: msg.sender_id,
+        receiverId: msg.receiver_id,
+        content: msg.content,
+        timestamp: msg.sent_at,
+        isSender: msg.sender_id === currentUserId,
+        mediaUrl: msg.media_url,
+        mediaType: msg.media_type,
+        is_Read: msg.sender_id === currentUserId ? 'sent' : null,
+      }));
+      setMessages(mappedMessages);
+      setTimeout(scrollToBottom, 100);
+    }
 
-    // New: receive conversation history
-    socket.on('conversation_history', (history) => {
-      if (selectedRecipients.length === 1 && Array.isArray(history)) {
-        const selectedUserId = selectedRecipients[0].id;
-        setMessages(prev => ({
-          ...prev,
-          [selectedUserId]: history,
-        }));
-        scrollToBottom();
+    socket.emit('join_room', currentUserId);
+
+    if (otherUser.id) {
+      socket.emit('get_read_status', { userId2: otherUser.id });
+      socket.emit('get_typing_status', { senderId: currentUserId, receiverId: otherUser.id });
+    }
+
+    const handleNewMessage = (message) => {
+      const isRelevantMessage =
+        (message.senderId === currentUserId && message.receiverId === otherUser.id) ||
+        (message.senderId === otherUser.id && message.receiverId === currentUserId);
+
+      if (isRelevantMessage) {
+        setMessages((prev) => {
+          const updatedMessages = [
+            ...prev,
+            {
+              id: message.id,
+              senderId: message.senderId,
+              receiverId: message.receiverId,
+              content: message.content,
+              timestamp: message.timestamp,
+              isSender: message.senderId === currentUserId,
+              mediaUrl: message.media ? message.media.url : null,
+              mediaType: message.media ? message.media.type : null,
+              status: message.senderId === currentUserId ? 'sent' : null,
+            },
+          ];
+
+          if (lastSeenMessageId) {
+            return updateMessageStatuses(updatedMessages);
+          }
+          return updatedMessages;
+        });
+        setTimeout(scrollToBottom, 100);
       }
+    };
+
+    const updateMessageStatuses = (msgs) => {
+      if (!lastSeenMessageId) return msgs;
+
+      let lastSeenIndex = -1;
+      for (let i = 0; i < msgs.length; i++) {
+        if (msgs[i].id === lastSeenMessageId) {
+          lastSeenIndex = i;
+          break;
+        }
+      }
+
+      if (lastSeenIndex === -1) return msgs;
+
+      return msgs.map((msg, index) => {
+        if (!msg.isSender) return msg;
+        if (index <= lastSeenIndex) {
+          return { ...msg, status: 'read' };
+        }
+        return { ...msg, status: 'sent' };
+      });
+    };
+
+    const handleReadStatus = (status) => {
+      setLastSeenMessageId(status.lastMessageId);
+      setMessages((prev) => {
+        const updatedMessages = [...prev];
+        if (status.isRead) {
+          return updateMessageStatuses(updatedMessages);
+        }
+        return updatedMessages;
+      });
+    };
+
+    const handleConversationRead = ({ by }) => {
+      if (by === otherUser.id) {
+        socket.emit('get_read_status', { userId2: otherUser.id });
+      }
+    };
+
+    const handleTyping = (data) => {
+      if (data.from === otherUser.id) {
+        socket.emit('get_typing_status', { senderId: currentUserId, receiverId: otherUser.id });
+      }
+    };
+
+    const handleTypingStatus = (data) => {
+      if (data.senderId === currentUserId && data.receiverId === otherUser.id) {
+        setIsTyping(data.isTyping);
+      }
+    };
+
+    socket.on('receive_message', handleNewMessage);
+    socket.on('read_status', handleReadStatus);
+    socket.on('conversation_read', handleConversationRead);
+    socket.on('typing', handleTyping);
+    socket.on('typing_status', handleTypingStatus);
+    socket.on('connect_error', (err) => {
+      console.error('WebSocket connection error:', err);
     });
 
     return () => {
-      socket.off('receive_message', handleMessage);
-      socket.off('conversation_history');
+      socket.off('receive_message', handleNewMessage);
+      socket.off('read_status', handleReadStatus);
+      socket.off('conversation_read', handleConversationRead);
+      socket.off('typing', handleTyping);
+      socket.off('typing_status', handleTypingStatus);
+      socket.off('connect_error');
     };
-  }, [currentUserId, selectedRecipients]);
+  }, [conversation, currentUserId, otherUser.id]);
 
+  // Additional scroll to bottom when component mounts
   useEffect(() => {
-    const fetchInitialData = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          console.error('Token is missing');
-          return;
-        }
-
-        const conn = await getConnections();
-        setConnections(conn.connections);
-      } catch (error) {
-        console.error('Error fetching connections:', error);
-      }
-    };
-
-    fetchInitialData();
+    setTimeout(scrollToBottom, 300);
   }, []);
 
-  const handleSearchChange = async (e) => {
-    const query = e.target.value;
-    setSearchQuery(query);
-
-    if (query.length > 2) {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await searchUsers(token, { q: query });
-
-        const filtered = response.users.filter(
-          user => connections.some(conn => conn.userId === user.userId)
-        );
-
-        setSearchResults(filtered);
-      } catch (error) {
-        console.error('Search failed:', error);
+  // Emit typing event when user types
+  const handleTyping = () => {
+    if (conversation) {
+      const otherUser = conversation.participants.find((p) => p.id !== currentUserId);
+      if (otherUser) {
+        socket.emit('typing', { senderId: currentUserId, receiverId: otherUser.id });
       }
-    } else {
-      setSearchResults([]);
     }
-  };
-
-  const handleSelectRecipient = (user) => {
-    if (!selectedRecipients.some(r => r.id === user.userId)) {
-      setSelectedRecipients([{ id: user.userId, name: user.name }]); // Only allow one selection
-
-      // New: request conversation history
-      socket.emit('get_conversation', {
-        userId: currentUserId,
-        otherUserId: user.userId,
-      });
-    }
-    setSearchQuery('');
-    setSearchResults([]);
-  };
-
-  const handleRemoveRecipient = (userId) => {
-    setSelectedRecipients(selectedRecipients.filter(r => r.id !== userId));
   };
 
   const handleSendMessage = () => {
     const trimmed = messageContent.trim();
-    if (trimmed.length <= 3 || selectedRecipients.length !== 1) return;
-  
-    const recipient = selectedRecipients[0];
+    if (trimmed.length < 1 || !conversation) return;
+
+    const otherUser = conversation.participants.find((p) => p.id !== currentUserId);
+    if (!otherUser) return;
+
     const message = {
       senderId: currentUserId,
-      receiverId: recipient.id,
+      receiverId: otherUser.id,
       content: trimmed,
-      timestamp: new Date().toISOString(),
     };
-  
+
     socket.emit('send_text', message);
-    handleMessage(message);
+
+    setMessages((prev) => {
+      const updatedMessages = [
+        ...prev,
+        {
+          id: `temp-${Date.now()}`,
+          senderId: currentUserId,
+          receiverId: otherUser.id,
+          content: trimmed,
+          timestamp: new Date().toISOString(),
+          isSender: true,
+          status: 'sent',
+        },
+      ];
+
+      if (lastSeenMessageId) {
+        return updateMessageStatuses(updatedMessages);
+      }
+      return updatedMessages;
+    });
+
     setMessageContent('');
+    setTimeout(scrollToBottom, 100);
   };
 
-  const filteredConnections = searchQuery.length > 2 ? searchResults : [];
+  const handleQuickReply = (text) => {
+    setMessageContent(text);
+    handleSendMessage();
+  };
+
+  const formatTimestamp = (timestamp) => {
+    const date = new Date(timestamp);
+    const today = new Date();
+    const isToday = date.toDateString() === today.toDateString();
+    if (isToday) {
+      return date
+        .toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        .replace(' ', ':')
+        .toLowerCase();
+    }
+    return date.toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase();
+  };
+
+  const groupMessagesByDay = (messages) => {
+    const groups = [];
+    let currentGroup = { day: null, messages: [] };
+
+    messages.forEach((msg) => {
+      const msgDate = new Date(msg.timestamp).toDateString();
+      if (currentGroup.day === null || msgDate !== currentGroup.day) {
+        if (currentGroup.messages.length > 0) {
+          groups.push(currentGroup);
+        }
+        currentGroup = { day: msgDate, messages: [] };
+      }
+      currentGroup.messages.push(msg);
+    });
+
+    if (currentGroup.messages.length > 0) {
+      groups.push(currentGroup);
+    }
+    return groups;
+  };
+
+  const messageGroups = groupMessagesByDay(messages);
+
+  if (!conversation) {
+    return (
+      <div className="flex-1 flex items-center justify-center bg-gray-100">
+        <div className="text-center">
+          <p className="text-gray-500">Select a conversation to start messaging</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="w-2/3 flex flex-col">
-      <div className="p-4 border-b">
-        <h2 className="font-medium">New message</h2>
+    <div className="flex flex-col h-full">
+      {/* Header */}
+      <div className="p-4 border-b flex items-center bg-gray-50">
+        <div className="w-12 h-12 rounded-full bg-orange-500 flex items-center justify-center mr-3">
+          {otherUser.avatarUrl ? (
+            <img
+              src={otherUser.avatarUrl}
+              alt={otherUser.name}
+              className="rounded-full w-full h-full object-cover"
+            />
+          ) : (
+            <span className="text-lg text-white">{otherUser.name?.charAt(0) || '?'}</span>
+          )}
+        </div>
+        <div>
+          <p className="font-semibold text-lg">{otherUser.name || 'Unknown User'}</p>
+          <p className="text-sm text-gray-600">{otherUser.title || ''}</p>
+        </div>
+        <div className="ml-auto flex space-x-3">
+          <button className="text-gray-600 hover:text-gray-800">
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <circle cx="4" cy="10" r="2" />
+              <circle cx="10" cy="10" r="2" />
+              <circle cx="16" cy="10" r="2" />
+            </svg>
+          </button>
+          <button className="text-purple-600 hover:text-purple-800">
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" />
+            </svg>
+          </button>
+          <button className="text-gray-600 hover:text-gray-800">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.783-.57-.38-1.81.588-1.81h4.915a1 1 0 00.95-.69l1.519-4.674z"
+              />
+            </svg>
+          </button>
+        </div>
       </div>
 
-      <div className="p-4 border-b flex flex-wrap items-center">
-        {selectedRecipients.map((recipient) => (
-          <div key={recipient.id} className="flex items-center bg-green-800 text-white px-2 py-1 rounded-full mr-2 mb-2">
-            <span>{recipient.name}</span>
-            <button onClick={() => handleRemoveRecipient(recipient.id)} className="ml-1">
-              <X className="h-4 w-4" />
-            </button>
+      {/* Messages */}
+      <div className="flex-1 p-6 bg-gray-100 overflow-y-auto">
+        {messageGroups.map((group, groupIndex) => (
+          <div key={groupIndex}>
+            <div className="text-center text-xs text-gray-500 my-6">
+              {formatTimestamp(new Date(group.day))}
+            </div>
+            {group.messages.map((msg) => (
+              <div
+                key={msg.id}
+                className={`flex mb-4 ${msg.isSender ? 'justify-end' : 'justify-start'}`}
+              >
+                {!msg.isSender && (
+                  <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center mr-3 self-end">
+                    <span className="text-sm text-white">{otherUser.name?.charAt(0) || '?'}</span>
+                  </div>
+                )}
+                <div
+                  className={`max-w-xs p-3 rounded-lg ${
+                    msg.isSender ? 'bg-blue-400 text-white' : 'bg-white text-gray-800'
+                  }`}
+                >
+                  <div className="flex items-baseline justify-between">
+                    <p className="font-medium mr-2">{msg.isSender ? "" : otherUser.name}</p>
+                  </div>
+                  <p className="mt-1">{msg.content}</p>
+                  {msg.isSender && (
+                    <div className="flex justify-end mt-1">
+                      <span
+                        className={`text-xs ${
+                          msg.status === 'read' ? 'text-blue-500' : 'text-gray-400'
+                        }`}
+                      >
+                        {msg.status === 'sent' ? 'Sent' : 'Read'}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                {msg.isSender && (
+                  <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center ml-3 self-end">
+                    <span className="text-sm text-white">{otherUser.name?.charAt(0) || '?'}</span>
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
         ))}
-        <div className="flex-1">
+        {isTyping && (
+          <div className="text-sm text-gray-500 italic mb-2">
+            {otherUser.name || 'User'} is typing...
+          </div>
+        )}
+        <div ref={messagesEndRef} />
+      </div>
+
+      {/* Quick reply buttons */}
+      <div className="p-4 flex space-x-3">
+        {['Hello', 'Hi', 'How are you?'].map((text) => (
+          <button
+            key={text}
+            onClick={() => handleQuickReply(text)}
+            className="px-4 py-1.5 border-2 border-blue-500 text-blue-500 rounded-full hover:bg-blue-50 text-sm font-medium"
+          >
+            {text}
+          </button>
+        ))}
+      </div>
+
+      {/* Message input */}
+      <div className="p-4 border-t bg-white flex items-center">
+        <div className="flex-1 relative">
           <input
             type="text"
-            placeholder="Type a name or multiple names"
-            className="w-full p-2 focus:outline-none"
-            value={searchQuery}
-            onChange={handleSearchChange}
+            placeholder="Write a message..."
+            className="w-full p-3 pr-10 border rounded-lg bg-gray-100 text-gray-600 focus:outline-none"
+            value={messageContent}
+            onChange={(e) => {
+              setMessageContent(e.target.value);
+              handleTyping();
+            }}
+            onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
           />
+          <button className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 15l7-7 7 7" />
+            </svg>
+          </button>
         </div>
-        <button className="ml-2">
-          <PlusCircle className="h-5 w-5 text-gray-500" />
-        </button>
-      </div>
-
-      {filteredConnections.length > 0 && (
-        <div className="flex-1 p-4 overflow-y-auto max-h-64">
-          {filteredConnections.map(connection => (
-            <div
-              key={connection.userId}
-              className="flex items-center p-4 border-b cursor-pointer hover:bg-gray-50"
-              onClick={() => handleSelectRecipient(connection)}
-            >
-              <div className="relative mr-3">
-                <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
-                  {connection.avatarUrl ? (
-                    <img
-                      src={connection.avatarUrl}
-                      alt={connection.name}
-                      className="w-full h-full rounded-full object-cover"
-                    />
-                  ) : (
-                    <span className="text-gray-500 text-lg">
-                      {connection.firstName ? connection.firstName.split(' ').map(n => n[0]).join('').substring(0, 2) : '??'}
-                    </span>
-                  )}
-                </div>
-                {connection.isOnline && (
-                  <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-                )}
-              </div>
-              <div>
-                <div className="font-medium">
-                  {connection.firstName} {connection.lastName}
-                  {connection.connectionDegree && (
-                    <span className="text-gray-500 font-normal text-sm"> · {connection.connectionDegree}</span>
-                  )}
-                </div>
-                {connection.title && (
-                  <div className="text-sm text-gray-600">{connection.title}</div>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-<div className="flex-1 overflow-y-auto p-4 flex flex-col space-y-2">
-  {selectedRecipients.length === 1 &&
-    messages[selectedRecipients[0].id]?.map((msg, index) => (
-      <div
-        key={index}
-        className={`flex ${msg.isSender ? 'justify-end' : 'justify-start'}`}
-      >
-        <div
-          className={`p-3 rounded-lg max-w-md ${
-            msg.isSender ? 'bg-blue-500 text-white' : 'bg-gray-300 text-black'
-          }`}
-        >
-          <div className="text-sm">{msg.content}</div>
-        </div>
-      </div>
-    ))}
-  <div ref={messagesEndRef} />
-</div>
-
-
-
-      <div className="mt-auto border-t">
-        <textarea
-          placeholder="Write a message..."
-          className="w-full p-4 resize-none focus:outline-none h-32"
-          value={messageContent}
-          onChange={(e) => setMessageContent(e.target.value)}
-        ></textarea>
-
-        <div className="flex justify-between items-center p-3 border-t">
-          <div className="flex space-x-4">
-            <button>
-              <Image className="h-5 w-5 text-gray-600" />
-            </button>
-            <button>
-              <Paperclip className="h-5 w-5 text-gray-600" />
-            </button>
-            <button>
-              <span className="font-bold">GIF</span>
-            </button>
-            <button>
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10" />
-                <path d="M8 14s1.5 2 4 2 4-2 4-2" />
-                <line x1="9" y1="9" x2="9.01" y2="9" />
-                <line x1="15" y1="9" x2="15.01" y2="9" />
-              </svg>
-            </button>
-          </div>
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={handleSendMessage}
-              className={`px-4 py-1 rounded-full ${
-                selectedRecipients.length > 0 && messageContent.trim()
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-200 text-gray-400'
-              }`}
-              disabled={selectedRecipients.length === 0 || !messageContent.trim()}
-            >
-              Send
-            </button>
-            <button>
-              <MoreHorizontal className="h-5 w-5 text-gray-600" />
-            </button>
-          </div>
+        <div className="ml-3 flex space-x-3">
+          <button className="text-gray-500 hover:text-gray-700">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+              />
+            </svg>
+          </button>
+          <button className="text-gray-500 hover:text-gray-700">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M15.172 7l-6.586 6.586a2 2 0 002.828 2.828l6.586-6.586a4 4 0 00-5.656-5.656L5.757 10.757a6 6 0 008.486 8.486L21 12"
+              />
+            </svg>
+          </button>
+          <button className="text-gray-500 hover:text-gray-700">
+            <span className="text-sm font-medium">GIF</span>
+          </button>
+          <button className="text-gray-500 hover:text-gray-700">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </button>
+          <button
+            onClick={handleSendMessage}
+            className="px-4 py-1.5 bg-gray-200 rounded-full hover:bg-gray-300 text-sm font-medium"
+          >
+            Send
+          </button>
+          <button className="text-gray-500 hover:text-gray-700">
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <circle cx="4" cy="10" r="2" />
+              <circle cx="10" cy="10" r="2" />
+              <circle cx="16" cy="10" r="2" />
+            </svg>
+          </button>
         </div>
       </div>
     </div>

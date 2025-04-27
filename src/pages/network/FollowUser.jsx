@@ -8,10 +8,12 @@ const FollowUserPage = () => {
   const [followedUsers, setFollowedUsers] = useState(new Set());
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState({});
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true);
         const token = localStorage.getItem("token");
         if (!token) throw new Error("Authentication required");
 
@@ -26,8 +28,10 @@ const FollowUserPage = () => {
 
         setUsers(suggestionsRes.data.users || []);
         setFollowedUsers(new Set(followingRes.data.following?.map(u => u.id) || []));
+        setError(null);
       } catch (err) {
         console.error("Fetch error:", err);
+        setError(err.response?.data?.message || "Failed to load data");
         toast.error(err.response?.data?.message || "Failed to load data");
       } finally {
         setLoading(false);
@@ -56,7 +60,7 @@ const FollowUserPage = () => {
 
       if (response.status === 200) {
         setFollowedUsers(prev => new Set(prev).add(userId));
-        toast.success(`Following user successfully`);
+        toast.success("User followed successfully");
       }
     } catch (error) {
       console.error("Follow error:", error);
@@ -65,6 +69,7 @@ const FollowUserPage = () => {
       setProcessing(prev => ({ ...prev, [userId]: false }));
     }
   };
+
   const handleUnfollow = async (userId) => {
     try {
       setProcessing(prev => ({ ...prev, [userId]: true }));
@@ -73,7 +78,12 @@ const FollowUserPage = () => {
 
       const response = await axios.delete(
         `http://localhost:5000/api/following/users/${userId}`,
-        { headers: { Authorization: `Bearer ${token}` } }
+        { 
+          headers: { 
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
       );
 
       if (response.status === 200) {
@@ -142,6 +152,10 @@ const FollowUserPage = () => {
                       src={user.avatarUrl} 
                       alt={user.name}
                       className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.src = '/default-avatar.png';
+                        e.target.onerror = null;
+                      }}
                     />
                   ) : (
                     <span className="text-gray-600 font-medium">
@@ -150,8 +164,10 @@ const FollowUserPage = () => {
                   )}
                 </div>
                 <div>
-                  <p className="font-medium">{user.name}</p>
-                  <p className="text-sm text-gray-500">{user.title || user.email}</p>
+                  <p className="font-medium">{user.name || user.email}</p>
+                  <p className="text-sm text-gray-500">
+                    {user.title || user.headline || 'No description available'}
+                  </p>
                 </div>
               </div>
               
@@ -161,6 +177,7 @@ const FollowUserPage = () => {
                 <button
                   onClick={() => handleUnfollow(user.id)}
                   className="flex items-center space-x-1 px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded transition-colors"
+                  disabled={processing[user.id]}
                 >
                   <UserCheck className="h-4 w-4" />
                   <span>Following</span>
@@ -169,6 +186,7 @@ const FollowUserPage = () => {
                 <button
                   onClick={() => handleFollow(user.id)}
                   className="flex items-center space-x-1 px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded transition-colors"
+                  disabled={processing[user.id]}
                 >
                   <UserPlus className="h-4 w-4" />
                   <span>Follow</span>

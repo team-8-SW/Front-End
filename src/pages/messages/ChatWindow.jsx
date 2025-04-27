@@ -58,13 +58,21 @@ const ChatWindow = () => {
       ? message.receiverId
       : message.senderId;
   
+    const isSender = message.senderId === currentUserId;
+  
+    const enrichedMessage = {
+      ...message,
+      isSender,
+    };
+  
     setMessages(prev => ({
       ...prev,
-      [otherUserId]: [...(prev[otherUserId] || []), message],
+      [otherUserId]: [...(prev[otherUserId] || []), enrichedMessage],
     }));
-
+  
     scrollToBottom();
   };
+  
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });

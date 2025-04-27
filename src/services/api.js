@@ -558,15 +558,7 @@ api.interceptors.response.use(
   }
 );
 
-export const getMessageRequests = async () => {
-  try {
-    const response = await api.get('/messages/requests');
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching message requests:', error);
-    throw error;
-  }
-};
+
 
 export const acceptMessageRequest = async (id) => {
   try {
@@ -623,24 +615,36 @@ export const followUser = async (userId, token) => {
     const response = await axios.post(
       `http://localhost:5000/api/following/users/${userId}`,
       {},
-      { headers: { Authorization: `Bearer ${token}` } }
+      { 
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      }
     );
     return response.data;
   } catch (error) {
     console.error("API Error:", error.response?.data || error.message);
-    throw error; // Re-throw for handling in the component
+    throw error;
   }
 };
+
 export const unfollowUser = async (userId, token) => {
-  const response = await axios.delete(
-    `http://localhost:5000/api/following/users/${userId}`,
-    {
-      headers: {
-        'Authorization': `Bearer ${token}`
+  try {
+    const response = await axios.delete(
+      `http://localhost:5000/api/following/users/${userId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       }
-    }
-  );
-  return response.data;
+    );
+    return response.data;
+  } catch (error) {
+    console.error("API Error:", error.response?.data || error.message);
+    throw error;
+  }
 };
 export const getBlockedUsers = async (token) => {
   return axios.get('http://localhost:5000/api/users/me/blocked', {

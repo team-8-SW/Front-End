@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import socket from '../../services/socket';
-
+import { format } from 'date-fns'; // Import date-fns for formatting
 
 const RequestList = ({ currentUserId }) => {
   const [requests, setRequests] = useState([]);
@@ -15,10 +15,11 @@ const RequestList = ({ currentUserId }) => {
     }
 
     const fetchRequests = () => {
-      socket.emit('get_message_requests', { receiver_id: currentUserId });
+      socket.emit('get_message_requests', { userId: currentUserId }); // Match backend payload
     };
 
     const handleRequests = (data) => {
+      console.log('Received message requests:', data);
       if (Array.isArray(data)) {
         setRequests(data);
       } else {
@@ -27,16 +28,16 @@ const RequestList = ({ currentUserId }) => {
       setLoading(false);
     };
 
-    const handleRequestUpdate = (updatedRequest) => {
-      setRequests(prev => prev.filter(req => req.id !== updatedRequest.id));
+    const handleRequestUpdate = (message) => {
+      // Remove the request from the list after it's accepted
+      setRequests((prev) => prev.filter((req) => req.id !== message.id));
     };
 
     if (socket.connected) fetchRequests();
 
     socket.on('connect', fetchRequests);
     socket.on('message_requests', handleRequests);
-    socket.on('request_accepted', handleRequestUpdate);
-    socket.on('request_declined', handleRequestUpdate);
+    socket.on('receive_message', handleRequestUpdate); // Backend event for accepted request
     socket.on('error', (err) => {
       setError(err.message || 'Error fetching requests');
       setLoading(false);
@@ -45,24 +46,18 @@ const RequestList = ({ currentUserId }) => {
     return () => {
       socket.off('connect', fetchRequests);
       socket.off('message_requests', handleRequests);
-      socket.off('request_accepted', handleRequestUpdate);
-      socket.off('request_declined', handleRequestUpdate);
+      socket.off('receive_message', handleRequestUpdate);
       socket.off('error');
     };
   }, [currentUserId]);
 
   const handleAccept = (requestId) => {
-    socket.emit('accept_request', { 
-      request_id: requestId,
-      receiver_id: currentUserId 
-    });
+    socket.emit('accept_message_request', { requestId }); // Match backend event and payload
   };
 
   const handleDecline = (requestId) => {
-    socket.emit('decline_request', { 
-      request_id: requestId,
-      receiver_id: currentUserId 
-    });
+    // Since the backend doesn't specify a decline event, we'll assume a custom event
+    socket.emit('decline_request', { request_id: requestId, receiver_id: currentUserId });
   };
 
   if (loading) {
@@ -111,13 +106,13 @@ const RequestList = ({ currentUserId }) => {
 
   return (
     <div className="divide-y">
-      {requests.map(request => (
+      {requests.map((request) => (
         <div key={request.id} className="p-4 hover:bg-gray-50 transition">
           <div className="flex items-start space-x-3">
             <div className="flex-shrink-0">
               <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
                 <span className="text-gray-600 font-medium">
-                  {request.sender_name?.charAt(0) || '?'}
+                  {request.sender_name?.charAt(0) || request.sender_id.charAt(0) || '?'}
                 </span>
               </div>
             </div>
@@ -130,9 +125,7 @@ const RequestList = ({ currentUserId }) => {
                   {format(new Date(request.sent_at), 'h:mm a')}
                 </span>
               </div>
-              <p className="mt-1 text-sm text-gray-600">
-                {request.content}
-              </p>
+              <p className="mt-1 text-sm text-gray-600">{request.content}</p>
               <div className="mt-2 flex space-x-2">
                 <button
                   onClick={() => handleAccept(request.id)}

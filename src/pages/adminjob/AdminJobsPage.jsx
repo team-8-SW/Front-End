@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import JobCard from "./Jobcard";
+import { useNavigate } from "react-router-dom";
+import JobCard from "./JobCard";
 import Sidebar from "../adminhome/SideBar";
 
 export default function AdminJobsPage() {
@@ -9,6 +10,7 @@ export default function AdminJobsPage() {
   const [error, setError] = useState(null);
 
   const token = localStorage.getItem("token");
+  const navigate = useNavigate(); // ✅ React Router navigate
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -30,6 +32,13 @@ export default function AdminJobsPage() {
     fetchJobs();
   }, []);
 
+  const handleDropdownChange = (e) => {
+    const value = e.target.value;
+    if (value === "flagged") {
+      navigate("./FlaggedJobsPage"); 
+    }
+  };
+
   if (loading) {
     return <div className="p-6">Loading jobs...</div>;
   }
@@ -45,19 +54,26 @@ export default function AdminJobsPage() {
 
       {/* Page Content */}
       <div className="flex-1 p-6">
-        <h2 className="text-2xl font-semibold mb-6">Job Listings</h2>
+        {/* Top Section: Title + Dropdown */}
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-semibold">Job Listings</h2>
 
-        {loading ? (
-          <p>Loading jobs...</p>
-        ) : error ? (
-          <p className="text-red-500">{error}</p>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {jobs.map((job) => (
-              <JobCard key={job.id} job={job} />
-            ))}
-          </div>
-        )}
+          <select
+            onChange={handleDropdownChange}
+            className="border border-slate-300 rounded-md p-2 text-sm"
+            defaultValue="all"
+          >
+            <option value="all">All Jobs</option>
+            <option value="flagged">Flagged Jobs</option>
+          </select>
+        </div>
+
+        {/* Jobs List */}
+        <div className="flex flex-col gap-6">
+          {jobs.map((job) => (
+            <JobCard key={job.id} job={job} />
+          ))}
+        </div>
       </div>
     </div>
   );

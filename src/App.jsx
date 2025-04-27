@@ -13,6 +13,8 @@ import DetailsExperience from "./pages/Detailedexperience/DetailsExperience";
 import DetailedSkills from "./pages/DetailedSkills/DetailedSkills";
 import LoginPage from './pages/login/LoginPage';
 import BlockedUsersList from "./pages/network/BlockedUsersList";
+import MessageRequestDetail from "./pages/messages/MessageRequestDetail";
+import MessageRequestsPage from "./pages/messages/MessageRequestsPage"; 
 
 import ConversationList from "./pages/messages/ConversationList";
 import ChatWindow from "./pages/messages/ChatWindow";
@@ -60,6 +62,7 @@ function App() {
       return;
     }
 
+    
     axios
       .get("http://localhost:5000/api/profiles/", {
         headers: {
@@ -106,6 +109,7 @@ function App() {
         <Route path="/network" element={<ProtectedRoute><NetworkPage /></ProtectedRoute>} />
         <Route path="/network/pending" element={<ProtectedRoute><PendingConnections loggedUser={loggedUser} /></ProtectedRoute>} />
         <Route path="/network/blocked" element={<ProtectedRoute><BlockedUsersList loggedUser={loggedUser} /></ProtectedRoute>} />
+        
 
 
 
@@ -138,9 +142,17 @@ function App() {
         <Route path="/messages/:conversationId" element={<ProtectedRoute><ChatWindow /></ProtectedRoute>} />
         <Route path="/jobs" element={<ProtectedRoute><JobHome /></ProtectedRoute>} />
         <Route path="/detailedjobs" element={<ProtectedRoute><MainPage /></ProtectedRoute>} />
+
+<Route path="/messages" element={<ProtectedRoute><MessagesPage /></ProtectedRoute>}>
+  <Route index element={<ConversationList />} />
+  <Route path=":conversationId" element={<ChatWindow />} />
+  <Route path="requests" element={<MessageRequestsPage />} />
+  <Route path="requests/:requestId" element={<MessageRequestDetail />} />
+</Route>
         <Route path="/detailedjobs/:jobId" element={<ProtectedRoute><MainPage /></ProtectedRoute>} />
         <Route path="/myjobs" element={<ProtectedRoute><MyJobs /></ProtectedRoute>} />
         <Route path="/mypostedjobs" element={<ProtectedRoute><MyPostedJobs/></ProtectedRoute>} />
+        <Route path="/requests" element={<ProtectedRoute><MessageRequestsPage /></ProtectedRoute>} />
         <Route
   path="/mypostedjobs/:jobid/applications"
   element={<ProtectedRoute><MyJobApplications /></ProtectedRoute>}

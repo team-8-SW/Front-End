@@ -1,3 +1,5 @@
+// src/components/JobCard.jsx
+
 import React from "react";
 import axios from "axios";
 
@@ -5,7 +7,6 @@ export default function JobCard({ job, onDelete }) {
   const token = localStorage.getItem("token");
 
   const handleDelete = async () => {
-    if (!window.confirm("Are you sure you want to delete this job?")) return;
 
     try {
       await axios.delete(`http://localhost:5000/api/admin/jobs/${job.id}`, {
@@ -13,14 +14,32 @@ export default function JobCard({ job, onDelete }) {
           Authorization: `Bearer ${token}`
         }
       });
-      onDelete(); 
+      onDelete();
     } catch (error) {
       console.log("Failed to delete job:", error);
+      
+    }
+  };
+
+  const handleUpdateStatus = async (newStatus) => {
+
+    try {
+      await axios.put(`http://localhost:5000/api/admin/jobs/${job.id}/status`, {
+        status: newStatus
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      onDelete();
+    } catch (error) {
+      console.log(`Failed to ${newStatus.toLowerCase()} job:`, error);
     }
   };
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6 flex flex-col gap-4 hover:shadow-lg transition">
+      {/* Top: Job Details */}
       <div className="flex flex-col md:flex-row md:justify-between md:items-start">
         <div>
           <h3 className="text-xl font-semibold text-slate-800">{job.title}</h3>
@@ -38,19 +57,36 @@ export default function JobCard({ job, onDelete }) {
           <p className="text-sm text-slate-500">
             Expires: {new Date(job.expires_at).toLocaleDateString()}
           </p>
-
-          {/* Delete Button */}
-          <button
-            onClick={handleDelete}
-            className="mt-2 bg-red-500 text-white px-3 py-1 rounded-md text-sm hover:bg-red-600"
-          >
-            Delete
-          </button>
         </div>
       </div>
 
+      {/* Middle: Description */}
       <div className="mt-4 text-slate-600 text-sm">
         {job.description.replace(/\\n/g, " ")}
+      </div>
+
+      {/* Bottom: Action Buttons */}
+      <div className="flex flex-wrap gap-4 mt-4">
+        <button
+          onClick={() => handleUpdateStatus("Approved")}
+          className="text-blue-600 font-semibold text-sm px-4 py-1.5 rounded-full border border-blue-600 hover:bg-blue-50"
+        >
+          Approve
+        </button>
+
+        <button
+          onClick={() => handleUpdateStatus("Rejected")}
+          className="text-gray-600 font-semibold text-sm px-4 py-1.5 rounded-full border border-gray-300 hover:bg-gray-50"
+        >
+          Reject
+        </button>
+
+        <button
+          onClick={handleDelete}
+          className="hover:bg-red-600  text-sm text-gray-600 font-semibold text-sm px-4 py-1.5 rounded-full border border-gray-300"
+        >
+          Delete
+        </button>
       </div>
     </div>
   );

@@ -12,7 +12,7 @@ import UserSearch from "../pages/network/UserSearch";
 
 const Nav = () => {
   const location = useLocation();
-  const hiddenPaths = ["/login", "/signup", "/detailedjobs", "/detailedjobs/:jobId", "/adminhome","/adminjobs","/adminjobs/FlaggedJobsPage"];
+  const hiddenPaths = ["/login", "/signup", "/detailedjobs", "/detailedjobs/:jobId", "/adminhome","/adminjobs","/adminjobs/FlaggedJobsPage","/adminreport"];
 
   if (location.pathname.startsWith("/detailedjobs")) return null;
   if (hiddenPaths.includes(location.pathname)) return null;

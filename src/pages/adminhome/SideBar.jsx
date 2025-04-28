@@ -7,7 +7,7 @@ export default function Sidebar() {
 
   const menuItems = [
     { id: 'home', label: 'HOME', icon: <HomeIcon size={20} />, path: '/adminhome' },
-    { id: 'reports', label: 'REPORTS', icon: <BarChartIcon size={20} />, path: '/admin/reports' },
+    { id: 'reports', label: 'REPORTS', icon: <BarChartIcon size={20} />, path: '/adminreport' },
     { id: 'jobs', label: 'JOBS', icon: <BriefcaseIcon size={20} />, path: '/adminjobs' },
   ];
 

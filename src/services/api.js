@@ -230,20 +230,20 @@ export const handlerepostPost = async (postId,token, setrepostsCount,repostsCoun
     setrepostsCount(repostsCount+1);
 };
 
-export const handleAddNewComment = async (postId,newComment, token) => {
+export const handleAddNewComment = async (postId,newComment, token,setCommentsCount,commentsCount) => {
   try {
-    // Prepare the payload for the API request
-    const payload = {
-      post_id: postId,
-      content: newComment,
-    };
-
-    // Make the POST request to the given endpoint with the token
-    await axios.post("http://localhost:5000/api/posts/me/comment", payload, {
+    
+    await axios.post("http://localhost:5000/api/posts/me/comment",
+      {
+        post_id: postId,
+        content: newComment,
+      } ,
+      {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
+    setCommentsCount(commentsCount+1);
   }
   catch (error) {
     console.error("Error posting comment:", error);
@@ -431,9 +431,9 @@ export const removeConnection = async (connectionId) => {
 export const deletePost = async (postId, token) => {
   try {
     const response = await axios.delete(
-      `http://localhost:5000/api/posts/me/deletepost`,
+      `http://localhost:5000/api/posts/me/delete`,
       {
-        post_id:postId // Send post_id in the request body
+        post_id:postId
       },
       {
         headers: {

@@ -11,12 +11,12 @@ import { removeConnection, blockUser, unblockUser, followUser, unfollowUser } fr
 import ViewProfilePhotoCard from "./ViewProfilePhotoCard";
 import axios from "axios";
 
-const ViewProfileCard = ({ profile, userid, token, connectionStatus, connectionId, allowConnectionRequests }) => {
+const ViewProfileCard = ({ profile, userid, token, connectionStatus, connectionId, allowConnectionRequests, isFollowing: initialIsFollowing }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [openContact, setOpenContact] = useState(false);
   const [openPP, setOpenPP] = useState(false);
   const [isBlocked, setIsBlocked] = useState(profile?.isBlocked || false);
-  const [isFollowing, setIsFollowing] = useState(profile?.isFollowing || false);
+  const [isFollowing, setIsFollowing] = useState(initialIsFollowing || false); 
   const [isLoading, setIsLoading] = useState(false);
   const [disableConnect, setDisableConnect] = useState(true);
   const [connectionMessage, setConnectionMessage] = useState("");

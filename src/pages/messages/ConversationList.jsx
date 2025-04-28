@@ -184,13 +184,21 @@ const ConversationList = ({ currentUserId, onSelect, onNewMessage }) => {
   // Empty state
   if (conversations.length === 0) {
     return (
+      <div className="relative w-full h-full overflow-y-auto divide-y">
       <div className="flex flex-col items-center justify-center h-full p-6 text-center">
         <div className="mb-6">
           <img src="/placeholder-messages.png" alt="No conversations" className="w-32 mx-auto" />
         </div>
         <h2 className="text-xl font-medium mb-2">No conversations yet</h2>
         <p className="text-gray-600">Start a new conversation to begin messaging</p>
+       <button
+        onClick={onNewMessage}
+        className="absolute bottom-4 right-4 bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-full shadow-lg z-10"
+       >
+        <PencilIcon className="h-6 w-6" />
+      </button>
       </div>
+      </div>  
     );
   }
 

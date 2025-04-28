@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import JobCard from "./JobCard";
+import JobCard from "./Jobcard";
 import Sidebar from "../adminhome/SideBar";
 
 export default function AdminJobsPage() {
@@ -10,7 +10,7 @@ export default function AdminJobsPage() {
   const [error, setError] = useState(null);
 
   const token = localStorage.getItem("token");
-  const navigate = useNavigate(); // ✅ React Router navigate
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     const fetchJobs = async () => {

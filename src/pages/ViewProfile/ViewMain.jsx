@@ -29,6 +29,7 @@ const ViewMain = ({ loggedUser, setLoggedUser }) => {
         setProfileData(res.data);     
         console.log("profile dataaaa",res.data)     // set entire response
         console.log("Connection Status:", res.data.connectionStatus);
+        console.log("followigStatus:", res.data.followigStatus);
         setVisibility(res.data.public);  
           // extract and store visibility
           console.log("allowConnectionRequesttttt", res.data.allowConnectionRequests);
@@ -65,7 +66,7 @@ const ViewMain = ({ loggedUser, setLoggedUser }) => {
         connectionStatus={profileData.connectionStatus.status}
         connectionId={profileData.connectionStatus.connectionId}
         allowConnectionRequests={allowConnectionRequests} // Pass the allowConnectionRequests state
-       
+        isFollowing={profileData.followigStatus}
       />
 
   

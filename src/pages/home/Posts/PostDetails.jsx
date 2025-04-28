@@ -33,7 +33,7 @@ import CommentsSection from "./CommentsSection";
 import axios from "axios";
 
 const PostDetails = ({ post, loggedUser, onRemovePost }) => {
-  if (!post) return null;
+  
   const token = localStorage.getItem("token");
   const posterProfilePicture = useProfilePicture(post.user_id, token);
   const [liked, setLiked] = useState(false);
@@ -47,8 +47,6 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
   const posterName = useName(post.user_id, null);
   const [commentsCount, setCommentsCount] = useState(0);
   const [bookmarked, setBookmarked] = useState(false);
-
-  const [posterData, setPosterData] = useState(null);
 
   useEffect(() => {
     if (post.liked) setLiked(true);
@@ -71,20 +69,7 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
     fetchEngagement();
   }, [post.id, token]);
 
-  useEffect(() => {
-    const fetchPosterData = async () => {
-      try {
-        const response = await axios.get(`http://localhost:5000/api/profiles/me/${post.user_id}`);
-        setPosterData(response?.data?.profile || null);
-      } catch (error) {
-        console.error("Error fetching poster data:", error);
-      }
-    };
 
-    if (post?.user_id) {
-      fetchPosterData();
-    }
-  }, [post?.user_id]);
 
   const handleDeletePost = async () => {
     try {
@@ -99,7 +84,7 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
   const handleBookmarkPost = async () => {
     try {
       setBookmarked((prev) => !prev);
-      await axios.post('http://localhost:3000/api/posts/me/save', {
+      await axios.post('http://localhost:5000/api/posts/me/save', {
         post_id: post.id,
       });
     } catch (error) {
@@ -137,7 +122,9 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
       fetchComments();
     }
   }, [post.id, token]);
-
+  if (!post) return null;
+  console.log(post,"post details");
+  
   return (
     <div className="bg-white border border-gray-300 rounded-lg shadow-sm p-4 mb-4 relative">
       {/* Top right buttons */}
@@ -169,7 +156,7 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
             </MenuItem>
 
             {/* Edit and Delete if owner */}
-            {loggedUser?.profile?.userName === posterData?.userName && (
+            {post.mypost&& (
               <>
                 <MenuItem
                   onClick={() => console.log("Edit post clicked")}
@@ -288,6 +275,8 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
           commenterName={commenterName}
           commenterProfilePicture={commenterProfilePicture}
           comments={comments}
+          setCommentsCount={setCommentsCount}
+          commentsCount={commentsCount}
         />
       )}
     </div>

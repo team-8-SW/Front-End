@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card, CardHeader, CardBody, CardFooter, Typography, Button, Avatar, Dialog
 } from "@material-tailwind/react";
@@ -9,6 +9,7 @@ import AcceptConnection from "../network/AcceptConnection";
 import DeclineConnection from "../network/DeclineConnection";
 import { removeConnection, blockUser, unblockUser, followUser, unfollowUser } from "../../services/api";
 import ViewProfilePhotoCard from "./ViewProfilePhotoCard";
+import axios from "axios";
 
 const ViewProfileCard = ({ profile, userid, token, connectionStatus, connectionId, allowConnectionRequests }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,6 +18,8 @@ const ViewProfileCard = ({ profile, userid, token, connectionStatus, connectionI
   const [isBlocked, setIsBlocked] = useState(profile?.isBlocked || false);
   const [isFollowing, setIsFollowing] = useState(profile?.isFollowing || false);
   const [isLoading, setIsLoading] = useState(false);
+  const [disableConnect, setDisableConnect] = useState(true);
+  const [connectionMessage, setConnectionMessage] = useState("");
 
   if (!profile) return <p className="text-center mt-10">Loading...</p>;
 
@@ -68,6 +71,27 @@ const ViewProfileCard = ({ profile, userid, token, connectionStatus, connectionI
     }
   };
 
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/api/profiles/", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data= res.data;
+        console.log("Profile other data:", data);
+        console.log("Profile other dataaa:", data.profile.is_premium);
+        console.log("connectrion other dataaa:", data.connectionsCount);
+        if (data && data.profile.is_premium === false && parseInt(data.connectionsCount) >1) {
+          setDisableConnect(false);
+          setConnectionMessage("Connection limit reached. Upgrade to premium to connect more.");
+        }
+      } catch (error) {
+        console.error("Failed to fetch profile for connection limit check:", error);
+      }
+    };
+    fetchProfileData();
+  }, [token]);
+
   return (
     <Card className="relative w-full mx-auto shadow-lg rounded-lg">
       <CardHeader floated={false} shadow={false} className="relative h-40">
@@ -106,10 +130,21 @@ const ViewProfileCard = ({ profile, userid, token, connectionStatus, connectionI
               Contact Info <PencilIcon className="w-4 h-4" />
             </button>
           </div>
+          {connectionMessage && (
+            <div className="flex flex-col gap-2 mt-2 self-start">
+               <div className="text-center text-sm text-red-500  self-start">
+      {connectionMessage}
+    </div>
+    <Typography variant ="small" className="text-gray-500">
+to suscribe to premium plan, please visit the <a href="/payment" className="text-blue-500">premium page</a>.
+    </Typography>
+              </div>
+   
+  )}
         </div>
       </CardBody>
 
-      <CardFooter className="flex items-center gap-4 flex-wrap md:flex-nowrap pb-6 mt-4 relative">
+      <CardFooter className="flex items-center gap-4 flex-wrap md:flex-nowrap pb-6 mt-0 relative">
 
         {connectionStatus === "connected" && (
           <>
@@ -156,8 +191,8 @@ const ViewProfileCard = ({ profile, userid, token, connectionStatus, connectionI
 
         {connectionStatus === "no connection" && (
           <>
-            {allowConnectionRequests && (
-              <ConnectButton userId={userid} token={token} />
+            {allowConnectionRequests && disableConnect && (
+              <ConnectButton userId={userid} token={token} disabled={disableConnect} />
             )}
             <Button
               onClick={handleFollowWithoutConnecting}
@@ -177,7 +212,10 @@ const ViewProfileCard = ({ profile, userid, token, connectionStatus, connectionI
             />
           </>
         )}
+
+ 
       </CardFooter>
+      
 
       {/* Dialogs */}
       <Dialog open={openContact} handler={() => setOpenContact(false)}>
@@ -193,6 +231,7 @@ const ViewProfileCard = ({ profile, userid, token, connectionStatus, connectionI
           setOpen={setOpenPP}
         />
       </Dialog>
+
     </Card>
   );
 };

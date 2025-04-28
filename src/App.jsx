@@ -49,6 +49,9 @@ import MyPostedJobs from "./pages/jobs/MyPostedJobs";
 import MyJobApplications from "./pages/jobs/MyJobApplications";
 import AdminJobsPage from "./pages/adminjob/AdminJobsPage";
 import FlaggedJobsPage from "./pages/adminjob/FlaggedJobsPage";
+import StripeProvider from "./pages/payment/StripeProvider";
+import PaymentPage from "./pages/payment/PaymentPage";
+
 
 function App() {
   const [loggedUser, setLoggedUser] = useState(null);
@@ -91,6 +94,7 @@ function App() {
   return (
     <div className="bg-backGroundColor min-h-screen">
       <Nav />
+      <StripeProvider>
       <Routes>
 
         {/* Public Routes */}
@@ -170,9 +174,12 @@ function App() {
   path="/company/:companyid/job/:jobid/applications"
   element={<ProtectedRoute><JobApplications /></ProtectedRoute>}
 />
+<Route path="/payment" element={<ProtectedRoute><PaymentPage /></ProtectedRoute>} />
+
 
 
       </Routes>
+      </StripeProvider>
     </div>
   );
 }

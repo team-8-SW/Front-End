@@ -10,12 +10,12 @@ import DeclineConnection from "../network/DeclineConnection";
 import { removeConnection, blockUser, unblockUser, followUser, unfollowUser } from "../../services/api";
 import ViewProfilePhotoCard from "./ViewProfilePhotoCard";
 
-const ViewProfileCard = ({ profile, userid, token, connectionStatus, connectionId, allowConnectionRequests }) => {
+const ViewProfileCard = ({ profile, userid, token, connectionStatus, connectionId, allowConnectionRequests, isFollowing: initialIsFollowing }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [openContact, setOpenContact] = useState(false);
   const [openPP, setOpenPP] = useState(false);
   const [isBlocked, setIsBlocked] = useState(profile?.isBlocked || false);
-  const [isFollowing, setIsFollowing] = useState(profile?.isFollowing || false);
+  const [isFollowing, setIsFollowing] = useState(initialIsFollowing || false); 
   const [isLoading, setIsLoading] = useState(false);
 
   if (!profile) return <p className="text-center mt-10">Loading...</p>;

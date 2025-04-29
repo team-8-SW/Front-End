@@ -9,6 +9,8 @@ import { AiFillMessage } from "react-icons/ai";
 import { FaBell } from "react-icons/fa";
 import { unReadCount } from "../services/api";
 import UserSearch from "../pages/network/UserSearch";
+import socket from "../services/socket";
+import {fetchPendingConnections} from "../services/api";
 
 const Nav = () => {
   const location = useLocation();
@@ -16,10 +18,14 @@ const Nav = () => {
 
   if (location.pathname.startsWith("/detailedjobs")) return null;
   if (hiddenPaths.includes(location.pathname)) return null;
-
+  
   const [isAppsDropdownOpen, setIsAppsDropdownOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(null);
+  const [unseenMessageCount, setUnseenMessageCount] = useState(0);
+  const [pendingRequestCount, setPendingRequestCount] = useState(0);
+
+
 
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
@@ -35,16 +41,49 @@ const Nav = () => {
         console.error("Error fetching unread notifications count:", error);
       }
     };
-
     fetchUnreadCount();
     const interval = setInterval(fetchUnreadCount, 1000);
     return () => clearInterval(interval);
   }, []);
+   useEffect(() => {
+    if (!socket.connected) {
+      socket.connect();
+    }
+  
+    const handleUnseenCount = (data) => {
+      if (data?.unreadCount !== undefined) {
+        setUnseenMessageCount(data.unreadCount);
+      }
+    };
+  
+    socket.on("unseen_count", handleUnseenCount);
+  
+    return () => {
+      socket.off("unseen_count", handleUnseenCount);
+    };
+  }, []);
+  useEffect(() => {
+    const fetchPendingCount = async () => {
+      try {
+        const pending = await fetchPendingConnections(token);
+        setPendingRequestCount(pending.length);
+      } catch (err) {
+        console.error("Failed to fetch pending connections:", err);
+      }
+    };
+  
+    fetchPendingCount();
+  
+    const interval = setInterval(fetchPendingCount, 10000);
+    return () => clearInterval(interval);
+  }, []);
+  
 
   const logout = () => {
     localStorage.removeItem("token");
     navigate("/login");
   };
+  console.log("Rendered unseenMessageCount:", unseenMessageCount);
 
   return (
     <div className="sticky top-0 left-0 w-full bg-white shadow-md z-50 h-[52px]">
@@ -79,11 +118,25 @@ const Nav = () => {
                     {unreadCount}
                   </span>
                 )}
+                  {label === "Messaging" && unseenMessageCount > 0 && (
+                 <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                 {unseenMessageCount}
+                 </span>
+                 )}
+
+                {label === "Network" && pendingRequestCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                {pendingRequestCount}
+                </span>
+                )}
+
               </div>
               <span className={`text-xs mt-1 ${isActive(to) ? "text-blue-700 font-semibold" : "text-gray-500 group-hover:text-blue-700"}`}>
                 {label}
               </span>
               {isActive(to) && <div className="w-6 h-1 bg-blue-700 rounded-full mt-1"></div>}
+      
+
             </Link>
           ))}
 

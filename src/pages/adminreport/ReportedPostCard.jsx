@@ -13,15 +13,13 @@ export default function ReportedPostCard({ report, onAction }) {
           Authorization: `Bearer ${token}`
         }
       });
-      onAction();
+      onAction(report.reportId);
     } catch (error) {
       console.error("Failed to resolve report:", error);
     }
   };
 
   const handleDelete = async () => {
-    if (!window.confirm("Are you sure you want to delete this content?")) return;
-
     const deleteUrl =
       report.contentType === "post"
         ? `http://localhost:5000/api/admin/posts/${report.contentId}`
@@ -33,7 +31,7 @@ export default function ReportedPostCard({ report, onAction }) {
           Authorization: `Bearer ${token}`
         }
       });
-      onAction(); 
+      onAction(report.reportId); 
     } catch (error) {
       console.error("Failed to delete content:", error);
     }

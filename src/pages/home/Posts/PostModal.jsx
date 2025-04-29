@@ -2,15 +2,20 @@ import React, { useState } from "react";
 import { Button } from "@material-tailwind/react";
 import axios from "axios";
 import { PaperClipIcon } from "@heroicons/react/24/outline";
+import { tagUser } from "../../../utils/tagUserUtils";
+import { searchUsers } from "../../../services/api";
 
 const PostModal = ({ isOpen, toggleModal, loggedUser }) => {
   const [postContent, setPostContent] = useState("");
-  const [visibility, setVisibility] = useState("public"); // Default visibility
-  const [media, setMedia] = useState(null); // State for media file
-  const [mediaType, setMediaType] = useState(""); // State for media type
+  const [visibility, setVisibility] = useState("public");
+  const [media, setMedia] = useState(null);
+  const [mediaType, setMediaType] = useState("");
   const [error, setError] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [taggedUserId, setTaggedUserId] = useState(null);
   const token = localStorage.getItem("token");
-
+  const [postId, setPostId] = useState(null);
   if (!isOpen) return null;
 
   const handlePost = async () => {
@@ -21,7 +26,7 @@ const PostModal = ({ isOpen, toggleModal, loggedUser }) => {
     setError("");
 
     try {
-      await axios.post(
+      const response = await axios.post(
         "http://localhost:5000/api/posts/me/newpost",
         {
           content: postContent,
@@ -35,7 +40,17 @@ const PostModal = ({ isOpen, toggleModal, loggedUser }) => {
           },
         }
       );
-      console.log("Post successful");
+
+      console.log("Post successful", response);
+
+      // Get the post ID from the response
+      const post_id = response.data.id;
+      console.log("Post ID:", post_id);
+      setPostId(post_id);
+      if (taggedUserId) {
+        await tagUser(token, taggedUserId, postId);
+      }
+
       toggleModal();
     } catch (error) {
       console.error("Error posting:", error);
@@ -54,6 +69,37 @@ const PostModal = ({ isOpen, toggleModal, loggedUser }) => {
     }
   };
 
+  const handleInputChange = async (e) => {
+    const value = e.target.value;
+    setPostContent(value);
+
+    // Detect `@` and fetch suggestions
+    const lastWord = value.split(" ").pop();
+    if (lastWord.startsWith("@")) {
+      setShowSuggestions(true);
+      const query = lastWord.slice(1);
+      try {
+        const users = await searchUsers(token, query);
+        console.log("Fetched Users:", users); // Debugging
+        setSuggestions(users);
+      } catch (error) {
+        console.error("Error fetching suggestions:", error);
+        setSuggestions([]);
+      }
+    } else {
+      setShowSuggestions(false);
+    }
+  };
+
+  const handleSelectUser = (user) => {
+    const words = postContent.split(" ");
+    words[words.length - 1] = `@${user.userName} `;
+    setPostContent(words.join(" "));
+    setShowSuggestions(false);
+    setTaggedUserId(user.userId);
+    console.log("Tagged User ID:", taggedUserId);
+  };
+
   const handleOverlayClick = () => {
     toggleModal();
   };
@@ -61,7 +107,6 @@ const PostModal = ({ isOpen, toggleModal, loggedUser }) => {
   const handleModalClick = (event) => {
     event.stopPropagation();
   };
-
   return (
     <div
       data-testid="modal-overlay"
@@ -73,14 +118,41 @@ const PostModal = ({ isOpen, toggleModal, loggedUser }) => {
         onClick={handleModalClick}
       >
         <h2 className="text-xl font-bold mb-4">Create a Post</h2>
+
+        {/* Input Field */}
         <textarea
           className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           rows="4"
           placeholder="What's on your mind?"
           value={postContent}
-          onChange={(e) => setPostContent(e.target.value)}
+          onChange={handleInputChange}
         />
         {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+
+        {/* Suggestions Dropdown */}
+        {showSuggestions && suggestions.length > 0 && (
+          <ul className="absolute bg-white border border-gray-300 rounded-lg shadow-lg mt-1 max-h-40 overflow-y-auto w-full z-10">
+            {suggestions.map((user) => (
+              <li
+                key={user.userId}
+                className="p-2 hover:bg-gray-100 cursor-pointer"
+                onClick={() => handleSelectUser(user)}
+              >
+                <div className="flex items-center">
+                  <img
+                    src={
+user.profilePictureUrl ||
+"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3bHGb_Zk4zWeD4jw9ew8HboAT2zQIUZhYNA&s"
+}
+                    alt={user.userName}
+                    className="w-8 h-8 rounded-full mr-2"
+                  />
+                  <span>{user.userName}</span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
 
         {/* Media Upload */}
         <div className="mt-4 flex items-center">
@@ -103,7 +175,10 @@ const PostModal = ({ isOpen, toggleModal, loggedUser }) => {
 
         {/* Visibility Dropdown */}
         <div className="mt-4">
-          <label htmlFor="visibility" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="visibility"
+            className="block text-sm font-medium text-gray-700"
+          >
             Visibility
           </label>
           <select

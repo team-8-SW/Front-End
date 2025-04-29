@@ -48,7 +48,8 @@ export default function ReportedPostCard({ report, onAction }) {
             {report.contentType === "post" ? "Reported Post" : "Reported Comment"}
           </h3>
           <p className="text-slate-500 text-sm mt-1">
-            <span className="font-semibold">Content ID:</span> {report.contentId}
+            <span className="font-semibold">Content :</span> 
+            {report.postContent}
           </p>
           <p className="text-slate-500 text-sm mt-1">
             <span className="font-semibold">Reported By:</span> {report.reportedBy}

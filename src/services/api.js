@@ -452,7 +452,7 @@ export const getPostEngagement = async (postId, token) => {
   try {
     const response = await axios.post(
       `http://localhost:5000/api/posts/me/postengagement`,
-      { post_id: postId }, // Send post_id in the request body
+      { post_id: postId },
       {
         headers: {
           Authorization: `Bearer ${token}`,

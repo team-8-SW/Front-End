@@ -92,20 +92,6 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
     }
   };
 
-  const handleReportPost = async () => {
-    try {
-      await axios.post("http://localhost:5000/api/posts/me/report", {
-        post_id: post.id,
-      }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      alert("Post reported successfully.");
-      onRemovePost(post.id); // Remove the post from UI
-    } catch (error) {
-      console.error("Failed to report post:", error);
-      alert("Failed to report post. Try again.");
-    }
-  };
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -150,16 +136,12 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
             </button>
           </MenuHandler>
           <MenuList>
-            {/* Report Button inside dropdown */}
-            <MenuItem onClick={handleReportPost} className="text-red-600">
-              Report Post
-            </MenuItem>
-
             {/* Edit and Delete if owner */}
             {post.mypost&& (
               <>
                 <MenuItem
                   onClick={() => console.log("Edit post clicked")}
+                  className="text-red-600"
                 >
                   Edit Post
                 </MenuItem>

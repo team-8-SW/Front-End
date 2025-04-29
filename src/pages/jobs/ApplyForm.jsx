@@ -72,7 +72,8 @@ const ApplyForm = ({ open, handleClose, jobId }) => {
       handleClose();
     } catch (err) {
       console.error("Apply error:", err);
-      alert("Failed to apply. Try again.");
+      alert("you have exceeded the limit of applications subscribe for more.");
+     
     }
   };
 

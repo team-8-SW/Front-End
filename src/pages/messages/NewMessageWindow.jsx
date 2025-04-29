@@ -130,11 +130,7 @@ const NewMessageWindow = () => {
         const response = await searchUsers(token, { q: query });
         console.log('Search results:', response.users);
 
-        const filtered = response.users.filter((user) =>
-          connections.some((conn) => conn.userId === user.userId)
-        );
-
-        setSearchResults(filtered);
+        setSearchResults(response.users);
       } catch (error) {
         console.error('Search failed:', error);
         setSearchResults([]);

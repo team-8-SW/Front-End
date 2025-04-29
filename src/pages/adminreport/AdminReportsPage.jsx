@@ -50,7 +50,14 @@ export default function AdminReportsPage() {
         <div className="flex flex-col gap-6">
           {reports.length > 0 ? (
             reports.map((report) => (
-              <ReportedPostCard key={report.reportId} report={report} onAction={fetchReports} />
+              <ReportedPostCard
+            key={report.reportId}
+           report={report}
+           onAction={(id) =>
+           setReports((prev) => prev.filter((r) => r.reportId !== id))
+          }
+          />
+
             ))
           ) : (
             <p className="text-slate-500">No reported content found.</p>

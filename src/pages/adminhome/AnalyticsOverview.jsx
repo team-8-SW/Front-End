@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 export default function AnalyticsOverview() {
-  const [range, setRange] = useState("daily");
+  const [range, setRange] = useState();
   const [data, setData] = useState({ newUsers: 0, newJobListings: 0, newPosts: 0 });
   const [loading, setLoading] = useState(true);
   const token = localStorage.getItem("token");
@@ -49,10 +49,7 @@ export default function AnalyticsOverview() {
         <p className="text-slate-500 text-sm">Loading...</p>
       ) : (
         <div className="space-y-4">
-          <div>
-            <p className="text-slate-500 text-sm">New Users</p>
-            <p className="text-xl font-bold text-slate-800">{data.newUsers}</p>
-          </div>
+    
           <div>
             <p className="text-slate-500 text-sm">New Job Listings</p>
             <p className="text-xl font-bold text-slate-800">{data.newJobListings}</p>

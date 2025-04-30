@@ -7,6 +7,7 @@ import {
   deletePost,
   getPostEngagement,
   getComments,
+  getSavedPosts,
 } from "../../../services/api";
 import {
   Button,
@@ -30,23 +31,24 @@ import {
   BookmarkIcon as SolidBookmarkIcon,
 } from "@heroicons/react/24/solid";
 import CommentsSection from "./CommentsSection";
+import EditPostModal from "./EditPostModal";
 import axios from "axios";
 
 const PostDetails = ({ post, loggedUser, onRemovePost }) => {
   
   const token = localStorage.getItem("token");
-  const posterProfilePicture = useProfilePicture(post.user_id, token);
+  const posterProfilePicture = post.mypost? useProfilePicture(post.user_id, token):useProfilePicture(post.user_id, null);
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
   const commenterName = useName(null, token);
   const commenterProfilePicture = useProfilePicture(null, token);
-  // const [comments, setComments] = useState([]);
   const [showComments, setShowComments] = useState(false);
   const [repostsCount, setRepostsCount] = useState(0);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
-  const posterName = useName(post.user_id, null);
+  const posterName = post.mypost?useName(post.user_id,token):useName(post.user_id, null);
   const [commentsCount, setCommentsCount] = useState(0);
-  const [bookmarked, setBookmarked] = useState(false);
+  const [saved,setSaved]= useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   useEffect(() => {
     if (post.liked) setLiked(true);
@@ -75,8 +77,6 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
     setRepostsCount(post.repost_count || 0);
   }, [post.like_count, post.comment_count, post.repost_count]);
   
-
-
   const handleDeletePost = async () => {
     try {
       await deletePost(post.id, token);
@@ -88,15 +88,59 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
   };
 
   const handleBookmarkPost = async () => {
-    try {
-      setBookmarked((prev) => !prev);
-      await axios.post('http://localhost:5000/api/posts/me/save', {
-        post_id: post.id,
-      });
-    } catch (error) {
-      console.error("Failed to bookmark post:", error);
+    if(saved){
+      handleUnsavePost();
+      return;
+    }
+    else{
+      handleSavePost();
+      return;
     }
   };
+
+  const handleSavePost = async () => {try {
+    await axios.post(
+      'http://localhost:5000/api/posts/me/save',
+      { post_id: post.id },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    console.log("post saved");
+    setSaved(true);
+  } catch (error) {
+    console.error("Failed to bookmark post:", error);
+  }
+};
+
+  const handleUnsavePost= async()=>{
+    try{
+      
+      await axios.delete(`http://localhost:5000/api/posts/me/unsavepost`, {
+        data: { post_id: post.id },
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      console.log("Post unsaved successfully");
+      setSaved(false);
+    }catch(error){
+      console.error("failed to unsave post:",error)
+    }
+  };
+  
+  useEffect(() => {
+    const fetchSavedPosts = async () => {
+      const savedposts = await getSavedPosts(token);
+      if (savedposts && Array.isArray(savedposts)) {
+        const isSaved = savedposts.some((savedPost) => savedPost.post_id === post.id);
+        setSaved(isSaved);
+      }
+    };
+  
+    fetchSavedPosts();
+  }, [post.id, token]);
+  
 
   const handleReportPost = async () => {
     try {
@@ -106,29 +150,41 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert("Post reported successfully.");
-      onRemovePost(post.id); // Remove the post from UI
+      onRemovePost(post.id);
     } catch (error) {
       console.error("Failed to report post:", error);
       alert("Failed to report post. Try again.");
     }
   };
 
+  const handleUpdatePost = (updatedPost) => {
+    // Update the post's state with the new content, visibility, and media
+    post.content = updatedPost.content;
+    post.visibility = updatedPost.visibility;
+    post.media_url = updatedPost.media_url;
+    post.media_type = updatedPost.media_type;
 
-  // useEffect(() => {
-  //   const fetchComments = async () => {
-  //     try {
-  //       const data = await getComments(post.id, token);
-  //       setComments(Array.isArray(data) ? data : []);
-  //     } catch (error) {
-  //       console.error("Error fetching comments:", error);
-  //       setComments([]);
-  //     }
-  //   };
+    console.log("Post updated:", updatedPost);
+  };
 
-  //   if (post?.id) {
-  //     fetchComments();
-  //   }
-  // }, [post.id, token]);
+  const handleSharePost = () => {
+    const shareUrl = post.link_url || window.location.href; // Use link_url if available, fallback to current URL
+
+    if (navigator.share) {
+      navigator
+        .share({
+          title: "Check out this post!",
+          text: post.content,
+          url: shareUrl, // Use the link_url or fallback
+        })
+        .then(() => console.log("Post shared successfully"))
+        .catch((error) => console.error("Error sharing post:", error));
+    } else {
+      // Fallback for unsupported browsers
+      alert(`Share this link: ${shareUrl}`);
+    }
+  };
+
   if (!post) return null;
   
   return (
@@ -141,7 +197,7 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
           onClick={handleBookmarkPost}
           data-testid="bookmark-icon"
         >
-          {bookmarked ? (
+          {saved ? (
             <SolidBookmarkIcon className="h-5 w-5 text-blue-600" />
           ) : (
             <OutlineBookmarkIcon className="h-5 w-5" />
@@ -156,7 +212,7 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
             </button>
           </MenuHandler>
           <MenuList>
-           {/* Report Button inside dropdown */}
+            {/* Report Button inside dropdown */}
            <MenuItem onClick={handleReportPost} className="text-red-600">
               Report Post
             </MenuItem>
@@ -164,7 +220,7 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
             {post.mypost&& (
               <>
                 <MenuItem
-                  onClick={() => console.log("Edit post clicked")}
+                  onClick={() => setShowEditModal(true)}
                   className="text-red-600"
                 >
                   Edit Post
@@ -220,13 +276,43 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
         </div>
         <div className="ml-3">
           <h2 className="font-semibold text-gray-900">{posterName}</h2>
-          <p className="text-sm text-gray-500">{post.created_at || "Just now"}</p>
+          <p className="text-sm text-gray-500">
+            {post.created_at ? new Date(post.created_at).toLocaleString("en-US", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+              hour: "numeric",
+              minute: "numeric",
+              hour12: true,
+            }) : "Just now"}
+          </p>
         </div>
       </div>
 
       <div className="mb-4">
         <p className="text-gray-800">{post.content}</p>
       </div>
+
+      {/* Media Content */}
+      {post.media_url && post.media_type && (
+        <div className="mb-4">
+          {post.media_type.startsWith("image/") ? (
+            <img
+              src={post.media_url}
+              alt="Post Media"
+              className="w-full h-auto rounded-lg object-cover"
+            />
+          ) : post.media_type.startsWith("video/") ? (
+            <video
+              controls
+              className="w-full h-auto rounded-lg"
+            >
+              <source src={post.media_url} type={post.media_type} />
+              Your browser does not support the video tag.
+            </video>
+          ) : null}
+        </div>
+      )}
 
       {/* Buttons Footer */}
       <div className="flex items-center justify-start space-x-4 text-gray-600 text-sm">
@@ -268,12 +354,16 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
           Repost {repostsCount}
         </Button>
 
-        <Button variant="text" color="blue" className="flex items-center gap-1 hover:text-blue-600">
+        <Button
+          variant="text"
+          color="blue"
+          className="flex items-center gap-1 hover:text-blue-600"
+          onClick={handleSharePost}
+        >
           <ShareIcon className="h-5 w-5" />
           Share
         </Button>
       </div>
-
       {showComments && (
         <CommentsSection
           postId={post.id}
@@ -282,6 +372,16 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
           commenterProfilePicture={commenterProfilePicture}
           setCommentsCount={setCommentsCount}
           commentsCount={commentsCount}
+        />
+      )}
+
+      {showEditModal && (
+        <EditPostModal
+          isOpen={showEditModal}
+          toggleModal={() => setShowEditModal(false)}
+          post={post}
+          token={token}
+          onUpdatePost={handleUpdatePost} // Pass the callback
         />
       )}
     </div>

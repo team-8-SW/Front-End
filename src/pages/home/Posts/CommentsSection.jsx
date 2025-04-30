@@ -1,19 +1,34 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Input } from "@material-tailwind/react";
-import { handleAddNewComment } from "../../../services/api";
+import { handleAddNewComment,getComments } from "../../../services/api";
 
 const CommentsSection = ({
   postId,
   token,
   commenterName,
   commenterProfilePicture,
-  comments,
   setCommentsCount,
   commentsCount,
 }) => {
   const [newComment, setNewComment] = useState("");
   const [visibleComments, setVisibleComments] = useState(2);
-  
+  const[comments,setComments]=useState([]);
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const data = await getComments(postId, token);
+        setComments(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error("Error fetching comments:", error);
+        setComments([]);
+      }
+    };
+
+    if (postId) {
+      fetchComments();
+      console.log("comments",comments)
+    }
+  }, [postId, token]);
 
   return (
     <div className="mt-4">

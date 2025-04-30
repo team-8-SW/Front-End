@@ -658,7 +658,7 @@ export const getBlockedUsers = async (token) => {
 
 export const getComments = async (postId, token) => {
   try {
-    const response = await axios.get(`http://localhost:5000/api/posts/me/postcomments`, 
+    const response = await axios.get(`http://localhost:5000/api/posts/me/postcomments`,
       { post_id: postId },
       {
       headers: {
@@ -672,4 +672,21 @@ export const getComments = async (postId, token) => {
   }
 };
 
+export const addMedia= async(media,token,postId)=>{
+  const formData=new FormData();
+  formData.append("file",media);
+  try{
+  const response=await axios.post(`http://localhost:5000/api/posts/me/${postId}/media`, formData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    }
+  });
+  
+  console.log("Media added successfully:", response.data);
+  return response.data;
+} catch (error) {
+  console.error("Error adding media:", error);
+  throw error;
+}
+};
 

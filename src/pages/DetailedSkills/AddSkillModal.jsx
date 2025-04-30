@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Dialog, Button, Typography } from "@material-tailwind/react";
 import axios from "axios";
+import { api } from "../../services/profile"; // Adjust the import path as necessary
 
 const AddSkillModal = ({ open, onClose, userId, onSkillAdded }) => {
   const [newSkill, setNewSkill] = useState("");
@@ -18,8 +19,8 @@ const AddSkillModal = ({ open, onClose, userId, onSkillAdded }) => {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/profiles/me/skills",
+      const res = await api.post(
+        "/api/profiles/me/skills",
         { name: newSkill.trim() }, // ✅ backend expects "name"
         {
           headers: { Authorization: `Bearer ${token}` },

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Card, Typography, Radio, Button } from "@material-tailwind/react";
+import { api } from "../../services/profile";
 
 const ThirdSide = ({ loggedUser }) => {
   const [visibility, setVisibility] = useState("");
@@ -21,8 +22,8 @@ const ThirdSide = ({ loggedUser }) => {
     const token = localStorage.getItem("token");
     try {
       setLoading(true);
-      await axios.put(
-        "http://localhost:5000/api/profiles/me/visibility",
+      await api.put(
+        "/api/profiles/me/visibility",
         { visibility },
         {
           headers: {

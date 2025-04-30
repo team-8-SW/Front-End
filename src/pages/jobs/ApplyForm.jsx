@@ -9,6 +9,7 @@ import {
   Textarea,
 } from "@material-tailwind/react";
 import axios from "axios";
+import { api } from "../../services/profile"; // Adjust the import path as necessary
 
 const ApplyForm = ({ open, handleClose, jobId }) => {
   const [form, setForm] = useState({
@@ -28,7 +29,7 @@ const ApplyForm = ({ open, handleClose, jobId }) => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/profiles/", {
+        const res = await api.get("/api/profiles/", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -58,8 +59,8 @@ const ApplyForm = ({ open, handleClose, jobId }) => {
 
   const handleSubmit = async () => {
     try {
-      await axios.post(
-        `http://localhost:5000/api/jobs/${jobId}/apply`,
+      await api.post(
+        `/api/jobs/${jobId}/apply`,
         form,
         {
           headers: {

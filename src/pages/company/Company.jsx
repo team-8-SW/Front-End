@@ -13,6 +13,7 @@ import EditCompanyForm from "./EditCompanyPage";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { api } from "../../services/profile"; // Adjust the import path as necessary
 
 
 const Company = ({ loggedUser }) => {
@@ -24,7 +25,7 @@ const Company = ({ loggedUser }) => {
     const fetchLatestCompany = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get(`http://localhost:5000/api/company/${companyid}`, {
+        const res = await api.get(`/api/company/${companyid}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

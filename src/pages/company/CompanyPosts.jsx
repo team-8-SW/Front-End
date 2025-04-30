@@ -3,6 +3,7 @@ import CompanyCreatePost from "./CompanyCreatePost";
 import CompanyPostsDetails from "./companyPostsDetails";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import { api } from "../../services/profile"; // Adjust the import path as necessary
 
 const CompanyPosts = ({ loggedUser }) => {
   const [posts, setPosts] = useState([]);
@@ -19,8 +20,8 @@ const CompanyPosts = ({ loggedUser }) => {
       try {
         const companyId="20f970d2-7933-41db-af9e-9fb987a11a1e"
         const token = localStorage.getItem("token");
-        const res = await axios.get(
-          `http://localhost:5000/api/company/${companyid}/updates`,
+        const res = await api.get(
+          `/api/company/${companyid}/updates`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -42,7 +43,7 @@ const CompanyPosts = ({ loggedUser }) => {
     const fetchLatestCompany = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get(`http://localhost:5000/api/company/${companyid}`, {
+        const res = await api.get(`/api/company/${companyid}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

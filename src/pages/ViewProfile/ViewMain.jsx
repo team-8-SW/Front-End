@@ -7,19 +7,21 @@ import ViewSkills from './Viewskills';
 import ViewResume from './ViewResume';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
+import { api } from "../../services/profile";
 
 const ViewMain = ({ loggedUser, setLoggedUser }) => {
   const { id: userid } = useParams();
   const [visibility, setVisibility] = useState(false);
   const [profileData, setProfileData] = useState(null);
   const [allowConnectionRequests, setAllowConnectionRequests] = useState(true);
+  
 
   useEffect(() => {
     const fetchProfile = async () => {
       const token = localStorage.getItem("token");
 
       try {
-        const res = await axios.get(`http://localhost:5000/api/profiles/me/${userid}`, {
+        const res = await api.get(`/api/profiles/me/${userid}`, {
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
@@ -67,6 +69,7 @@ const ViewMain = ({ loggedUser, setLoggedUser }) => {
         connectionId={profileData.connectionStatus.connectionId}
         allowConnectionRequests={allowConnectionRequests} // Pass the allowConnectionRequests state
         isFollowing={profileData.followigStatus}
+        connectionsCount={profileData.connectionsCount}
       />
 
   

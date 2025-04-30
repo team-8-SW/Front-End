@@ -6,6 +6,8 @@ import { Link } from "react-router-dom";
 import EducationFormModal from "./EducationFormModal";
 import EduData from "./EduData";
 import axios from "axios";
+import { api } from "../../services/profile"; // Adjust the import path as necessary
+
 
 const DetailedEduCard = ({ loggedUser }) => {
   const [education, setEducation] = useState([]);
@@ -13,7 +15,7 @@ const DetailedEduCard = ({ loggedUser }) => {
 
   const fetchEducation = async () => {
     const token = localStorage.getItem("token");
-    const res = await axios.get("http://localhost:5000/api/profiles/", {
+    const res = await api.get("/api/profiles/", {
       headers: { Authorization: `Bearer ${token}` },
     });
     setEducation(res.data.education || []);

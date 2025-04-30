@@ -4,6 +4,7 @@ import axios from "axios";
 import { Card, Typography, Button } from "@material-tailwind/react";
 import Nav2 from "../../components/Nav2";
 import ApplyForm from "./ApplyForm";
+import { api } from "../../services/profile"; // Adjust the import path as necessary
 
 const MainPage = () => {
   const [jobs, setJobs] = useState([]);
@@ -41,16 +42,16 @@ const MainPage = () => {
         let params = {};
 
         if (mode === "search") {
-          endpoint = "http://localhost:5000/api/jobs/search";
+          endpoint = "/api/jobs/search";
           params = searchParams;
         } else if (mode === "filter") {
-          endpoint = "http://localhost:5000/api/jobs/filter";
+          endpoint = "/api/jobs/filter";
           params = filterParams;
         } else {
-          endpoint = "http://localhost:5000/api/jobs/";
+          endpoint = "/api/jobs/";
         }
 
-        const { data } = await axios.get(endpoint, {
+        const { data } = await api.get(endpoint, {
           params,
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -62,7 +63,7 @@ const MainPage = () => {
         const logos = {};
         for (const job of jobList) {
           try {
-            const logoRes = await axios.get(`http://localhost:5000/api/jobs/${job.id}/logo`, {
+            const logoRes = await api.get(`/api/jobs/${job.id}/logo`, {
               headers: { Authorization: `Bearer ${token}` },
             });
             logos[job.id] = logoRes.data?.data?.logo?.logo_url || null;
@@ -85,7 +86,7 @@ const MainPage = () => {
   useEffect(() => {
     const fetchSavedJobs = async () => {
       try {
-        const { data } = await axios.get("http://localhost:5000/api/jobs/applicant/jobs", {
+        const { data } = await api.get("/api/jobs/applicant/jobs", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -102,7 +103,7 @@ const MainPage = () => {
   useEffect(() => {
     const fetchAppliedJobs = async () => {
       try {
-        const { data } = await axios.get("http://localhost:5000/api/jobs/applicantions/jobs", {
+        const { data } = await api.get("/api/jobs/applicantions/jobs", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -120,7 +121,7 @@ const MainPage = () => {
     const fetchJobDetails = async () => {
       if (!jobId) return;
       try {
-        const { data } = await axios.get(`http://localhost:5000/api/jobs/${jobId}`, {
+        const { data } = await api.get(`/api/jobs/${jobId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setSelectedJob(data.job?.[0] || null);
@@ -137,12 +138,12 @@ const MainPage = () => {
       const isSaved = savedJobIds.includes(jobId);
 
       if (isSaved) {
-        await axios.delete(`http://localhost:5000/api/jobs/${jobId}/unsave`, {
+        await api.delete(`/api/jobs/${jobId}/unsave`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setSavedJobIds((prev) => prev.filter((id) => id !== jobId));
       } else {
-        await axios.post(`http://localhost:5000/api/jobs/${jobId}/save`, {}, {
+        await api.post(`/api/jobs/${jobId}/save`, {}, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setSavedJobIds((prev) => [...prev, jobId]);

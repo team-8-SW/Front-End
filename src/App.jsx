@@ -53,6 +53,7 @@ import StripeProvider from "./pages/payment/StripeProvider";
 import PaymentPage from "./pages/payment/PaymentPage";
 
 import AdminReportsPage from "./pages/adminreport/AdminReportsPage";
+import {api} from "./services/profile";
 
 function App() {
   const [loggedUser, setLoggedUser] = useState(null);
@@ -69,8 +70,8 @@ function App() {
     }
 
     
-    axios
-      .get("http://localhost:5000/api/profiles/", {
+    api
+      .get("/api/profiles/", {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",

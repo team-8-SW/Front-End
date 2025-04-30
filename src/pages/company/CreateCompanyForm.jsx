@@ -4,6 +4,7 @@ import {
 } from "@material-tailwind/react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { api } from "../../services/profile"; // Adjust the import path as necessary
 
 const CreateCompanyForm = ({ setCompanyData }) => {
   const [open, setOpen] = useState(false);
@@ -45,7 +46,7 @@ const CreateCompanyForm = ({ setCompanyData }) => {
     };
 
     try {
-      const res = await axios.post("http://localhost:5000/api/company", payload, {
+      const res = await api.post("/api/company", payload, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json"

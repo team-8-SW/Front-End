@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { BookmarkIcon } from "@heroicons/react/24/solid";
 import { Typography } from "@material-tailwind/react";
 import axios from "axios";
+import { api } from "../../services/profile"; // Adjust the import path as necessary
 
 const LeftMyJobsCard = () => {
   const navigate = useNavigate();
@@ -12,7 +13,7 @@ const LeftMyJobsCard = () => {
   useEffect(() => {
     const fetchPostedJobsCount = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/jobs/employer/jobs", {
+        const res = await api.get("/api/jobs/employer/jobs", {
           headers: { Authorization: `Bearer ${token}` },
         });
         const jobs = res.data.job || [];

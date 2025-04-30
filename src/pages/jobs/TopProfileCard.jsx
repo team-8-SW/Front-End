@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Typography, Avatar } from "@material-tailwind/react";
 import axios from "axios";
-
+import { api } from "../../services/profile"; // Adjust the import path as necessary
 const TopProfileCard = () => {
   const [profile, setProfile] = useState(null);
     const [education, setEducation] = useState(null);
@@ -11,7 +11,7 @@ const TopProfileCard = () => {
     const fetchProfile = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:5000/api/profiles", {
+        const res = await api.get("/api/profiles", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setEducation(res.data.education[0]);

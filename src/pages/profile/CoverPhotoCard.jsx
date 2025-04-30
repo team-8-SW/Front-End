@@ -3,8 +3,9 @@ import { Card, Typography } from "@material-tailwind/react";
 import { MdCancel } from "react-icons/md";
 import { FaCamera, FaRegTrashAlt } from "react-icons/fa";
 import axios from "axios";
+import { api } from "../../services/profile"; 
 
-const CoverPhotoCard = ({ userData, setOpenCP }) => {
+const CoverPhotoCard = ({ userData, setUserData, setOpenCP }) => {
   const fileInputRef = useRef(null);
 
   const triggerFileInput = () => {
@@ -20,13 +21,17 @@ const CoverPhotoCard = ({ userData, setOpenCP }) => {
     formData.append("file", file);
 
     try {
-      await axios.post("http://localhost:5000/api/profiles/me/cover-photo", formData, {
+      const response = await api.post("/api/profiles/me/cover-photo", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
         },
       });
-      window.location.reload();
+
+      setUserData((prev) => ({
+        ...prev,
+        coverPhotoUrl: response.data.coverPhotoUrl, // backend should return the new URL
+      }));
     } catch (error) {
       console.error("Error uploading cover photo:", error);
     }
@@ -35,12 +40,16 @@ const CoverPhotoCard = ({ userData, setOpenCP }) => {
   const handleRemoveCoverPhoto = async () => {
     const token = localStorage.getItem("token");
     try {
-      await axios.delete("http://localhost:5000/api/profiles/me/cover-photo", {
+      await api.delete("/api/profiles/me/cover-photo", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      window.location.reload();
+
+      setUserData((prev) => ({
+        ...prev,
+        coverPhotoUrl: null,
+      }));
     } catch (error) {
       console.error("Error removing cover photo:", error);
     }
@@ -76,7 +85,6 @@ const CoverPhotoCard = ({ userData, setOpenCP }) => {
 
           {/* Action Buttons */}
           <div className="flex justify-between items-center w-full px-8">
-            {/* Upload Button */}
             <div className="flex flex-col items-center cursor-pointer" onClick={triggerFileInput}>
               <FaCamera />
               <Typography variant="h6" className="text-white mt-2">
@@ -84,7 +92,6 @@ const CoverPhotoCard = ({ userData, setOpenCP }) => {
               </Typography>
             </div>
 
-            {/* Delete Button */}
             <div className="flex flex-col items-center cursor-pointer" onClick={handleRemoveCoverPhoto}>
               <FaRegTrashAlt />
               <Typography variant="h6" className="text-white mt-2">
@@ -97,5 +104,6 @@ const CoverPhotoCard = ({ userData, setOpenCP }) => {
     </div>
   );
 };
+
 
 export default CoverPhotoCard;

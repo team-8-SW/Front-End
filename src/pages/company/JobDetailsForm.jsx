@@ -11,6 +11,7 @@ import {
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
+import { api } from '../../services/profile'; // Adjust the import path as necessary
 
 const JobDetailsForm = ({ loggedUser }) => {
   const navigate = useNavigate();
@@ -49,8 +50,8 @@ const JobDetailsForm = ({ loggedUser }) => {
     try {
       console.log("Submitting job payload:", jobDetails);
   
-      await axios.post(
-        `http://localhost:5000/api/company/job`,
+      await api.post(
+        `/api/company/job`,
         {
           title: jobDetails.title,
           description: jobDetails.description,

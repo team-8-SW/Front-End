@@ -9,6 +9,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { api } from "../../services/profile"; // Adjust the import path as necessary
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
@@ -21,8 +22,8 @@ const VisitorsTab = ({ companyid }) => {
       try {
                 const companyId="20f970d2-7933-41db-af9e-9fb987a11a1e"
         const token = localStorage.getItem("token");
-        const response = await axios.get(
-          `http://localhost:5000/api/company/${companyid}/visitors`,
+        const response = await api.get(
+          `/api/company/${companyid}/visitors`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }

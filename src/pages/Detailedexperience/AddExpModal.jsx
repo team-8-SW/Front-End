@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Dialog, Button, Typography } from "@material-tailwind/react";
 import axios from "axios";
+import { api } from "../../services/profile"; // Adjust the import path as necessary
 
 const jobTitles = ["Software Engineer", "Data Scientist", "Product Manager", "UX Designer"];
 const companies = ["Google", "Microsoft", "Amazon", "Facebook"];
@@ -38,8 +39,8 @@ const AddExpModal = ({ open, onClose, onExpAdded }) => {
     const token = localStorage.getItem("token");
 
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/profiles/me/experience",
+      const response = await api.post(
+        "/api/profiles/me/experience",
         {
           companyName: expData.companyName,
           position: expData.position,

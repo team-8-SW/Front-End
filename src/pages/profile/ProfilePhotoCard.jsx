@@ -2,9 +2,9 @@ import React, { useRef } from "react";
 import { Card, Typography } from "@material-tailwind/react";
 import { MdCancel } from "react-icons/md";
 import { FaCamera, FaRegTrashAlt } from "react-icons/fa";
-import axios from "axios";
+import { api } from "../../services/profile"; // ✅ Make sure to import from your axios instance
 
-const ProfilePhotoCard = ({ userData, setOpenPP }) => {
+const ProfilePhotoCard = ({ userData, setUserData, setOpenPP }) => {
   const fileInputRef = useRef(null);
 
   const triggerFileInput = () => {
@@ -14,34 +14,45 @@ const ProfilePhotoCard = ({ userData, setOpenPP }) => {
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-  
+
     const token = localStorage.getItem("token");
     const formData = new FormData();
     formData.append("file", file);
-  
+
     try {
-      await axios.post("http://localhost:5000/api/profiles/me/profile-picture", formData, {
+      const response = await api.post("/api/profiles/me/profile-picture", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
         },
       });
-      window.location.reload();
+
+      // ✅ Update the profile picture without reloading
+      setUserData((prev) => ({
+        ...prev,
+        profilePictureUrl: response.data.profilePictureUrl,
+      }));
+      setOpenPP(false);
     } catch (error) {
       console.error("Error uploading profile picture:", error);
     }
   };
-  
 
   const handleRemoveProfilePicture = async () => {
     const token = localStorage.getItem("token");
+
     try {
-      await axios.delete("http://localhost:5000/api/profiles/me/profile-picture", {
+      await api.delete("/api/profiles/me/profile-picture", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      window.location.reload();
+
+      setUserData((prev) => ({
+        ...prev,
+        profilePictureUrl: null,
+      }));
+      setOpenPP(false);
     } catch (error) {
       console.error("Error removing profile picture:", error);
     }
@@ -57,9 +68,9 @@ const ProfilePhotoCard = ({ userData, setOpenPP }) => {
           </div>
 
           <img
-            src={userData.profilePictureUrl}
+            src={userData.profilePictureUrl || "/photos/default-profile.svg"}
             alt="Profile"
-            className="w-[200px] h-[200px] rounded-full border-4 border-white shadow-lg mt-4"
+            className="w-[200px] h-[200px] rounded-full border-4 border-white shadow-lg mt-4 object-cover"
           />
 
           <input

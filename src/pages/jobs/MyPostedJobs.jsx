@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Card, Typography, Chip } from "@material-tailwind/react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { api } from "../../services/profile"; // Adjust the import path as necessary
 
 const MyPostedJobs = () => {
   const [jobsData, setJobsData] = useState([]);
@@ -13,7 +14,7 @@ const MyPostedJobs = () => {
   useEffect(() => {
     const fetchMyJobs = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/jobs/employer/jobs", {
+        const res = await api.get("/api/jobs/employer/jobs", {
           headers: { Authorization: `Bearer ${token}` },
         });
         const jobs = res.data.job || [];
@@ -23,8 +24,8 @@ const MyPostedJobs = () => {
         const counts = {};
         for (const job of jobs) {
           try {
-            const appRes = await axios.get(
-              `http://localhost:5000/api/jobs/${job.id}/applications`,
+            const appRes = await api.get(
+              `/api/jobs/${job.id}/applications`,
               { headers: { Authorization: `Bearer ${token}` } }
             );
             counts[job.id] = appRes.data.applications?.length || 0;

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Bar } from "react-chartjs-2";
 import FollowerModal from "./FollowerModal";
 import axios from "axios";
+import { api } from "../../services/profile"; // Adjust the import path as necessary
+
 
 const FollowersTab = ({ companyid }) => {
   const [analyticsData, setAnalyticsData] = useState(null);
@@ -13,8 +15,8 @@ const FollowersTab = ({ companyid }) => {
         const companyId="20f970d2-7933-41db-af9e-9fb987a11a1e"
         const token = localStorage.getItem("token");
         console.log("token in followers analytics:", token);  
-        const res = await axios.get(
-          `http://localhost:5000/api/company/${companyid}/followers-analytics`,
+        const res = await api.get(
+          `/api/company/${companyid}/followers-analytics`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }

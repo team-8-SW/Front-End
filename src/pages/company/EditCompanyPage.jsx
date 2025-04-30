@@ -5,6 +5,7 @@ import {
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { FaCamera } from "react-icons/fa";
+import { api } from "../../services/profile"; // Adjust the import path as necessary
 
 const EditCompanyForm = ({ setCompanyData }) => {
   const [open, setOpen] = useState(false);
@@ -33,7 +34,7 @@ const EditCompanyForm = ({ setCompanyData }) => {
     const fetchCompany = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get(`http://localhost:5000/api/company/${companyid}`, {
+        const res = await api.get(`/api/company/${companyid}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -65,8 +66,8 @@ const EditCompanyForm = ({ setCompanyData }) => {
     setLogoPreview(URL.createObjectURL(file));
 
     try {
-      const res = await axios.post(
-        `http://localhost:5000/api/company/logo/${companyid}`,
+      const res = await api.post(
+        `/api/company/logo/${companyid}`,
         data,
         {
           headers: {
@@ -93,8 +94,8 @@ const EditCompanyForm = ({ setCompanyData }) => {
     setCoverPreview(URL.createObjectURL(file));
 
     try {
-      const res = await axios.post(
-        `http://localhost:5000/api/company/cover/${companyid}`,
+      const res = await api.post(
+        `/api/company/cover/${companyid}`,
         data,
         {
           headers: {
@@ -117,7 +118,7 @@ const EditCompanyForm = ({ setCompanyData }) => {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await axios.put(`http://localhost:5000/api/company/${companyid}`, formData, {
+      const res = await api.put(`/api/company/${companyid}`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",

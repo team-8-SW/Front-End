@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Typography, Card } from "@material-tailwind/react";
 import { useNavigate } from "react-router-dom";
+import { api } from "../../services/profile"; // Adjust the import path as necessary
 
 const SavedJobsTab = () => {
   const [detailedJobs, setDetailedJobs] = useState([]);
@@ -13,7 +14,7 @@ const SavedJobsTab = () => {
   useEffect(() => {
     const fetchSavedJobs = async () => {
       try {
-        const { data } = await axios.get("http://localhost:5000/api/jobs/applicant/jobs", {
+        const { data } = await api.get("/api/jobs/applicant/jobs", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -38,7 +39,7 @@ const SavedJobsTab = () => {
   const fetchJobDetails = async (jobId) => {
     console.log("Fetching details for job ID:", jobId);
     try {
-      const { data } = await axios.get(`http://localhost:5000/api/jobs/${jobId}`, {
+      const { data } = await api.get(`/api/jobs/${jobId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

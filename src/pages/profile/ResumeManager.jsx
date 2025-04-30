@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import {api} from "../../services/profile"; // Adjust the import path as necessary
 
 const ResumeManager = ({ userId, onResumesUpdated }) => {
   const [resumeUrl, setResumeUrl] = useState(null);
@@ -7,7 +8,7 @@ const ResumeManager = ({ userId, onResumesUpdated }) => {
   useEffect(() => {
     const token = localStorage.getItem("token");
   
-    axios.get("http://localhost:5000/api/profiles/", {
+    api.get("/api/profiles/", {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -32,8 +33,8 @@ const ResumeManager = ({ userId, onResumesUpdated }) => {
     const token = localStorage.getItem("token");
   
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/profiles/me/resume",
+      const res = await api.post(
+        "/api/profiles/me/resume",
         formData,
         {
           headers: {
@@ -56,7 +57,7 @@ const ResumeManager = ({ userId, onResumesUpdated }) => {
     const token = localStorage.getItem("token");
   
     try {
-      await axios.delete("http://localhost:5000/api/profiles/me/resume", {
+      await api.delete("/api/profiles/me/resume", {
         headers: { Authorization: `Bearer ${token}` },
       });
   

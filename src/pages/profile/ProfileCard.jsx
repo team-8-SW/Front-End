@@ -7,6 +7,7 @@ import axios from "axios";
 import ContactInfo from "./ContactInfo";
 import ProfilePhotoCard from "./ProfilePhotoCard";
 import CoverPhotoCard from "./CoverPhotoCard";
+import { api } from "../../services/profile";
 
 const ProfileCard = ({ loggedUser }) => {
   const [open, setOpen] = useState(false);
@@ -66,8 +67,8 @@ const ProfileCard = ({ loggedUser }) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
     try {
-      await axios.put(
-        "http://localhost:5000/api/profiles/me",
+      await api.put(
+        "/api/profiles/me",
         {
           firstName: userData.firstName,
           lastName: userData.lastName,
@@ -116,6 +117,7 @@ const ProfileCard = ({ loggedUser }) => {
               <PencilIcon className="w-5 h-5" />
             </button>
           </div>
+          <Typography variant="small" className="text-black">{loggedUser.connectionsCount} connections</Typography>
           <Typography variant="small" className="text-gray-500">{userData.bio}</Typography>
           <div className="flex items-center gap-2 mt-2">
           <Typography variant="small" className="text-gray-500">{userData.location}</Typography>
@@ -151,10 +153,10 @@ const ProfileCard = ({ loggedUser }) => {
         <ContactInfo userData={userData} setOpenContact={setOpenContact} />
       </Dialog>
       <Dialog open={openPP} handler={() => setOpenPP(false)}>
-        <ProfilePhotoCard userData={userData} setOpenPP={setOpenPP} />
+        <ProfilePhotoCard userData={userData} setOpenPP={setOpenPP} setUserData={setUserData} />
       </Dialog>
       <Dialog open={openCP} handler={() => setOpenCP(false)}>
-        <CoverPhotoCard userData={userData} setOpenCP={setOpenCP} />
+        <CoverPhotoCard userData={userData} setOpenCP={setOpenCP} setUserData={setUserData} />
       </Dialog>
     </Card>
   );

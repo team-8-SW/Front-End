@@ -120,6 +120,18 @@ const Nav = () => {
               </div>
             )}
           </div>
+          <Link
+  to="/payment"
+  className="flex flex-col items-center gap-1 text-[#915907] hover:underline font-medium text-sm ml-2"
+>
+  <img
+    src="\logos\eb00f08b-bb75-4e5d-b334-d0b441aca0c5 (1).png" // 🔁 Replace with your actual imported logo path
+    alt="Premium Icon"
+    className="w-5 h-5"
+  />
+  Try Premium 
+</Link>
+
         </div>
       </div>
     </div>

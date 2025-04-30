@@ -2,6 +2,7 @@ import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { api } from '../../services/profile'; // Adjust the import path as necessary
 
 const CheckoutForm = () => {
   const stripe = useStripe();
@@ -25,7 +26,7 @@ const CheckoutForm = () => {
       const token = localStorage.getItem('token');
 
       // Step 1: Create payment intent
-      const { data } = await axios.post('http://localhost:5000/api/payments/create-payment-intent', {}, {
+      const { data } = await api.post('/api/payments/create-payment-intent', {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -50,7 +51,7 @@ console.log('Client Secret:', clientSecret);
       } else {
         if (result.paymentIntent.status === 'succeeded') {
           // Step 3: Confirm to backend
-          await axios.post('http://localhost:5000/api/payments/confirm', {
+          await api.post('/api/payments/confirm', {
             paymentIntentId: result.paymentIntent.id
           }, {
             headers: { Authorization: `Bearer ${token}` }

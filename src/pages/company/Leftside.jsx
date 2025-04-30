@@ -3,6 +3,7 @@ import { Avatar, Typography, Button } from "@material-tailwind/react";
 import { Link, useLocation } from "react-router-dom";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import { api } from "../../services/profile"; // Adjust the import path as necessary
 
 const Leftside = () => {
   const location = useLocation();
@@ -20,7 +21,7 @@ const {companyid}=useParams()
     const fetchLatestCompany = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get(`http://localhost:5000/api/company/${companyid}`, {
+        const res = await api.get(`/api/company/${companyid}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

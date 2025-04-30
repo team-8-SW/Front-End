@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { FaGraduationCap } from "react-icons/fa";
 import EduData2 from "./EduData2";
 import EducationFormModal from "../DetailedEducation/EducationFormModal";
+import { api } from "../../services/profile"; 
 
 const Education = ({ loggedUser }) => {
   const [educations, setEducations] = useState([]);
@@ -14,7 +15,7 @@ const Education = ({ loggedUser }) => {
   const fetchEducation = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:5000/api/profiles/", {
+      const res = await api.get("/api/profiles/", {
         headers: {
           Authorization: `Bearer ${token}`,
         },

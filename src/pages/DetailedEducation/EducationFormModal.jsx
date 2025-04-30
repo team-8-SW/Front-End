@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { Typography, Button, Input, Select, Option } from "@material-tailwind/react";
+import { api } from "../../services/profile"; // Adjust the import path as necessary
 
 // Schools list - same used in backend validation
 export const schoolsList = [
@@ -49,8 +50,8 @@ const EducationFormModal = ({ onClose, onSave }) => {
     }
 
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/profiles/me/education",
+      const res = await api.post(
+        "/api/profiles/me/education",
         {
           school: matchedSchool,
           degree: education.degree,

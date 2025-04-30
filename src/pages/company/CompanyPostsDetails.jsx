@@ -7,6 +7,7 @@ import {
   PaperAirplaneIcon as ShareIcon,
 } from "@heroicons/react/24/outline";
 import axios from "axios";
+import { api } from "../../services/profile"; // Adjust the import path as necessary
 
 const CompanyPostsDetails = ({ post, companyLogo, companyid }) => {
   const [companyData, setCompanyData] = useState(null);
@@ -19,7 +20,7 @@ const CompanyPostsDetails = ({ post, companyLogo, companyid }) => {
 
     const fetchCompany = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/company/${companyid}`, {
+        const res = await api.get(`/api/company/${companyid}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setCompanyData(res.data);
@@ -30,8 +31,8 @@ const CompanyPostsDetails = ({ post, companyLogo, companyid }) => {
 
     const fetchCommentCount = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:5000/api/company/${post.id}/comment-count`,
+        const res = await api.get(
+          `/api/company/${post.id}/comment-count`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setCommentCount(res.data.commentCount || 0);
@@ -47,8 +48,8 @@ const CompanyPostsDetails = ({ post, companyLogo, companyid }) => {
   const handleLike = async () => {
     const token = localStorage.getItem("token");
     try {
-      await axios.post(
-        `http://localhost:5000/api/company/${post.id}/impressions`,
+      await api.post(
+        `/api/company/${post.id}/impressions`,
         { type: "like" },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -63,8 +64,8 @@ const CompanyPostsDetails = ({ post, companyLogo, companyid }) => {
     if (!commentText.trim()) return;
 
     try {
-      await axios.post(
-        `http://localhost:5000/api/company/${post.id}/comments`,
+      await api.post(
+        `/api/company/${post.id}/comments`,
         { content: commentText },
         {
           headers: {
@@ -83,8 +84,8 @@ const CompanyPostsDetails = ({ post, companyLogo, companyid }) => {
   const handleRepost = async () => {
     const token = localStorage.getItem("token");
     try {
-      await axios.post(
-        `http://localhost:5000/api/company/${post.id}/reposts`,
+      await api.post(
+        `/api/company/${post.id}/reposts`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Button, Input } from "@material-tailwind/react";
 import axios from "axios";
+import { api } from "../../services/profile"; // Adjust the import path as necessary
 
 const CompanyPostModal = ({
   isOpen,
@@ -34,8 +35,8 @@ const CompanyPostModal = ({
         media_url: mediaUrl || "", // leave empty string if none provided
       };
 
-      const response = await axios.post(
-        `http://localhost:5000/api/company/${companyid}/update`,
+      const response = await api.post(
+        `/api/company/${companyid}/update`,
         payload,
         {
           headers: {

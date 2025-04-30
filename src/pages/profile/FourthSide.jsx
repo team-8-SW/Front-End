@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Card, Typography, Radio, Button } from "@material-tailwind/react";
+import { api } from "../../services/profile"; 
 
 const FourthSide = ({ loggedUser }) => {
   const [allowConnectionRequests, setAllowConnectionRequests] = useState(true);
@@ -22,8 +23,8 @@ const FourthSide = ({ loggedUser }) => {
     console.log("newconnection", allowConnectionRequests);6
     try {
       setLoading(true);
-      await axios.put(
-        "http://localhost:5000/api/profiles/me/allow-connection-requests",
+      await api.put(
+        "/api/profiles/me/allow-connection-requests",
         { allowConnectionRequests },
         {
           headers: {

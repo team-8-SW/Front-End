@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Card, Typography, Button, Avatar } from '@material-tailwind/react';
+import { api } from '../../services/profile'; // Adjust the import path as necessary
 
 const MyJobApplications = () => {
   const { jobid } = useParams();
@@ -13,7 +14,7 @@ const MyJobApplications = () => {
 
   const fetchApplications = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/jobs/${jobid}/applications`, {
+      const res = await api.get(`/api/jobs/${jobid}/applications`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const apps = res.data.applications || [];
@@ -22,8 +23,8 @@ const MyJobApplications = () => {
       const profileData = {};
       for (const app of apps) {
         try {
-          const profileRes = await axios.get(
-            `http://localhost:5000/api/profiles/me/${app.applicant_id}`,
+          const profileRes = await api.get(
+            `/api/profiles/me/${app.applicant_id}`,
             { headers: { Authorization: `Bearer ${token}` } }
           );
           profileData[app.applicant_id] = profileRes.data?.profile || {};
@@ -45,8 +46,8 @@ const MyJobApplications = () => {
 
   const handleAccept = async (appId) => {
     try {
-      await axios.put(
-        `http://localhost:5000/api/jobs/${appId}/accept`,
+      await api.put(
+        `/api/jobs/${appId}/accept`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -58,8 +59,8 @@ const MyJobApplications = () => {
 
   const handleReject = async (appId) => {
     try {
-      await axios.put(
-        `http://localhost:5000/api/jobs/${appId}/reject`,
+      await api.put(
+        `/api/jobs/${appId}/reject`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -71,7 +72,7 @@ const MyJobApplications = () => {
 
   const handleViewResume = async (applicantId) => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/jobs/resume`, {
+      const res = await api.get(`/api/jobs/resume`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

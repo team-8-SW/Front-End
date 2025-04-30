@@ -10,8 +10,9 @@ import DeclineConnection from "../network/DeclineConnection";
 import { removeConnection, blockUser, unblockUser, followUser, unfollowUser } from "../../services/api";
 import ViewProfilePhotoCard from "./ViewProfilePhotoCard";
 import axios from "axios";
+import { api } from "../../services/profile"; // Adjust the import path as necessary
 
-const ViewProfileCard = ({ profile, userid, token, connectionStatus, connectionId, allowConnectionRequests, isFollowing: initialIsFollowing }) => {
+const ViewProfileCard = ({ profile, userid, token, connectionStatus, connectionId, allowConnectionRequests, isFollowing: initialIsFollowing,connectionsCount }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [openContact, setOpenContact] = useState(false);
   const [openPP, setOpenPP] = useState(false);
@@ -74,14 +75,14 @@ const ViewProfileCard = ({ profile, userid, token, connectionStatus, connectionI
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/profiles/", {
+        const res = await api.get("/api/profiles/", {
           headers: { Authorization: `Bearer ${token}` }
         });
         const data= res.data;
         console.log("Profile other data:", data);
         console.log("Profile other dataaa:", data.profile.is_premium);
         console.log("connectrion other dataaa:", data.connectionsCount);
-        if (data && data.profile.is_premium === false && parseInt(data.connectionsCount) >1) {
+        if (data && data.profile.is_premium === false && parseInt(data.connectionsCount) >49) {
           setDisableConnect(false);
           setConnectionMessage("Connection limit reached. Upgrade to premium to connect more.");
         }
@@ -115,6 +116,9 @@ const ViewProfileCard = ({ profile, userid, token, connectionStatus, connectionI
         <div className="flex flex-col gap-2">
           <Typography variant="h3" color="blue-gray" className="font-semibold">
             {profile.firstName} {profile.lastName}
+          </Typography>
+          <Typography variant="small" className="text-black">
+            {connectionsCount} connections
           </Typography>
           <Typography variant="small" className="text-gray-500">
             {profile.bio}

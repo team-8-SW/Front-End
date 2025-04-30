@@ -10,6 +10,7 @@ import {
 } from '@material-tailwind/react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { api } from '../../services/profile'; // Adjust the import path as necessary
 
 const JobDetailsForm = ({ loggedUser }) => {
   const navigate = useNavigate();
@@ -61,7 +62,7 @@ const JobDetailsForm = ({ loggedUser }) => {
 
       console.log("Posting job:", payload);
 
-      await axios.post("http://localhost:5000/api/jobs/post-job", payload, {
+      await api.post("/api/jobs/post-job", payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
 

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Typography, Button, Avatar } from "@material-tailwind/react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { api } from "../../services/profile"; // Adjust the import path as necessary
 
 const RecommendedJobsCard = () => {
   const [jobs, setJobs] = useState([]);
@@ -14,7 +15,7 @@ const RecommendedJobsCard = () => {
       try {
         const token = localStorage.getItem("token");
 
-        const res = await axios.get(`http://localhost:5000/api/jobs/`, {
+        const res = await api.get(`/api/jobs/`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const jobList = res.data.jobs.slice(0, 3) || [];
@@ -24,7 +25,7 @@ const RecommendedJobsCard = () => {
         const logos = {};
         for (const job of jobList) {
           try {
-            const logoRes = await axios.get(`http://localhost:5000/api/jobs/${job.id}/logo`, {
+            const logoRes = await api.get(`/api/jobs/${job.id}/logo`, {
               headers: { Authorization: `Bearer ${token}` },
             });
             logos[job.id] = logoRes.data?.data?.logo?.logo_url || null;

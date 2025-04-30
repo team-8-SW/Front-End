@@ -15,6 +15,7 @@ import { useParams } from "react-router-dom";
 import ConnectButton from "../network/ConnectButton";
 import CompanyPostsDetails from "./companyPostsDetails";
 import CompanyJobsTab from "./CompanyJobsTab";
+import { api } from "../../services/profile"; // Adjust the import path as necessary
 
 const ViewCompany = ({ loggedUser }) => {
   const [companyData, setCompanyData] = useState(null);
@@ -29,7 +30,7 @@ const ViewCompany = ({ loggedUser }) => {
     const fetchCompanyDetails = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get(`http://localhost:5000/api/company/${companyid}`, {
+        const res = await api.get(`/api/company/${companyid}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setCompanyData(res.data);
@@ -46,7 +47,7 @@ const ViewCompany = ({ loggedUser }) => {
     const fetchAdminDetails = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get(`http://localhost:5000/api/profiles/me/${adminId}`, {
+        const res = await api.get(`/api/profiles/me/${adminId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setAdminData(res.data);
@@ -61,8 +62,8 @@ const ViewCompany = ({ loggedUser }) => {
     const fetchJobs = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get(
-          `http://localhost:5000/api/company/${companyid}/getalljob`,
+        const res = await api.get(
+          `/api/company/${companyid}/getalljob`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setCompanyJobs(res.data.jobs || []);
@@ -77,7 +78,7 @@ const ViewCompany = ({ loggedUser }) => {
     const fetchCompanyPosts = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get(`http://localhost:5000/api/company/${companyid}/updates`, {
+        const res = await api.get(`/api/company/${companyid}/updates`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setPosts(res.data);

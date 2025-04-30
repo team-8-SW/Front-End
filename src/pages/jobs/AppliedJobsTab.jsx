@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Typography, Card, Chip } from "@material-tailwind/react";
 import { useNavigate } from "react-router-dom";
+import { api } from "../../services/profile"; // Adjust the import path as necessary
 
 const AppliedJobsTab = () => {
   const [appliedJobs, setAppliedJobs] = useState([]);
@@ -12,7 +13,7 @@ const AppliedJobsTab = () => {
   useEffect(() => {
     const fetchAppliedJobs = async () => {
       try {
-        const { data } = await axios.get("http://localhost:5000/api/jobs/applicantions/jobs", {
+        const { data } = await api.get("/api/jobs/applicantions/jobs", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -41,10 +42,10 @@ const AppliedJobsTab = () => {
   const fetchJobDetailsWithStatus = async (jobId, applicationId) => {
     try {
       const [jobRes, statusRes] = await Promise.all([
-        axios.get(`http://localhost:5000/api/jobs/${jobId}`, {
+        api.get(`/api/jobs/${jobId}`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
-        axios.get(`http://localhost:5000/api/jobs/${applicationId}/status`, {
+        api.get(`/api/jobs/${applicationId}/status`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
         // 🔥 Changed the status API to use applicationId

@@ -40,7 +40,7 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
   const [likesCount, setLikesCount] = useState(0);
   const commenterName = useName(null, token);
   const commenterProfilePicture = useProfilePicture(null, token);
-  const [comments, setComments] = useState([]);
+  // const [comments, setComments] = useState([]);
   const [showComments, setShowComments] = useState(false);
   const [repostsCount, setRepostsCount] = useState(0);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
@@ -52,23 +52,29 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
     if (post.liked) setLiked(true);
   }, [post.liked]);
 
+  // useEffect(() => {
+  //   if (!post?.id) return;
+
+  //   const fetchEngagement = async () => {
+  //     try {
+  //       const data = await getPostEngagement(post.id, token);
+  //       setLikesCount(data.like_count || 0);
+  //       setCommentsCount(data.comment_count || 0);
+  //       setRepostsCount(data.repost_count || 0);
+  //     } catch (error) {
+  //       console.error("Error loading engagement data:", error);
+  //     }
+  //   };
+
+  //   fetchEngagement();
+  // }, [post.id, token]);
+
   useEffect(() => {
-    if (!post?.id) return;
-
-    const fetchEngagement = async () => {
-      try {
-        const data = await getPostEngagement(post.id, token);
-        setLikesCount(data.like_count || 0);
-        setCommentsCount(data.comment_count || 0);
-        setRepostsCount(data.repost_count || 0);
-      } catch (error) {
-        console.error("Error loading engagement data:", error);
-      }
-    };
-
-    fetchEngagement();
-  }, [post.id, token]);
-
+    setLikesCount(post.like_count || 0);
+    setCommentsCount(post.comment_count || 0);
+    setRepostsCount(post.repost_count || 0);
+  }, [post.like_count, post.comment_count, post.repost_count]);
+  
 
 
   const handleDeletePost = async () => {
@@ -92,24 +98,38 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
     }
   };
 
-
-  useEffect(() => {
-    const fetchComments = async () => {
-      try {
-        const data = await getComments(post.id, token);
-        setComments(Array.isArray(data) ? data : []);
-      } catch (error) {
-        console.error("Error fetching comments:", error);
-        setComments([]);
-      }
-    };
-
-    if (post?.id) {
-      fetchComments();
+  const handleReportPost = async () => {
+    try {
+      await axios.post("http://localhost:5000/api/posts/me/report", {
+        post_id: post.id,
+      }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      alert("Post reported successfully.");
+      onRemovePost(post.id); // Remove the post from UI
+    } catch (error) {
+      console.error("Failed to report post:", error);
+      alert("Failed to report post. Try again.");
     }
-  }, [post.id, token]);
+  };
+
+
+  // useEffect(() => {
+  //   const fetchComments = async () => {
+  //     try {
+  //       const data = await getComments(post.id, token);
+  //       setComments(Array.isArray(data) ? data : []);
+  //     } catch (error) {
+  //       console.error("Error fetching comments:", error);
+  //       setComments([]);
+  //     }
+  //   };
+
+  //   if (post?.id) {
+  //     fetchComments();
+  //   }
+  // }, [post.id, token]);
   if (!post) return null;
-  console.log(post,"post details");
   
   return (
     <div className="bg-white border border-gray-300 rounded-lg shadow-sm p-4 mb-4 relative">
@@ -136,6 +156,10 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
             </button>
           </MenuHandler>
           <MenuList>
+           {/* Report Button inside dropdown */}
+           <MenuItem onClick={handleReportPost} className="text-red-600">
+              Report Post
+            </MenuItem>
             {/* Edit and Delete if owner */}
             {post.mypost&& (
               <>
@@ -256,7 +280,6 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
           token={token}
           commenterName={commenterName}
           commenterProfilePicture={commenterProfilePicture}
-          comments={comments}
           setCommentsCount={setCommentsCount}
           commentsCount={commentsCount}
         />

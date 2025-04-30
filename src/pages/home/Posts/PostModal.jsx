@@ -3,7 +3,7 @@ import { Button } from "@material-tailwind/react";
 import axios from "axios";
 import { PaperClipIcon } from "@heroicons/react/24/outline";
 import { tagUser } from "../../../utils/tagUserUtils";
-import { searchUsers } from "../../../services/api";
+import { addMedia, searchUsers } from "../../../services/api";
 
 const PostModal = ({ isOpen, toggleModal, loggedUser }) => {
   const [postContent, setPostContent] = useState("");
@@ -14,8 +14,8 @@ const PostModal = ({ isOpen, toggleModal, loggedUser }) => {
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [taggedUserId, setTaggedUserId] = useState(null);
+  const [file,setFile]=useState(null);
   const token = localStorage.getItem("token");
-  const [postId, setPostId] = useState(null);
   if (!isOpen) return null;
 
   const handlePost = async () => {
@@ -46,28 +46,36 @@ const PostModal = ({ isOpen, toggleModal, loggedUser }) => {
       // Get the post ID from the response
       const post_id = response.data.id;
       console.log("Post ID:", post_id);
-      setPostId(post_id);
+      
       if (taggedUserId) {
-        await tagUser(token, taggedUserId, postId);
+        await tagUser(token, taggedUserId, post_id);
       }
-
+      if(file){
+        const res=await addMedia(file,token,post_id);
+        console.log("Media added:", res);
+      }
+      
+      
       toggleModal();
     } catch (error) {
       console.error("Error posting:", error);
     }
   };
 
-  const handleMediaChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setMedia(reader.result); // Base64 string
-        setMediaType(file.type); // Media type
-      };
-      reader.readAsDataURL(file); // Convert file to Base64
-    }
-  };
+const handleMediaChange = (event) => {
+  const selectedFile=event.target.files[0]
+  setFile(selectedFile);
+  if (selectedFile) {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setMedia(reader.result);
+      setMediaType(file.type);
+      console.log("Media set:", reader.result);
+      console.log("Media type set:", file.type);
+    };
+    reader.readAsDataURL(file);
+  }
+};
 
   const handleInputChange = async (e) => {
     const value = e.target.value;

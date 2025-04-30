@@ -2,6 +2,7 @@
 
 import React from "react";
 import axios from "axios";
+import { api } from "../../services/profile";
 
 export default function JobCard({ job, onDelete }) {
   const token = localStorage.getItem("token");
@@ -9,7 +10,7 @@ export default function JobCard({ job, onDelete }) {
   const handleDelete = async () => {
 
     try {
-      await axios.delete(`http://localhost:5000/api/admin/jobs/${job.id}`, {
+      await api.delete(`/api/admin/jobs/${job.id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -24,7 +25,7 @@ export default function JobCard({ job, onDelete }) {
   const handleUpdateStatus = async (newStatus) => {
 
     try {
-      await axios.put(`http://localhost:5000/api/admin/jobs/${job.id}/status`, {
+      await api.put(`/api/admin/jobs/${job.id}/status`, {
         status: newStatus
       }, {
         headers: {

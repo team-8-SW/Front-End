@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Sidebar from "../adminhome/SideBar";
 import JobCard from "./Jobcard";
+import { api } from "../../services/profile";
 
 export default function FlaggedJobsPage() {
   const [flaggedJobs, setFlaggedJobs] = useState([]);
@@ -13,7 +14,7 @@ export default function FlaggedJobsPage() {
   useEffect(() => {
     const fetchFlaggedJobs = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/admin/jobs/flagged", {
+        const response = await api.get("/api/admin/jobs/flagged", {
           headers: {
             Authorization: `Bearer ${token}`,
           },

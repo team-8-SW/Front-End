@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import JobCard from "./Jobcard";
 import Sidebar from "../adminhome/SideBar";
+import { api } from "../../services/profile";
 
 export default function AdminJobsPage() {
   const [jobs, setJobs] = useState([]);
@@ -15,7 +16,7 @@ export default function AdminJobsPage() {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/admin/jobs", {
+        const response = await api.get("/api/admin/jobs", {
           headers: {
             Authorization: `Bearer ${token}`
           }

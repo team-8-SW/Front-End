@@ -1,6 +1,7 @@
 
 import React from "react";
 import axios from "axios";
+import { api } from "../../services/profile";
 
 export default function ReportedPostCard({ report, onAction }) {
   const token = localStorage.getItem("token");
@@ -8,7 +9,7 @@ export default function ReportedPostCard({ report, onAction }) {
   const handleResolve = async () => {
 
     try {
-      await axios.put(`http://localhost:5000/api/admin/reports/${report.reportId}/resolve`, {}, {
+      await api.put(`/api/admin/reports/${report.reportId}/resolve`, {}, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -22,11 +23,11 @@ export default function ReportedPostCard({ report, onAction }) {
   const handleDelete = async () => {
     const deleteUrl =
       report.contentType === "post"
-        ? `http://localhost:5000/api/admin/posts/${report.contentId}`
-        : `http://localhost:5000/api/admin/comments/${report.contentId}`;
+        ? `/api/admin/posts/${report.contentId}`
+        : `api/admin/comments/${report.contentId}`;
 
     try {
-      await axios.delete(deleteUrl, {
+      await api.delete(deleteUrl, {
         headers: {
           Authorization: `Bearer ${token}`
         }

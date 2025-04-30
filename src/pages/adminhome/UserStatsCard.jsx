@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell } from 'recharts';
 import { UserIcon, UserCheckIcon, UserXIcon } from 'lucide-react';
+import { api } from '../../services/profile';
 
 export default function UserStatsCard() {
   const [userStats, setUserStats] = useState({
@@ -16,7 +17,7 @@ export default function UserStatsCard() {
   useEffect(() => {
     const fetchUserStats = async () => {
       try {
-        const { data } = await axios.get('http://localhost:5000/api/admin/users/statistics',{
+        const { data } = await api.get('/api/admin/users/statistics',{
         headers: {
             Authorization: `Bearer ${token}`
           }

@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Sidebar from "../adminhome/SideBar";
+import { api } from "../../services/profile";
 
 export default function MostReportedPage() {
   const [data, setData] = useState([]);
@@ -11,7 +12,7 @@ export default function MostReportedPage() {
   useEffect(() => {
     const fetchMostReported = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/admin/analytics/most-reported", {
+        const response = await api.get("/api/admin/analytics/most-reported", {
           headers: {
             Authorization: `Bearer ${token}`
           }

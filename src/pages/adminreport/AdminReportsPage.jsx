@@ -4,6 +4,7 @@ import axios from "axios";
 import ReportedPostCard from "./ReportedPostCard";
 import Sidebar from "../adminhome/SideBar";
 import { useNavigate } from "react-router-dom";
+import { api } from "../../services/profile";
 
 export default function AdminReportsPage() {
   const [reports, setReports] = useState([]);
@@ -23,7 +24,7 @@ export default function AdminReportsPage() {
 
   const fetchReports = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/admin/reports", {
+      const response = await api.get("/api/admin/reports", {
         headers: {
           Authorization: `Bearer ${token}`
         }

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { api } from "../../services/profile";
 
 export default function AnalyticsOverview() {
   const [range, setRange] = useState();
@@ -10,8 +11,8 @@ export default function AnalyticsOverview() {
   const fetchOverview = async (selectedRange) => {
     setLoading(true);
     try {
-      const response = await axios.get(
-        `http://localhost:5000/api/admin/analytics/overview?range=${selectedRange}`,
+      const response = await api.get(
+        `/api/admin/analytics/overview?range=${selectedRange}`,
         {
           headers: {
             Authorization: `Bearer ${token}`

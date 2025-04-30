@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import { api } from '../../services/profile';
 
 export default function JobStatsCard() {
   const [jobStats, setJobStats] = useState({
@@ -18,7 +19,7 @@ export default function JobStatsCard() {
   useEffect(() => {
     const fetchJobStats = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/admin/analytics/jobs', {
+        const response = await api.get('/api/admin/analytics/jobs', {
             headers: {
               Authorization: `Bearer ${token}`
             }

@@ -715,4 +715,22 @@ export const getSavedPosts=async(token) => {
     } catch(error){
       console.error("Error getting saved posts:",error);
     }
+};
+
+export const searchPosts = async (query, token) => {
+  try {
+    const response = await axios.get(
+      "http://localhost:5000/api/posts/search",
+      {
+        params: { keyword: query },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error searching posts:", error);
+    throw error;
   }
+};

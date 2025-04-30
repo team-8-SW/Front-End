@@ -1,12 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import socket from '../../services/socket';
-import { PencilIcon } from '@heroicons/react/24/outline'; // Tailwind Heroicons
+import { PencilIcon } from '@heroicons/react/24/outline';
+import { EllipsisVerticalIcon } from '@heroicons/react/24/solid';
 
 const ConversationList = ({ currentUserId, onSelect, onNewMessage }) => {
   const [conversations, setConversations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [unseenCount, setUnseenCount] = useState(0);
+  const [hoveredConvId, setHoveredConvId] = useState(null);
+
+ const toggleReadStatus = (conversation, markAsRead) => {
+  const otherUser = conversation.participants.find(p => p.id !== currentUserId);
+  if (!otherUser) return;
+
+  const event = markAsRead ? 'mark_as_read' : 'mark_as_unread';
+  socket.emit(event, {
+    userId: currentUserId,
+    otherUserId: otherUser.id,
+  });
+
+  setConversations((prev) =>
+    prev.map((conv) =>
+      conv.id === conversation.id ? { ...conv, unread: !markAsRead } : conv
+    )
+  );
+  socket.emit('get_unseen_count', currentUserId);
+ };
 
   useEffect(() => {
     if (!currentUserId) {
@@ -37,7 +57,11 @@ const ConversationList = ({ currentUserId, onSelect, onNewMessage }) => {
               userName: p.user_name,
               avatarUrl: p.avatarUrl,
             })),
-            unread: conv.unread || false,
+            unread:
+           conv.lastMessage &&
+           conv.lastMessage.senderId &&
+           conv.lastMessage.senderId !== currentUserId,
+
           }))
         : [];
 
@@ -214,68 +238,102 @@ const ConversationList = ({ currentUserId, onSelect, onNewMessage }) => {
       </button>
 
       {conversations.map((conversation) => {
-        const otherUser = conversation.participants.find((p) => p.id !== currentUserId) || {};
-        const lastMessageTime = conversation.timestamp
-          ? new Date(conversation.timestamp).toLocaleTimeString([], {
-              hour: '2-digit',
-              minute: '2-digit',
-            })
-          : '';
+  const otherUser = conversation.participants.find((p) => p.id !== currentUserId) || {};
+  const lastMessageTime = conversation.timestamp
+    ? new Date(conversation.timestamp).toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+    : '';
 
-        return (
-          <div
-            key={conversation.id}
-            onClick={() => handleSelectConversation(conversation)}
-            className={`p-4 cursor-pointer hover:bg-gray-50 transition ${
-              conversation.unread ? 'bg-blue-50' : ''
-            }`}
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center flex-1 min-w-0">
-                <div className="relative w-12 h-12 rounded-full bg-gray-200 overflow-hidden mr-3 flex-shrink-0">
-                  {otherUser.avatarUrl ? (
-                    <img
-                      src={otherUser.avatarUrl}
-                      alt={otherUser.name}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.target.src = '/default-avatar.png';
-                        e.target.onerror = null;
-                      }}
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gray-300">
-                      <span className="text-gray-600 font-medium">
-                        {otherUser.name ? otherUser.name.charAt(0).toUpperCase() : '?'}
-                      </span>
-                    </div>
-                  )}
-                </div>
-                <div className="min-w-0">
-                  <p className="font-medium truncate">
-                    {otherUser.name || otherUser.userName || 'Unknown User'}
-                  </p>
-                  <p
-                    className={`text-sm truncate ${
-                      conversation.unread ? 'font-medium text-gray-900' : 'text-gray-500'
-                    }`}
-                  >
-                    {conversation.lastMessage || 'No messages yet'}
-                  </p>
-                </div>
-              </div>
-              <div className="ml-4 flex flex-col items-end">
-                <span className="text-xs text-gray-500 whitespace-nowrap">
-                  {lastMessageTime}
+  const isHovered = hoveredConvId === conversation.id;
+  const isUnread = conversation.unread;
+
+  return (
+    <div
+      key={conversation.id}
+      onMouseEnter={() => setHoveredConvId(conversation.id)}
+      onMouseLeave={() => setHoveredConvId(null)}
+      className={`relative p-4 cursor-pointer transition ${
+        isUnread ? 'bg-blue-50' : 'bg-white hover:bg-gray-50'
+      }`} 
+    >
+      <div
+        onClick={() => {
+          handleSelectConversation(conversation);
+          toggleReadStatus(conversation, true); // Mark as read when opened
+        }}
+        className="flex items-center justify-between"
+      >
+        <div className="flex items-center flex-1 min-w-0">
+          <div className="relative w-12 h-12 rounded-full bg-gray-200 overflow-hidden mr-3 flex-shrink-0">
+            {otherUser.avatarUrl ? (
+              <img
+                src={otherUser.avatarUrl}
+                alt={otherUser.name}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.target.src = '/default-avatar.png';
+                  e.target.onerror = null;
+                }}
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-gray-300">
+                <span className="text-gray-600 font-medium">
+                  {otherUser.name ? otherUser.name.charAt(0).toUpperCase() : '?'}
                 </span>
-                {conversation.unread && (
-                  <div className="mt-1 w-2 h-2 rounded-full bg-blue-500"></div>
-                )}
               </div>
-            </div>
+            )}
           </div>
-        );
-      })}
+          <div className="min-w-0">
+            <p className="font-medium truncate">
+              {otherUser.name || otherUser.userName || 'Unknown User'}
+            </p>
+            <p
+              className={`text-sm truncate ${
+                isUnread ? 'font-medium text-gray-900' : 'text-gray-500'
+              }`}
+            >
+              {conversation.lastMessage || 'No messages yet'}
+            </p>
+          </div>
+        </div>
+        <div className="ml-4 flex flex-col items-end">
+          <span className="text-xs text-gray-500 whitespace-nowrap">
+            {lastMessageTime}
+          </span>
+          {isUnread && (
+            <div className="mt-1 w-2 h-2 rounded-full bg-blue-500"></div>
+          )}
+        </div>
+      </div>
+
+      {/* Hover dropdown icon & menu - FIXED */}
+      {(isHovered || hoveredConvId === conversation.id) && (
+        <div className="absolute top-2 right-2 group">
+          <EllipsisVerticalIcon className="w-5 h-5 text-gray-500 cursor-pointer" />
+          <div
+            className="absolute right-0 mt-1 w-36 bg-white border rounded shadow-lg z-10"
+            onMouseEnter={() => setHoveredConvId(conversation.id)}
+            onMouseLeave={() => setHoveredConvId(null)}
+          >
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleReadStatus(conversation, !isUnread);
+              }}
+              className="w-full px-4 py-2 text-left hover:bg-gray-100 text-sm"
+            >
+              {isUnread ? 'Mark as read' : 'Mark as unread'}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+})}
+
+
     </div>
   );
 };

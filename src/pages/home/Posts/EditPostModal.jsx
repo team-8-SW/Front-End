@@ -2,13 +2,13 @@ import React, { useState, useRef } from "react";
 import { Button } from "@material-tailwind/react";
 import axios from "axios";
 import { PaperClipIcon } from "@heroicons/react/24/outline";
-import { addMedia, searchUsers, tagUser } from "../../../services/api";
+import { searchUsers, tagUser, addMedia } from "../../../services/api";
 
-const PostModal = ({ isOpen, toggleModal, loggedUser }) => {
-  const [postContent, setPostContent] = useState("");
-  const [visibility, setVisibility] = useState("public");
-  const [media, setMedia] = useState(null);
-  const [mediaType, setMediaType] = useState("");
+const EditPostModal = ({ isOpen, toggleModal, post, token, onUpdatePost }) => {
+  const [postContent, setPostContent] = useState(post.content);
+  const [visibility, setVisibility] = useState(post.visibility);
+  const [media, setMedia] = useState(post.media_url);
+  const [mediaType, setMediaType] = useState(post.media_type);
   const [error, setError] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -16,10 +16,10 @@ const PostModal = ({ isOpen, toggleModal, loggedUser }) => {
   const [file, setFile] = useState(null);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
   const textareaRef = useRef(null);
-  const token = localStorage.getItem("token");
+
   if (!isOpen) return null;
 
-  const handlePost = async () => {
+  const handleUpdatePost = async () => {
     if (postContent.trim() === "" && !media) {
       setError("Post content or media is required.");
       return;
@@ -27,13 +27,13 @@ const PostModal = ({ isOpen, toggleModal, loggedUser }) => {
     setError("");
 
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/posts/me/newpost",
+      // Update the post via the API
+      const response = await axios.patch(
+        `http://localhost:5000/api/posts/me/editpost`,
         {
+          post_id: post.id,
           content: postContent,
           visibility: visibility,
-          media_url: media, // Base64-encoded media
-          media_type: mediaType, // Media type (e.g., image/jpeg)
         },
         {
           headers: {
@@ -42,41 +42,40 @@ const PostModal = ({ isOpen, toggleModal, loggedUser }) => {
         }
       );
 
-      console.log("Post successful", response);
-
-      // Get the post ID from the response
-      const post_id = response.data.id;
-      console.log("Post ID:", post_id);
+      console.log("Post updated successfully:", response);
 
       // Tag all selected users
       if (taggedUserIds.length > 0) {
         for (const userId of taggedUserIds) {
-          await tagUser(token, userId, post_id);
+          await tagUser(token, userId, post.post_id);
         }
       }
+
+      // Add media if a new file is uploaded
       if (file) {
-        const res = await addMedia(file, token, post_id);
-        console.log("Media added:", res);
+        const res = await addMedia(file, token, post.post_id);
+        console.log("Media updated:", res);
       }
 
-      setPostContent("");
-      setMedia(null);
-      setFile(null);
-      setTaggedUserIds([]);
+      // Notify the parent component about the update
+      onUpdatePost({
+        ...post,
+        content: postContent,
+        visibility,
+        media_url: media,
+        media_type: mediaType,
+      });
 
-      toggleModal();
+      toggleModal(); // Close the modal
     } catch (error) {
-      console.error("Error posting:", error);
+      console.error("Error updating post:", error);
     }
   };
 
   const handleCancel = () => {
-    setPostContent("");
-    setMedia(null);
-    setFile(null);
-    setTaggedUserIds([]);
     toggleModal();
   };
+
   const handleMediaChange = (event) => {
     const selectedFile = event.target.files[0];
     setFile(selectedFile);
@@ -84,11 +83,9 @@ const PostModal = ({ isOpen, toggleModal, loggedUser }) => {
       const reader = new FileReader();
       reader.onloadend = () => {
         setMedia(reader.result);
-        setMediaType(file.type);
-        console.log("Media set:", reader.result);
-        console.log("Media type set:", file.type);
+        setMediaType(selectedFile.type);
       };
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(selectedFile);
     }
   };
 
@@ -99,7 +96,7 @@ const PostModal = ({ isOpen, toggleModal, loggedUser }) => {
     // Detect `@` and fetch suggestions
     const lastWord = value.split(" ").pop();
     if (lastWord.startsWith("@")) {
-      const query = lastWord.slice(1).trim(); // Remove '@' and trim whitespace
+      const query = lastWord.slice(1).trim();
       if (query !== "") {
         setShowSuggestions(true);
 
@@ -107,13 +104,11 @@ const PostModal = ({ isOpen, toggleModal, loggedUser }) => {
         const textarea = textareaRef.current;
         const { selectionStart } = e.target;
         const { top, left } = calculateCursorPosition(textarea, selectionStart);
-        console.log("Dropdown Position:", { top, left }); // Debugging
         setDropdownPosition({ top, left });
 
         try {
           const users = await searchUsers(token, { q: query });
           setSuggestions(users.users);
-          console.log("Fetched Users:", users.users); // Debugging
         } catch (error) {
           console.error("Error fetching suggestions:", error);
           setSuggestions([]);
@@ -130,7 +125,6 @@ const PostModal = ({ isOpen, toggleModal, loggedUser }) => {
     const div = document.createElement("div");
     const style = window.getComputedStyle(textarea);
 
-    // Copy textarea styles to the div
     for (const prop of style) {
       div.style[prop] = style[prop];
     }
@@ -142,7 +136,7 @@ const PostModal = ({ isOpen, toggleModal, loggedUser }) => {
     div.textContent = textarea.value.substring(0, selectionStart);
 
     const span = document.createElement("span");
-    span.textContent = "\u200b"; // Zero-width space
+    span.textContent = "\u200b";
     div.appendChild(span);
 
     document.body.appendChild(div);
@@ -162,47 +156,34 @@ const PostModal = ({ isOpen, toggleModal, loggedUser }) => {
     setPostContent(words.join(" "));
     setShowSuggestions(false);
 
-    // Add the selected user's ID to the taggedUserIds array
     setTaggedUserIds((prev) => [...prev, user.userId]);
-    console.log("Tagged User IDs:", [...taggedUserIds, user.userId]);
   };
 
-  const handleOverlayClick = () => {
-    toggleModal();
-  };
-
-  const handleModalClick = (event) => {
-    event.stopPropagation();
-  };
   return (
     <div
-      data-testid="modal-overlay"
       className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-      onClick={handleOverlayClick}
+      onClick={handleCancel}
     >
       <div
         className="bg-white p-4 rounded-lg shadow-lg max-w-md w-full"
-        onClick={handleModalClick}
+        onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="text-xl font-bold mb-4">Create a Post</h2>
+        <h2 className="text-xl font-bold mb-4">Edit Post</h2>
 
-        {/* Input Field */}
         <textarea
           ref={textareaRef}
           className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           rows="4"
-          placeholder="What's on your mind?"
+          placeholder="Edit your post..."
           value={postContent}
           onChange={handleInputChange}
         />
         {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
 
-        {/* Suggestions Dropdown */}
         {showSuggestions && suggestions.length > 0 && (
           <ul
             className="absolute bg-white border border-gray-300 rounded-lg shadow-lg z-10"
             style={{
-              position: "absolute",
               top: `${dropdownPosition.top}px`,
               left: `${dropdownPosition.left}px`,
             }}
@@ -215,10 +196,7 @@ const PostModal = ({ isOpen, toggleModal, loggedUser }) => {
               >
                 <div className="flex items-center">
                   <img
-                    src={
-                      user.profilePictureUrl ||
-                      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3bHGb_Zk4zWeD4jw9ew8HboAT2zQIUZhYNA&s"
-                    }
+                    src={user.profilePictureUrl || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3bHGb_Zk4zWeD4jw9ew8HboAT2zQIUZhYNA&s"}
                     alt={user.userName}
                     className="w-8 h-8 rounded-full mr-2"
                   />
@@ -267,7 +245,6 @@ const PostModal = ({ isOpen, toggleModal, loggedUser }) => {
           </div>
         )}
 
-        {/* Visibility Dropdown */}
         <div className="mt-4">
           <label
             htmlFor="visibility"
@@ -291,8 +268,8 @@ const PostModal = ({ isOpen, toggleModal, loggedUser }) => {
           <Button onClick={handleCancel} className="mr-2">
             Cancel
           </Button>
-          <Button color="blue" onClick={handlePost}>
-            Post
+          <Button color="blue" onClick={handleUpdatePost}>
+            Update
           </Button>
         </div>
       </div>
@@ -300,4 +277,4 @@ const PostModal = ({ isOpen, toggleModal, loggedUser }) => {
   );
 };
 
-export default PostModal;
+export default EditPostModal;

@@ -8,11 +8,11 @@ import { MdWork, MdPeople } from "react-icons/md";
 import { AiFillMessage } from "react-icons/ai";
 import { FaBell } from "react-icons/fa";
 import { unReadCount } from "../services/api";
-import UserSearch from "../pages/network/UserSearch";
+import PostsSearch from "../pages/home/Posts/PostsSearch";
 import socket from "../services/socket";
 import {fetchPendingConnections} from "../services/api";
 
-const Nav = () => {
+const HomeNav = () => {
   const location = useLocation();
   const hiddenPaths = ["/login", "/signup", "/detailedjobs", "/detailedjobs/:jobId", "/adminhome","/adminjobs","/adminjobs/FlaggedJobsPage","/adminreport","/adminreport/most-reported"];
 
@@ -97,7 +97,7 @@ const Nav = () => {
               </svg>
             </Typography>
           </Link>
-          <UserSearch token={token} />
+          <PostsSearch token={token} />
         </div>
 
         <div className="flex gap-6 text-gray-600">
@@ -173,22 +173,10 @@ const Nav = () => {
               </div>
             )}
           </div>
-          <Link
-  to="/payment"
-  className="flex flex-col items-center gap-1 text-[#915907] hover:underline font-medium text-sm ml-2"
->
-  <img
-    src="\logos\eb00f08b-bb75-4e5d-b334-d0b441aca0c5 (1).png" // 🔁 Replace with your actual imported logo path
-    alt="Premium Icon"
-    className="w-5 h-5"
-  />
-  Try Premium 
-</Link>
-
         </div>
       </div>
     </div>
   );
 };
 
-export default Nav;
+export default HomeNav;

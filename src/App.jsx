@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Routes, Route, useNavigate } from "react-router-dom";
-
+import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
+import HomeNav from "./components/HomeNav";
 import Nav from "./components/Nav";
 import Profile from "./pages/profile/Profile";
 import Home from "./pages/home/Home";
@@ -59,6 +59,9 @@ function App() {
   const [loggedUser, setLoggedUser] = useState(null);
   const navigate = useNavigate();
 
+  const location=useLocation();
+  const isHomePage = location.pathname === "/";
+  console.log("isHomePage:", isHomePage);
   useEffect(() => {
     const token = localStorage.getItem("token");
     console.log("Token:", token);
@@ -95,7 +98,7 @@ function App() {
 
   return (
     <div className="bg-backGroundColor min-h-screen">
-      <Nav />
+      {isHomePage?   <HomeNav/>: <Nav/>}
       <StripeProvider>
       <Routes>
 
@@ -171,6 +174,7 @@ function App() {
         <Route path="/adminjobs" element={<AdminJobsPage />} />
         <Route path="/adminjobs/FlaggedJobsPage" element={< FlaggedJobsPage />} />
         <Route path="/adminreport" element={<AdminReportsPage/>} />
+        <Route path="/adminreport/most-reported" element={<AdminReportsPage />} />
         
 
 <Route

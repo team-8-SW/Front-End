@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Sidebar from "../adminhome/SideBar";
-import JobCard from "./JobCard";
+import JobCard from "./Jobcard";
 
 export default function FlaggedJobsPage() {
   const [flaggedJobs, setFlaggedJobs] = useState([]);

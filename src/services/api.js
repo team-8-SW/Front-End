@@ -433,9 +433,7 @@ export const deletePost = async (postId, token) => {
     const response = await axios.delete(
       `http://localhost:5000/api/posts/me/delete`,
       {
-        post_id:postId
-      },
-      {
+        data: { post_id: postId },
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -447,6 +445,7 @@ export const deletePost = async (postId, token) => {
     throw error;
   }
 };
+
 
 export const getPostEngagement = async (postId, token) => {
   try {
@@ -656,15 +655,15 @@ export const getBlockedUsers = async (token) => {
 };
 
 
-export const getComments = async (postId, token) => {
+export const getComments = async (post_id, token) => {
   try {
-    const response = await axios.get(`http://localhost:5000/api/posts/me/postcomments`, 
-      { post_id: postId },
-      {
+    const response = await axios.get(`http://localhost:5000/api/posts/me/postcomments`,{
+      params: { post_id},
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
+    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching comments:", error);
@@ -672,4 +671,65 @@ export const getComments = async (postId, token) => {
   }
 };
 
+export const addMedia= async(media,token,postId)=>{
+  const formData=new FormData();
+  formData.append("file",media);
+  try{
+  const response=await axios.post(`http://localhost:5000/api/posts/me/${postId}/media`, formData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    }
+  });
+  
+  console.log("Media added successfully:", response.data);
+  return response.data;
+} catch (error) {
+  console.error("Error adding media:", error);
+  throw error;
+}
+};
 
+export const tagUser = async (token, userId, postId, commentId) => {
+  try {
+    const payload = postId
+      ? { post_id: postId }
+      : { comment_id: commentId };
+
+    await axios.post(`http://localhost:5000/api/posts/me/${userId}/taguser`, payload, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    console.log("User tagged successfully");
+  } catch (error) {
+    console.error("Error tagging user:", error);
+  }
+};
+
+export const getSavedPosts=async(token) => {
+  try{
+    const response= await axios.get(`http://localhost:5000/api/posts/me/getallsavedposts`,
+    {
+      headers:{
+        Authorization:`Bearer ${token}` },
+      });
+    return response.data;
+    } catch(error){
+      console.error("Error getting saved posts:",error);
+    }
+};
+
+export const searchPosts = async (query, token) => {
+  try {
+    const response = await axios.get(
+      "http://localhost:5000/api/posts/search",
+      { query },{
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error searching posts:", error);
+    throw error;
+  }
+};

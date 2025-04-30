@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import ReportedPostCard from "./ReportedPostCard";
 import Sidebar from "../adminhome/SideBar";
+import { useNavigate } from "react-router-dom";
 
 export default function AdminReportsPage() {
   const [reports, setReports] = useState([]);
@@ -10,7 +11,15 @@ export default function AdminReportsPage() {
   const [error, setError] = useState(null);
 
   const token = localStorage.getItem("token");
+  const navigate = useNavigate();
 
+  const handleDropdownChange = (e) => {
+    const value = e.target.value;
+    if (value === "most") {
+      navigate("/adminreport/most-reported");
+    }
+  };
+  
 
   const fetchReports = async () => {
     try {
@@ -45,7 +54,14 @@ export default function AdminReportsPage() {
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-semibold">Reported Content</h2>
         </div>
-
+        <select
+       onChange={handleDropdownChange}
+       className="border border-slate-300 rounded-md p-2 text-sm"
+       defaultValue="all"
+      >
+      <option value="all">All Reports</option>
+     <option value="most">Most Reported</option>
+     </select>
         
         <div className="flex flex-col gap-6">
           {reports.length > 0 ? (

@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import SocialLogin from '../../components/SocialLogin';
+import { api } from '../../services/profile';
 
 const LoginForm = ({ setLoggedUser }) => {
   const [email, setEmail] = useState("");
@@ -17,7 +18,7 @@ const LoginForm = ({ setLoggedUser }) => {
     setMessageType("");
 
     try {
-      const response = await axios.post("http://localhost:5000/api/auth/login", {
+      const response = await api.post("/api/auth/login", {
         email,
         password
       });

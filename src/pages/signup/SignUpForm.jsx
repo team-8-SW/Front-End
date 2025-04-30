@@ -4,6 +4,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 import { sendSignupEmail } from "../../services/api";
 import SocialLogin from "../../components/SocialLogin";
 import { Link } from "react-router-dom";
+import { api } from '../../services/profile';
 
 const SignUpForm = () => {
   const [email, setEmail] = useState("");
@@ -43,7 +44,7 @@ const SignUpForm = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/registerwithcaptcha', {
+      const response = await api.post('/api/auth/registerwithcaptcha', {
         userName,
         email,
         password,

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { fetchUser } from "./profile";
 import { MdVisibility } from "react-icons/md";
+import { api } from "./profile";
 
 export const useProfilePicture = (userId,token) => {
   const userData = useUserData(userId, token);
@@ -123,41 +124,6 @@ export const checkEmail = async (email, password) => {
   }
 };
 
-export const signIn = async (email, password,setLoggedUser) => {
-  try {
-    console.log("Logging in with:", email, password);
-
-    // Fetch all users from db.json
-    const response = await axios.get("http://localhost:5000/users");
-
-    // Filter users by email
-    const users = response.data.filter((user) => user.email === email);
-
-    if (users.length === 0) {
-      return "Incorrect email or password";
-    }
-
-    // Use the first matched user
-    const user = users[0];
-
-    console.log("Found user:", user);
-    localStorage.setItem("userId", user.id);
-    fetchUser(setLoggedUser);
-   
-    console.log("User ID stored:", localStorage.getItem("userId"));
-
-    // Check if the password matches
-    if (user.password !== password) {
-      return "Incorrect email or password";
-    }
-
-    // Return user data and a dummy token
-    return { token: "dummy-token", user };
-  } catch (error) {
-    console.error("API Error:", error);
-    return "Login failed. Please try again.";
-  }
-};
 const likePost = async (postId, token) => {
   try {
     await axios.post(
@@ -313,7 +279,7 @@ export const unReadCount = async (token) => {
 
 export const googleLogin = async (idToken) => {
   try {
-    const response = await axios.post("http://localhost:5000/api/auth/social/google", {
+    const response = await api.post("/api/auth/social/google", {
       idToken,
     });
 
@@ -336,8 +302,8 @@ export const googleLogin = async (idToken) => {
 
 export const handleConnectionRequest = async (userId, token) => {
   try {
-    const response = await axios.post(
-      `http://localhost:5000/api/connections/users/${userId}`, 
+    const response = await api.post(
+      `/api/connections/users/${userId}`, 
       {}, 
       {
         headers: {
@@ -353,7 +319,7 @@ export const handleConnectionRequest = async (userId, token) => {
 };
 
 export const searchUsers = async (token, params) => {
-  const { data } = await axios.get('http://localhost:5000/api/users/me/search', {
+  const { data } = await api.get('/api/users/me/search', {
     params,
     headers: {
       Authorization: `Bearer ${token}`,
@@ -364,7 +330,7 @@ export const searchUsers = async (token, params) => {
 export const getConnections = async () => {
   try {
     const token = localStorage.getItem('token'); 
-    const response = await axios.get('http://localhost:5000/api/connections/', {
+    const response = await api.get('/api/connections/', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -379,8 +345,8 @@ export const getConnections = async () => {
 export const acceptConnection = async (connectionId) => {
   const token = localStorage.getItem('token');
   try {
-    const response = await axios.post(
-      `http://localhost:5000/api/connections/${connectionId}/accept`,
+    const response = await api.post(
+      `/api/connections/${connectionId}/accept`,
       {},
       {
         headers: {
@@ -397,8 +363,8 @@ export const acceptConnection = async (connectionId) => {
 export const declineConnection = async (connectionId) => {
   const token = localStorage.getItem('token');
   try {
-    const response = await axios.post(
-      `http://localhost:5000/api/connections/${connectionId}/decline`,
+    const response = await api.post(
+      `/api/connections/${connectionId}/decline`,
       {},
       {
         headers: {
@@ -415,7 +381,7 @@ export const declineConnection = async (connectionId) => {
 export const removeConnection = async (connectionId) => {
   const token = localStorage.getItem("token");
   try {
-    const response = await axios.delete(`http://localhost:5000/api/connections/${connectionId}`, {
+    const response = await api.delete(`/api/connections/${connectionId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -430,8 +396,8 @@ export const removeConnection = async (connectionId) => {
 
 export const deletePost = async (postId, token) => {
   try {
-    const response = await axios.delete(
-      `http://localhost:5000/api/posts/me/delete`,
+    const response = await api.delete(
+      `/api/posts/me/delete`,
       {
         data: { post_id: postId },
         headers: {
@@ -449,8 +415,8 @@ export const deletePost = async (postId, token) => {
 
 export const getPostEngagement = async (postId, token) => {
   try {
-    const response = await axios.post(
-      `http://localhost:5000/api/posts/me/postengagement`,
+    const response = await api.post(
+      `/api/posts/me/postengagement`,
       { post_id: postId },
       {
         headers: {
@@ -466,11 +432,11 @@ export const getPostEngagement = async (postId, token) => {
 };
 
 
-const API_URL = `http://localhost:5000/api`;
+
 
 export const fetchPendingConnections = async (token) => {
   try {
-    const response = await axios.get(`${API_URL}/connections/pending`, {
+    const response = await api.get(`api/connections/pending`, {
       headers: { Authorization: `Bearer ${token}` }
     });
 
@@ -503,23 +469,19 @@ export const fetchPendingConnections = async (token) => {
 };
 
 
-const api = axios.create({
-  baseURL: API_URL,
-  timeout: 10000,
-});
 
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+// api.interceptors.request.use(
+//   (config) => {
+//     const token = localStorage.getItem('token');
+//     if (token) {
+//       config.headers.Authorization = `Bearer ${token}`;
+//     }
+//     return config;
+//   },
+//   (error) => Promise.reject(error)
+// );
 export const forgotPassword = (data) => {
-  return axios.post('http://localhost:5000/api/auth/forgot-password', data, {
+  return api.post('/api/auth/forgot-password', data, {
     headers: {
       'Content-Type': 'application/json'
     }
@@ -527,7 +489,7 @@ export const forgotPassword = (data) => {
 };
 
 export const resetPassword = (data) => {
-  return axios.post('http://localhost:5000/api/auth/reset-password', {
+  return api.post('/api/auth/reset-password', {
     token: data.token,
     newPassword: data.newPassword,
     confirmPassword: data.confirmPassword
@@ -579,14 +541,9 @@ export const declineMessageRequest = async (id) => {
   }
 };
 
-// Block a user
-// Updated Block/Unblock API functions
-
-
-// api.js
 export const blockUser = async (userId, token) => {
-  return axios.post(
-    `http://localhost:5000/api/users/${userId}/block`,
+  return api.post(
+    `/api/users/${userId}/block`,
     {},
     {
       headers: { 
@@ -598,9 +555,9 @@ export const blockUser = async (userId, token) => {
 };
 
 export const unblockUser = async (userId, token) => {
-  return axios.post(  // Changed from DELETE to POST
-    `http://localhost:5000/api/users/${userId}/unblock`,  // Changed port from 5000 to 3000
-    {}, // Empty body as shown in your API spec
+  return api.post(
+    `/api/users/${userId}/unblock`,  
+    {}, 
     {
       headers: { 
         'Authorization': `Bearer ${token}`,
@@ -609,10 +566,11 @@ export const unblockUser = async (userId, token) => {
     }
   );
 };
+
 export const followUser = async (userId, token) => {
   try {
-    const response = await axios.post(
-      `http://localhost:5000/api/following/users/${userId}`,
+    const response = await api.post(
+      `/api/following/users/${userId}`,
       {},
       { 
         headers: { 
@@ -630,8 +588,8 @@ export const followUser = async (userId, token) => {
 
 export const unfollowUser = async (userId, token) => {
   try {
-    const response = await axios.delete(
-      `http://localhost:5000/api/following/users/${userId}`,
+    const response = await api.delete(
+      `/api/following/users/${userId}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -645,8 +603,9 @@ export const unfollowUser = async (userId, token) => {
     throw error;
   }
 };
+
 export const getBlockedUsers = async (token) => {
-  return axios.get('http://localhost:5000/api/users/me/blocked', {
+  return api.get('/api/users/me/blocked', {
     headers: {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
@@ -657,7 +616,7 @@ export const getBlockedUsers = async (token) => {
 
 export const getComments = async (post_id, token) => {
   try {
-    const response = await axios.get(`http://localhost:5000/api/posts/me/postcomments`,{
+    const response = await api.get(`/api/posts/me/postcomments`,{
       params: { post_id},
       headers: {
         Authorization: `Bearer ${token}`,
@@ -675,7 +634,7 @@ export const addMedia= async(media,token,postId)=>{
   const formData=new FormData();
   formData.append("file",media);
   try{
-  const response=await axios.post(`http://localhost:5000/api/posts/me/${postId}/media`, formData, {
+  const response=await api.post(`/api/posts/me/${postId}/media`, formData, {
     headers: {
       Authorization: `Bearer ${token}`,
     }
@@ -695,7 +654,7 @@ export const tagUser = async (token, userId, postId, commentId) => {
       ? { post_id: postId }
       : { comment_id: commentId };
 
-    await axios.post(`http://localhost:5000/api/posts/me/${userId}/taguser`, payload, {
+    await api.post(`/api/posts/me/${userId}/taguser`, payload, {
       headers: { Authorization: `Bearer ${token}` },
     });
     console.log("User tagged successfully");
@@ -706,7 +665,7 @@ export const tagUser = async (token, userId, postId, commentId) => {
 
 export const getSavedPosts=async(token) => {
   try{
-    const response= await axios.get(`http://localhost:5000/api/posts/me/getallsavedposts`,
+    const response= await api.get(`/api/posts/me/getallsavedposts`,
     {
       headers:{
         Authorization:`Bearer ${token}` },
@@ -719,8 +678,8 @@ export const getSavedPosts=async(token) => {
 
 export const searchPosts = async (query, token) => {
   try {
-    const response = await axios.get(
-      "http://localhost:5000/api/posts/search",
+    const response = await api.get(
+      "/api/posts/search",
       { query },{
         headers: {
           Authorization: `Bearer ${token}`,

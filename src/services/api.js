@@ -721,8 +721,7 @@ export const searchPosts = async (query, token) => {
   try {
     const response = await axios.get(
       "http://localhost:5000/api/posts/search",
-      {
-        params: { keyword: query },
+      { query },{
         headers: {
           Authorization: `Bearer ${token}`,
         },

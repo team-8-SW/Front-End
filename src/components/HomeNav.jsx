@@ -12,7 +12,7 @@ import PostsSearch from "../pages/home/Posts/PostsSearch";
 import socket from "../services/socket";
 import {fetchPendingConnections} from "../services/api";
 
-const Nav = () => {
+const HomeNav = () => {
   const location = useLocation();
   const hiddenPaths = ["/login", "/signup", "/detailedjobs", "/detailedjobs/:jobId", "/adminhome","/adminjobs","/adminjobs/FlaggedJobsPage","/adminreport","/adminreport/most-reported"];
 
@@ -97,7 +97,7 @@ const Nav = () => {
               </svg>
             </Typography>
           </Link>
-          <PostsSearch />
+          <PostsSearch token={token} />
         </div>
 
         <div className="flex gap-6 text-gray-600">
@@ -179,4 +179,4 @@ const Nav = () => {
   );
 };
 
-export default Nav;
+export default HomeNav;

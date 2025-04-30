@@ -170,6 +170,7 @@ function App() {
         <Route path="/adminjobs" element={<AdminJobsPage />} />
         <Route path="/adminjobs/FlaggedJobsPage" element={< FlaggedJobsPage />} />
         <Route path="/adminreport" element={<AdminReportsPage/>} />
+        <Route path="/adminreport/most-reported" element={<AdminReportsPage />} />
         
 
 <Route

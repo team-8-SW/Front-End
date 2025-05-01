@@ -3,23 +3,36 @@ import { searchPosts } from "../../../services/api";
 import PostDetails from "./PostDetails";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
-const PostsSearch = ({ token }) => {
+const PostsSearch = ({ token, searching, setSearching, setGlobalPosts }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [searched, setSearched] = useState(false); // Track if a search has been performed
+  const [searched, setSearched] = useState(false);
 
   const handleSearch = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevent form submission page reload
+    if (!searchQuery.trim()) {
+      setSearching(false); // Trigger Posts to show all posts again
+      setPosts([]);
+      setSearched(false);
+      return;
+    }
+
     setLoading(true);
+    setSearching(true);
     setError("");
-    setSearched(true); // Mark that a search has been performed
+    setSearched(true);
+    setGlobalPosts([]); // Clear global posts to hide them immediately
+
     try {
-      const result = await searchPosts(searchQuery, token);
-      setPosts(result || []); // Set posts or an empty array if no results
-    } catch (err) {
-      setError("Failed to fetch posts. Please try again.");
+      const params = { keyword: searchQuery };
+      const response = await searchPosts(params, token);
+      setPosts(response || []);
+    } catch (error) {
+      console.error("Error fetching search results:", error);
+      setError("Failed to load search results.");
+      setPosts([]);
     } finally {
       setLoading(false);
     }
@@ -32,7 +45,14 @@ const PostsSearch = ({ token }) => {
           type="text"
           placeholder="Search posts..."
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={(e) => {
+            setSearchQuery(e.target.value);
+            if (e.target.value === "") {
+              setSearching(false); // If search input is cleared, fetch all posts
+              setSearched(false);
+              setPosts([]);
+            }
+          }}
           className="w-full border border-gray-300 rounded-full px-4 py-2 pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <button
@@ -43,13 +63,10 @@ const PostsSearch = ({ token }) => {
         </button>
       </form>
 
-      {/* Loading State */}
       {loading && <p className="text-gray-500 mt-2">Loading...</p>}
 
-      {/* Error State */}
       {error && <p className="text-red-500 mt-2">{error}</p>}
 
-      {/* No Posts Found */}
       {searched && posts.length === 0 && !loading && (
         <div className="text-center mt-4">
           <p className="text-gray-500 text-lg font-semibold">No posts found.</p>
@@ -57,7 +74,6 @@ const PostsSearch = ({ token }) => {
         </div>
       )}
 
-      {/* Display Posts */}
       {posts.length > 0 && (
         <div className="space-y-4 mt-4">
           {posts.map((post) => (

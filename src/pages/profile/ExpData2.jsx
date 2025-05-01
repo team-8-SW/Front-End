@@ -32,7 +32,7 @@ const ExpData = ({ experiences, userId, onDelete }) => {
           </Typography>
 
           <Typography variant="small" className="text-gray-600">
-            {experiences.companyName || "Company"} · {experiences.employmentType || "N/A"}
+            {experiences.companyName || "Company"} 
           </Typography>
 
           <Typography variant="small" className="text-gray-600">
@@ -41,7 +41,7 @@ const ExpData = ({ experiences, userId, onDelete }) => {
           </Typography>
 
           <Typography variant="small" className="text-gray-600">
-            {experiences.location || "Location not specified"} · {experiences.locationType || "N/A"}
+            {experiences.location || "Location not specified"} 
           </Typography>
 
           {experiences.description && (

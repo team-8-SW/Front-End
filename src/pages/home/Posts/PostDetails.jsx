@@ -9,6 +9,7 @@ import {
   getComments,
   getSavedPosts,
 } from "../../../services/api";
+import { api } from "../../../services/profile"; // Import api from profile.js
 import {
   Button,
   Menu,
@@ -32,51 +33,50 @@ import {
 } from "@heroicons/react/24/solid";
 import CommentsSection from "./CommentsSection";
 import EditPostModal from "./EditPostModal";
-import axios from "axios";
 
 const PostDetails = ({ post, loggedUser, onRemovePost }) => {
-  
   const token = localStorage.getItem("token");
-  const posterProfilePicture = post.mypost? useProfilePicture(post.user_id, token):useProfilePicture(post.user_id, null);
+
+  const posterProfilePicture = post.mypost
+    ? useProfilePicture(null, token)
+    : useProfilePicture(post.user_id, token);
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
-  const commenterName = useName(null, token);
-  const commenterProfilePicture = useProfilePicture(null, token);
   const [showComments, setShowComments] = useState(false);
   const [repostsCount, setRepostsCount] = useState(0);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
-  const posterName = post.mypost?useName(post.user_id,token):useName(post.user_id, null);
-  const [commentsCount, setCommentsCount] = useState(0);
-  const [saved,setSaved]= useState(false);
+  const posterName = post.mypost
+    ? useName(null, token)
+    : useName(post.user_id, token);
+  const [commentsCount, setCommentsCount] = useState( 0);
+  const [saved, setSaved] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const commenterProfilePicture = useProfilePicture(null, token);
 
   useEffect(() => {
     if (post.liked) setLiked(true);
   }, [post.liked]);
 
-  // useEffect(() => {
-  //   if (!post?.id) return;
-
-  //   const fetchEngagement = async () => {
-  //     try {
-  //       const data = await getPostEngagement(post.id, token);
-  //       setLikesCount(data.like_count || 0);
-  //       setCommentsCount(data.comment_count || 0);
-  //       setRepostsCount(data.repost_count || 0);
-  //     } catch (error) {
-  //       console.error("Error loading engagement data:", error);
-  //     }
-  //   };
-
-  //   fetchEngagement();
-  // }, [post.id, token]);
-
   useEffect(() => {
     setLikesCount(post.like_count || 0);
-    setCommentsCount(post.comment_count || 0);
     setRepostsCount(post.repost_count || 0);
-  }, [post.like_count, post.comment_count, post.repost_count]);
-  
+    setCommentsCount(post.comment_count || 0);
+  }, [post.like_count, post.repost_count, post.comment_count]);
+
+  useEffect(() => {
+    const fetchSavedPosts = async () => {
+      const savedposts = await getSavedPosts(token);
+      if (savedposts && Array.isArray(savedposts)) {
+        const isSaved = savedposts.some(
+          (savedPost) => savedPost.post_id === post.id
+        );
+        setSaved(isSaved);
+      }
+    };
+
+    fetchSavedPosts();
+  }, [post.id, token]);
+
   const handleDeletePost = async () => {
     try {
       await deletePost(post.id, token);
@@ -88,67 +88,57 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
   };
 
   const handleBookmarkPost = async () => {
-    if(saved){
+    if (saved) {
       handleUnsavePost();
       return;
-    }
-    else{
+    } else {
       handleSavePost();
       return;
     }
   };
 
-  const handleSavePost = async () => {try {
-    await axios.post(
-      'http://localhost:5000/api/posts/me/save',
-      { post_id: post.id },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    console.log("post saved");
-    setSaved(true);
-  } catch (error) {
-    console.error("Failed to bookmark post:", error);
-  }
-};
+  const handleSavePost = async () => {
+    try {
+      await api.post(
+        `/api/posts/me/save`,
+        { post_id: post.id },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log("Post saved");
+      setSaved(true);
+    } catch (error) {
+      console.error("Failed to bookmark post:", error);
+    }
+  };
 
-  const handleUnsavePost= async()=>{
-    try{
-      
-      await axios.delete(`http://localhost:5000/api/posts/me/unsavepost`, {
+  const handleUnsavePost = async () => {
+    try {
+      await api.delete(`/api/posts/me/unsavepost`, {
         data: { post_id: post.id },
         headers: { Authorization: `Bearer ${token}` },
       });
       console.log("Post unsaved successfully");
       setSaved(false);
-    }catch(error){
-      console.error("failed to unsave post:",error)
+    } catch (error) {
+      console.error("Failed to unsave post:", error);
     }
   };
-  
-  useEffect(() => {
-    const fetchSavedPosts = async () => {
-      const savedposts = await getSavedPosts(token);
-      if (savedposts && Array.isArray(savedposts)) {
-        const isSaved = savedposts.some((savedPost) => savedPost.post_id === post.id);
-        setSaved(isSaved);
-      }
-    };
-  
-    fetchSavedPosts();
-  }, [post.id, token]);
-  
 
   const handleReportPost = async () => {
     try {
-      await axios.post("http://localhost:5000/api/posts/me/report", {
-        post_id: post.id,
-      }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await api.post(
+        `/api/posts/me/report`,
+        {
+          post_id: post.id,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       alert("Post reported successfully.");
       onRemovePost(post.id);
     } catch (error) {
@@ -158,7 +148,6 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
   };
 
   const handleUpdatePost = (updatedPost) => {
-    // Update the post's state with the new content, visibility, and media
     post.content = updatedPost.content;
     post.visibility = updatedPost.visibility;
     post.media_url = updatedPost.media_url;
@@ -168,25 +157,32 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
   };
 
   const handleSharePost = () => {
-    const shareUrl = post.link_url || window.location.href; // Use link_url if available, fallback to current URL
+    const shareUrl = post.link_url || window.location.href;
 
     if (navigator.share) {
       navigator
         .share({
           title: "Check out this post!",
           text: post.content,
-          url: shareUrl, // Use the link_url or fallback
+          url: shareUrl,
         })
         .then(() => console.log("Post shared successfully"))
         .catch((error) => console.error("Error sharing post:", error));
     } else {
-      // Fallback for unsupported browsers
       alert(`Share this link: ${shareUrl}`);
     }
   };
 
+  useEffect(() => {
+    console.log("Token in PostDetails:", token);
+  }, [token]);
+
   if (!post) return null;
-  
+  if (!token) {
+    console.error("Token is missing or invalid.");
+    return null; // Prevent rendering if the token is invalid
+  }
+
   return (
     <div className="bg-white border border-gray-300 rounded-lg shadow-sm p-4 mb-4 relative">
       {/* Top right buttons */}
@@ -207,17 +203,15 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
         {/* Dropdown Menu */}
         <Menu>
           <MenuHandler>
-            <button className="text-gray-500 hover:text-gray-700">
-              ⋮
-            </button>
+            <button className="text-gray-500 hover:text-gray-700">⋮</button>
           </MenuHandler>
           <MenuList>
             {/* Report Button inside dropdown */}
-           <MenuItem onClick={handleReportPost} className="text-red-600">
+            <MenuItem onClick={handleReportPost} className="text-red-600">
               Report Post
             </MenuItem>
             {/* Edit and Delete if owner */}
-            {post.mypost&& (
+            {post.mypost && (
               <>
                 <MenuItem
                   onClick={() => setShowEditModal(true)}
@@ -277,14 +271,16 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
         <div className="ml-3">
           <h2 className="font-semibold text-gray-900">{posterName}</h2>
           <p className="text-sm text-gray-500">
-            {post.created_at ? new Date(post.created_at).toLocaleString("en-US", {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-              hour: "numeric",
-              minute: "numeric",
-              hour12: true,
-            }) : "Just now"}
+            {post.created_at
+              ? new Date(post.created_at).toLocaleString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                  hour: "numeric",
+                  minute: "numeric",
+                  hour12: true,
+                })
+              : "Just now"}
           </p>
         </div>
       </div>
@@ -300,13 +296,11 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
             <img
               src={post.media_url}
               alt="Post Media"
-              className="w-full h-auto rounded-lg object-cover"
+              className=" rounded-lg object-cover w-full h-[600px] "
+              
             />
           ) : post.media_type.startsWith("video/") ? (
-            <video
-              controls
-              className="w-full h-auto rounded-lg"
-            >
+            <video controls className=" rounded-lg w-full h-[600px]">
               <source src={post.media_url} type={post.media_type} />
               Your browser does not support the video tag.
             </video>
@@ -321,7 +315,14 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
           color="blue"
           className="flex items-center gap-1 hover:text-blue-600"
           onClick={() =>
-            handleLikePost(post.id, token, liked, setLiked, setLikesCount, likesCount)
+            handleLikePost(
+              post.id,
+              token,
+              liked,
+              setLiked,
+              setLikesCount,
+              likesCount
+            )
           }
         >
           {liked ? (
@@ -368,7 +369,7 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
         <CommentsSection
           postId={post.id}
           token={token}
-          commenterName={commenterName}
+          commenterName={loggedUser.userName}
           commenterProfilePicture={commenterProfilePicture}
           setCommentsCount={setCommentsCount}
           commentsCount={commentsCount}

@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
-import HomeNav from "./components/HomeNav";
 import Nav from "./components/Nav";
 import Profile from "./pages/profile/Profile";
 import Home from "./pages/home/Home";
@@ -56,10 +55,7 @@ import {api} from "./services/profile";
 function App() {
   const [loggedUser, setLoggedUser] = useState(null);
   const navigate = useNavigate();
-
-  const location=useLocation();
-  const isHomePage = location.pathname === "/";
-  console.log("isHomePage:", isHomePage);
+  const [searching, setSearching] = useState(false);
   useEffect(() => {
     const token = localStorage.getItem("token");
     console.log("Token:", token);
@@ -96,7 +92,10 @@ function App() {
 
   return (
     <div className="bg-backGroundColor min-h-screen">
-      {isHomePage?   <HomeNav/>: <Nav/>}
+      <Nav  
+        searching={searching}
+        setSearching={setSearching}
+      />
       <StripeProvider>
       <Routes>
 
@@ -108,7 +107,7 @@ function App() {
         <Route path="/VerifyEmail" element={<VerifyEmail />} />
 
         {/* Protected Routes */}
-        <Route path="/" element={<ProtectedRoute><Home loggedUser={loggedUser} /></ProtectedRoute>} />
+        <Route path="/" element={<ProtectedRoute><Home loggedUser={loggedUser} searching={searching} setSearching={setSearching} /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><Profile loggedUser={loggedUser} /></ProtectedRoute>} />
         <Route path="/view/:id" element={<ProtectedRoute><View loggedUser={loggedUser} /></ProtectedRoute>} />
         <Route path="/education" element={<ProtectedRoute><DetailsEducation loggedUser={loggedUser} /></ProtectedRoute>} />

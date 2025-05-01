@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { UserPlus, UserCheck, Loader2 } from "lucide-react";
 import { toast } from 'react-toastify';
+import api from "../../services/profile";
 
 const FollowUserPage = () => {
   const [users, setUsers] = useState([]);
@@ -18,10 +19,10 @@ const FollowUserPage = () => {
         if (!token) throw new Error("Authentication required");
 
         const [suggestionsRes, followingRes] = await Promise.all([
-          axios.get("http://localhost:5000/api/following/suggestions", {
+          api.get("/api/following/suggestions", {
             headers: { Authorization: `Bearer ${token}` }
           }),
-          axios.get("http://localhost:5000/api/following", {
+          api.get("/api/following", {
             headers: { Authorization: `Bearer ${token}` }
           })
         ]);
@@ -47,8 +48,8 @@ const FollowUserPage = () => {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("Authentication required");
 
-      const response = await axios.post(
-        `http://localhost:5000/api/following/users/${userId}`,
+      const response = await api.post(
+        `/api/following/users/${userId}`,
         {},
         { 
           headers: { 
@@ -76,8 +77,8 @@ const FollowUserPage = () => {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("Authentication required");
 
-      const response = await axios.delete(
-        `http://localhost:5000/api/following/users/${userId}`,
+      const response = await api.delete(
+        `/api/following/users/${userId}`,
         { 
           headers: { 
             Authorization: `Bearer ${token}`,

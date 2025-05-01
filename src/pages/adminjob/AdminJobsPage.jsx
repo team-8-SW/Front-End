@@ -39,6 +39,10 @@ export default function AdminJobsPage() {
       navigate("./FlaggedJobsPage"); 
     }
   };
+  const handleJobDelete = (deletedJobId) => {
+    setJobs(prevJobs => prevJobs.filter(job => job.id !== deletedJobId));
+  };
+  
 
   if (loading) {
     return <div className="p-6">Loading jobs...</div>;
@@ -72,7 +76,7 @@ export default function AdminJobsPage() {
         {/* Jobs List */}
         <div className="flex flex-col gap-6">
           {jobs.map((job) => (
-            <JobCard key={job.id} job={job} />
+            <JobCard key={job.id} job={job}  onDelete={() => handleJobDelete(job.id)}/>
           ))}
         </div>
       </div>

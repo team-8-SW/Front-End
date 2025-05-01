@@ -45,14 +45,14 @@ const {companyid}=useParams()
     { label: "Dashboard", to: `/company/${companyid}/dashboard` },
     { label: "Page posts", to: `/company/${companyid}/companyposts` },
     { label: "Analytics", to: `/company/${companyid}/analytics` },
-    { label: "Feed", to: "/feed" },
-    { label: "Activity", to: "/activity" },
-    { label: "Inbox", to: "/inbox" },
+    { label: "Feed", to: "" },
+    { label: "Activity", to: "" },
+    { label: "Inbox", to: "" },
     { label: "Edit page", to: `/company/${companyid}/updatecompany` },
     { type: "divider" },
     { label: "Jobs", to: `/company/${companyid}/job` },
     { type: "divider" },
-  ];``
+  ];
   
 
   return (

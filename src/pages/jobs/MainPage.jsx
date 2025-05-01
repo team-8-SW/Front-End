@@ -4,7 +4,9 @@ import axios from "axios";
 import { Card, Typography, Button } from "@material-tailwind/react";
 import Nav2 from "../../components/Nav2";
 import ApplyForm from "./ApplyForm";
-import { api } from "../../services/profile"; // Adjust the import path as necessary
+import { api } from "../../services/profile"; 
+import { Link } from "react-router-dom";
+
 
 const MainPage = () => {
   const [jobs, setJobs] = useState([]);
@@ -58,6 +60,7 @@ const MainPage = () => {
 
         const jobList = data.jobs || data.job || data.filteredJob || [];
         setJobs(jobList);
+        console.log("Fetched jobs:", jobList);
 
         // Fetch logos
         const logos = {};
@@ -205,9 +208,12 @@ const MainPage = () => {
               <Typography variant="h3" color="blue-gray" className="mb-1">
                 {selectedJob.title}
               </Typography>
-              <Typography variant="h5" color="gray">
+              <Link to={`/viewcompany/${selectedJob.company_id}`} className="flex items-center gap-2 mb-2">
+              <Typography variant="h5" color="gray" className="underline">
                 {selectedJob.company_name}
               </Typography>
+              </Link>
+          
               <Typography variant="paragraph" className="mb-4 text-gray-600 mt-2">
                 {selectedJob.description}
               </Typography>

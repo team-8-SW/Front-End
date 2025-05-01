@@ -296,10 +296,11 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
             <img
               src={post.media_url}
               alt="Post Media"
-              className="w-full h-auto rounded-lg object-cover"
+              className=" rounded-lg object-cover w-full h-[600px] "
+              
             />
           ) : post.media_type.startsWith("video/") ? (
-            <video controls className="w-full h-auto rounded-lg">
+            <video controls className=" rounded-lg w-full h-[600px]">
               <source src={post.media_url} type={post.media_type} />
               Your browser does not support the video tag.
             </video>

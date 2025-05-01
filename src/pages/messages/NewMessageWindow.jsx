@@ -189,9 +189,9 @@ const NewMessageWindow = () => {
   const filteredConnections = searchQuery.length > 2 ? searchResults : [];
 
   return (
-    <div className="w-2/3 flex flex-col h-full">
+    <div className="w-full flex flex-col h-full">
       <div className="p-4 border-b">
-        <h2 className="font-medium"> message</h2>
+        <h2 className="font-medium"> Message</h2>
       </div>
 
       <div className="p-4 border-b flex flex-wrap items-center">

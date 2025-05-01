@@ -1,9 +1,8 @@
 import React, { useState, useRef } from "react";
 import { Button } from "@material-tailwind/react";
-import axios from "axios";
 import { PaperClipIcon } from "@heroicons/react/24/outline";
 import { addMedia, searchUsers, tagUser } from "../../../services/api";
-
+import { api } from "../../../services/profile";
 const PostModal = ({ isOpen, toggleModal, loggedUser }) => {
   const [postContent, setPostContent] = useState("");
   const [visibility, setVisibility] = useState("public");
@@ -27,8 +26,8 @@ const PostModal = ({ isOpen, toggleModal, loggedUser }) => {
     setError("");
 
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/posts/me/newpost",
+      const response = await api.post(
+        `/api/posts/me/newpost`,
         {
           content: postContent,
           visibility: visibility,

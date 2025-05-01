@@ -1,9 +1,8 @@
 import React, { useState, useRef } from "react";
 import { Button } from "@material-tailwind/react";
-import axios from "axios";
 import { PaperClipIcon } from "@heroicons/react/24/outline";
 import { searchUsers, tagUser, addMedia } from "../../../services/api";
-
+import { api } from "../../../services/profile";
 const EditPostModal = ({ isOpen, toggleModal, post, token, onUpdatePost }) => {
   const [postContent, setPostContent] = useState(post.content);
   const [visibility, setVisibility] = useState(post.visibility);
@@ -28,8 +27,8 @@ const EditPostModal = ({ isOpen, toggleModal, post, token, onUpdatePost }) => {
 
     try {
       // Update the post via the API
-      const response = await axios.patch(
-        `http://localhost:5000/api/posts/me/editpost`,
+      const response = await api.patch(
+        `/api/posts/me/editpost`,
         {
           post_id: post.id,
           content: postContent,

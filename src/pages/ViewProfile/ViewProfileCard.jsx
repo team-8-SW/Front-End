@@ -10,7 +10,8 @@ import DeclineConnection from "../network/DeclineConnection";
 import { removeConnection, blockUser, unblockUser, followUser, unfollowUser } from "../../services/api";
 import ViewProfilePhotoCard from "./ViewProfilePhotoCard";
 import axios from "axios";
-import { api } from "../../services/profile"; // Adjust the import path as necessary
+import { api } from "../../services/profile"; 
+import { useNavigate } from "react-router-dom";
 
 const ViewProfileCard = ({ profile, userid, token, connectionStatus, connectionId, allowConnectionRequests, isFollowing: initialIsFollowing,connectionsCount }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -21,6 +22,7 @@ const ViewProfileCard = ({ profile, userid, token, connectionStatus, connectionI
   const [isLoading, setIsLoading] = useState(false);
   const [disableConnect, setDisableConnect] = useState(true);
   const [connectionMessage, setConnectionMessage] = useState("");
+  const navigate = useNavigate();
 
   if (!profile) return <p className="text-center mt-10">Loading...</p>;
 
@@ -34,7 +36,14 @@ const ViewProfileCard = ({ profile, userid, token, connectionStatus, connectionI
     } catch (error) {
       console.error("Error removing connection:", error);
     }
-  };
+  }; 
+ 
+
+const handleMessage = () => {
+  const userIdToMessage = userid; 
+  navigate('/messages', { state: { openUserId: userIdToMessage, openConversationId: userid  } });
+};
+
 
   const handleBlockAction = async () => {
     try {
@@ -152,7 +161,7 @@ to suscribe to premium plan, please visit the <a href="/payment" className="text
 
         {connectionStatus === "connected" && (
           <>
-            <Button color="blue" className="rounded-full w-[120px]">Message</Button>
+            <Button color="blue"  onClick={handleMessage} className="rounded-full w-[120px]">Message</Button>
             <MoreDropdown
               isOpen={isOpen}
               toggle={toggleDropdown}

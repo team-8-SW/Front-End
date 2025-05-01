@@ -18,6 +18,7 @@ const MessagesPage = () => {
   const socketRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const { openUserId, openConversationId } = location.state || {};
 
   const isRequestsPage = location.pathname.includes('/messages/requests');
 
@@ -76,6 +77,35 @@ const MessagesPage = () => {
       navigate('/login');
     }
   }, [navigate, currentUserId, isRequestsPage]);
+
+   useEffect(() => {
+    const openUserId = location.state?.openUserId;
+    if (openUserId && conversations.length > 0) {
+      const matched = conversations.find(conv => conv.otherUserId === openUserId);
+      if (matched) {
+        setSelectedConversation(matched);
+      } else {
+        
+        setShowNewMessage(true);
+      }
+  
+   
+      navigate('/messages', { replace: true, state: {} });
+    }
+  }, [location.state, conversations, navigate]);
+  
+  useEffect(() => {
+    const openConversationId = location.state?.openConversationId;
+    if (openConversationId && conversations.length > 0) {
+      const matched = conversations.find(conv => conv.id === openConversationId);
+      if (matched) {
+        setSelectedConversation(matched);
+      } else {
+        setShowNewMessage(true);
+      }
+    }
+  }, [location.state, conversations, navigate]);
+  
 
   useEffect(() => {
     const checkIfMobile = () => {

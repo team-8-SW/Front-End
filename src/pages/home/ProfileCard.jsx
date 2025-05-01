@@ -21,6 +21,7 @@ const ProfileCard = ({loggedUser}) => {
   const coverPhoto = useCoverPhoto(null, token);
   const name = useName(null, token);
   const userData = useUserData(null, token);
+  console.log("userData in home profilecard", userData);
   
   return (
     <Link to={`/profile`}>

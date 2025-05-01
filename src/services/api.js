@@ -33,26 +33,29 @@ export const useName = (userId, token) => {
 
 export const useUserData = (userId, token) => {
   const [user, setUser] = useState(null);
+console.log("User data in useUserData:", user); // Debugging line
 
   useEffect(() => {
     
   
     const fetchData = async () => {
       try {
-        if (token) {
-          const response = await api.get(`/api/profiles/`, {
+        if (token && !userId) {
+          const response = await axios.get(`http://localhost:5000/api/profiles/`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           });
           setUser(response.data);
-        } else if (userId) {
-          const response = await api.get(`/api/profiles/me/${userId}`,{
+          console.log("fetched in use:", response.data); // Debugging line
+        } else if (userId && token) {
+          const response = await axios.get(`http://localhost:5000/api/profiles/me/${userId}`,{
             headers:{
               Authorization:`Bearer ${token}`
             }
           });
           setUser(response.data);
+          console.log(" fetched in anotheruse:", response.data); // Debugging line
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -60,6 +63,7 @@ export const useUserData = (userId, token) => {
     };
   
     fetchData();
+    console.log("User data in useEffect:", user); // Debugging line
   }, [userId,token]);
   
 
@@ -115,6 +119,7 @@ export const checkEmail = async (email, password) => {
 
     if (existingUser) {
       throw new Error("Email is already registered.");
+     
     }
 
         const newUser = { email: normalizedEmail, password, skills: [], education: [], experience: [] };

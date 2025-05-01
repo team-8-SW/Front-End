@@ -38,16 +38,16 @@ const PostDetails = ({ post, loggedUser, onRemovePost }) => {
   const token = localStorage.getItem("token");
 
   const posterProfilePicture = post.mypost
-    ? useProfilePicture(post.user_id, token)
-    : useProfilePicture(post.user_id, null);
+    ? useProfilePicture(null, token)
+    : useProfilePicture(post.user_id, token);
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
   const [showComments, setShowComments] = useState(false);
   const [repostsCount, setRepostsCount] = useState(0);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const posterName = post.mypost
-    ? useName(post.user_id, token)
-    : useName(post.user_id, null);
+    ? useName(null, token)
+    : useName(post.user_id, token);
   const [commentsCount, setCommentsCount] = useState( 0);
   const [saved, setSaved] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);

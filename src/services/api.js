@@ -35,23 +35,32 @@ export const useUserData = (userId, token) => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    if (!token) return; 
+    
   
     const fetchData = async () => {
       try {
-        const response = await api.get(`/api/profiles/`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setUser(response.data);
+        if (token) {
+          const response = await api.get(`/api/profiles/`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          setUser(response.data);
+        } else if (userId) {
+          const response = await api.get(`/api/profiles/me/${userId}`,{
+            headers:{
+              Authorization:`Bearer ${token}`
+            }
+          });
+          setUser(response.data);
+        }
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
     };
   
     fetchData();
-  }, [token]);
+  }, [userId,token]);
   
 
   return user;

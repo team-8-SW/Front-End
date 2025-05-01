@@ -35,23 +35,32 @@ export const useUserData = (userId, token) => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    if (!token) return; 
+    
   
     const fetchData = async () => {
       try {
-        const response = await api.get(`/api/profiles/`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setUser(response.data);
+        if (token) {
+          const response = await api.get(`/api/profiles/`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          setUser(response.data);
+        } else if (userId) {
+          const response = await api.get(`/api/profiles/me/${userId}`,{
+            headers:{
+              Authorization:`Bearer ${token}`
+            }
+          });
+          setUser(response.data);
+        }
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
     };
   
     fetchData();
-  }, [token]);
+  }, [userId,token]);
   
 
   return user;
@@ -667,20 +676,18 @@ export const getSavedPosts=async(token) => {
     }
 };
 
-export const searchPosts = async (query, token) => {
-  try {
-    const response = await api.get(
-      "/api/posts/search",
-      { query },{
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+export const searchPosts = async (params, token) => {
+  try{
+    const response = await api.get('/api/posts/search', {
+      params,
+      
+    });
+    console.log("Search response:", response.data); // Debugging line
     return response.data;
-  } catch (error) {
+  }
+  catch (error) {
     console.error("Error searching posts:", error);
-    throw error;
+    return error
   }
 };
 

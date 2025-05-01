@@ -55,7 +55,7 @@ import {api} from "./services/profile";
 function App() {
   const [loggedUser, setLoggedUser] = useState(null);
   const navigate = useNavigate();
-
+  const [searching, setSearching] = useState(false);
   useEffect(() => {
     const token = localStorage.getItem("token");
     console.log("Token:", token);
@@ -92,7 +92,10 @@ function App() {
 
   return (
     <div className="bg-backGroundColor min-h-screen">
-      <Nav/>
+      <Nav  
+        searching={searching}
+        setSearching={setSearching}
+      />
       <StripeProvider>
       <Routes>
 
@@ -104,7 +107,7 @@ function App() {
         <Route path="/VerifyEmail" element={<VerifyEmail />} />
 
         {/* Protected Routes */}
-        <Route path="/" element={<ProtectedRoute><Home loggedUser={loggedUser} /></ProtectedRoute>} />
+        <Route path="/" element={<ProtectedRoute><Home loggedUser={loggedUser} searching={searching} setSearching={setSearching} /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><Profile loggedUser={loggedUser} /></ProtectedRoute>} />
         <Route path="/view/:id" element={<ProtectedRoute><View loggedUser={loggedUser} /></ProtectedRoute>} />
         <Route path="/education" element={<ProtectedRoute><DetailsEducation loggedUser={loggedUser} /></ProtectedRoute>} />

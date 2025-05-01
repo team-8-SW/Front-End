@@ -13,12 +13,12 @@ const LeftsideHome = () => {
   const location = useLocation();
 
   const navItems = [
-    { label: "Preferences", to: "/preferences", icon: ListBulletIcon },
+    { label: "Preferences", to: "", icon: ListBulletIcon },
     { label: "My Jobs", to: "/myjobs", icon: BookmarkIcon },
-    { label: "My Career Insights", to: "/insights", icon: ChartBarIcon },
+    { label: "My Career Insights", to: "", icon: ChartBarIcon },
     { divider: true },
     { label: "Post a free job", to: "/employerjobtitle", icon: PencilSquareIcon, color: "text-blue-600" },
-    { label: "Manage job posts", to: "/managejobs", icon: BriefcaseIcon },
+    { label: "Manage job posts", to: "", icon: BriefcaseIcon },
   ];
 
   return (

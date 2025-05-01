@@ -12,6 +12,7 @@ const Posts = ({ loggedUser }) => {
       try {
         const allPosts = await fetchPosts(token);
         setPosts(allPosts);
+        console.log("Fetched posts:", allPosts);
       } catch (error) {
         console.error("Error fetching posts:", error);
       }

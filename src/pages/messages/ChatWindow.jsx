@@ -40,6 +40,32 @@ const ChatWindow = ({ conversation, currentUserId }) => {
       socket.emit('get_typing_status', { senderId: currentUserId, receiverId: otherUser.id });
     }
 
+    const formatTimestamp = (timestamp) => {
+      const date = new Date(timestamp);
+      const now = new Date();
+      
+      // If message is from today, show time only
+      if (date.toDateString() === now.toDateString()) {
+        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      }
+      
+      // If message is from yesterday, show "Yesterday"
+      const yesterday = new Date(now);
+      yesterday.setDate(yesterday.getDate() - 1);
+      if (date.toDateString() === yesterday.toDateString()) {
+        return 'Yesterday';
+      }
+      
+      // If message is from this week, show day name
+      const weekAgo = new Date(now);
+      weekAgo.setDate(weekAgo.getDate() - 7);
+      if (date > weekAgo) {
+        return date.toLocaleDateString([], { weekday: 'short' });
+      }
+      
+      // Otherwise show full date
+      return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+    };
     const handleNewMessage = (message) => {
       const isRelevantMessage =
         (message.senderId === currentUserId && message.receiverId === otherUser.id) ||
@@ -325,15 +351,12 @@ const ChatWindow = ({ conversation, currentUserId }) => {
                         }`}
                       >
                         {msg.status === 'sent' ? 'Sent' : 'Read'}
+                        
                       </span>
                     </div>
                   )}
                 </div>
-                {msg.isSender && (
-                  <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center ml-3 self-end">
-                    <span className="text-sm text-white">{otherUser.name?.charAt(0) || '?'}</span>
-                  </div>
-                )}
+                
               </div>
             ))}
           </div>

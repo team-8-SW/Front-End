@@ -10,22 +10,24 @@ import { FaBell } from "react-icons/fa";
 import { unReadCount } from "../services/api";
 import PostsSearch from "../pages/home/Posts/PostsSearch";
 import socket from "../services/socket";
-import {fetchPendingConnections} from "../services/api";
+import { fetchPendingConnections } from "../services/api";
 
 const HomeNav = () => {
   const location = useLocation();
-  const hiddenPaths = ["/login", "/signup", "/detailedjobs", "/detailedjobs/:jobId", "/adminhome","/adminjobs","/adminjobs/FlaggedJobsPage","/adminreport","/adminreport/most-reported"];
+  const hiddenPaths = [
+    "/login", "/signup", "/detailedjobs", "/detailedjobs/:jobId", 
+    "/adminhome", "/adminjobs", "/adminjobs/FlaggedJobsPage",
+    "/adminreport", "/adminreport/most-reported"
+  ];
 
   if (location.pathname.startsWith("/detailedjobs")) return null;
   if (hiddenPaths.includes(location.pathname)) return null;
   
   const [isAppsDropdownOpen, setIsAppsDropdownOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(null);
+  const [unreadCount, setUnreadCount] = useState(0);
   const [unseenMessageCount, setUnseenMessageCount] = useState(0);
   const [pendingRequestCount, setPendingRequestCount] = useState(0);
-
-
 
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
@@ -42,26 +44,27 @@ const HomeNav = () => {
       }
     };
     fetchUnreadCount();
-    const interval = setInterval(fetchUnreadCount, 1000);
+    const interval = setInterval(fetchUnreadCount, 10000);
     return () => clearInterval(interval);
-  }, []);
-   useEffect(() => {
+  }, [token]);
+
+  useEffect(() => {
     if (!socket.connected) {
       socket.connect();
     }
   
-    const handleUnseenCount = (data) => {
-      if (data?.unreadCount !== undefined) {
-        setUnseenMessageCount(data.unreadCount);
-      }
+    const handleUnseenCount = (count) => {
+      setUnseenMessageCount(count);
     };
   
     socket.on("unseen_count", handleUnseenCount);
+    socket.emit("get_unseen_count");
   
     return () => {
       socket.off("unseen_count", handleUnseenCount);
     };
   }, []);
+
   useEffect(() => {
     const fetchPendingCount = async () => {
       try {
@@ -73,17 +76,15 @@ const HomeNav = () => {
     };
   
     fetchPendingCount();
-  
     const interval = setInterval(fetchPendingCount, 10000);
     return () => clearInterval(interval);
-  }, []);
-  
+  }, [token]);
 
   const logout = () => {
     localStorage.removeItem("token");
+    socket.disconnect();
     navigate("/login");
   };
-  console.log("Rendered unseenMessageCount:", unseenMessageCount);
 
   return (
     <div className="sticky top-0 left-0 w-full bg-white shadow-md z-50 h-[52px]">
@@ -103,66 +104,93 @@ const HomeNav = () => {
         <div className="flex gap-6 text-gray-600">
           {[
             { to: "/", icon: IoHomeSharp, label: "Home" },
-            { to: "/network", icon: MdPeople, label: "Network" },
+            { 
+              to: "/network", 
+              icon: MdPeople, 
+              label: "Network",
+              count: pendingRequestCount,
+              showCount: true
+            },
             { to: "/jobs", icon: MdWork, label: "Jobs" },
-            { to: "/messages", icon: AiFillMessage, label: "Messaging" },
-            { to: "/notifications", icon: FaBell, label: "Notifications" },
-          ].map(({ to, icon: Icon, label }) => (
-            <Link key={to} to={to} className="flex flex-col items-center group">
+            { 
+              to: "/messages", 
+              icon: AiFillMessage, 
+              label: "Messaging",
+              count: unseenMessageCount,
+              showCount: true,
+              testId: "messages-nav-link"
+            },
+            { 
+              to: "/notifications", 
+              icon: FaBell, 
+              label: "Notifications",
+              count: unreadCount,
+              showCount: true
+            },
+          ].map(({ to, icon: Icon, label, count, showCount, testId }) => (
+            <Link 
+              key={to} 
+              to={to} 
+              className="flex flex-col items-center group"
+              data-testid={testId}
+            >
               <div className="relative">
                 <Icon
                   className={`h-6 w-6 ${isActive(to) ? "text-blue-700" : "text-gray-900 group-hover:text-blue-700"}`}
                 />
-                {label === "Notifications" && unreadCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                    {unreadCount}
+                {showCount && count > 0 && (
+                  <span 
+                    className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center"
+                    data-testid={`${testId}-count`}
+                  >
+                    {count > 9 ? "9+" : count}
                   </span>
                 )}
-                  {label === "Messaging" && unseenMessageCount > 0 && (
-                 <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                 {unseenMessageCount}
-                 </span>
-                 )}
-
-                {label === "Network" && pendingRequestCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                {pendingRequestCount}
-                </span>
-                )}
-
               </div>
               <span className={`text-xs mt-1 ${isActive(to) ? "text-blue-700 font-semibold" : "text-gray-500 group-hover:text-blue-700"}`}>
                 {label}
               </span>
               {isActive(to) && <div className="w-6 h-1 bg-blue-700 rounded-full mt-1"></div>}
-      
-
             </Link>
           ))}
 
           {/* Profile dropdown */}
           <div className="relative">
-            <button onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)} className="flex flex-col items-center text-gray-500 hover:text-blue-700 focus:outline-none">
+            <button 
+              onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)} 
+              className="flex flex-col items-center text-gray-500 hover:text-blue-700 focus:outline-none"
+              data-testid="profile-dropdown-button"
+            >
               <UserCircleIcon className="h-6 w-6" />
               <span className="text-xs mt-0">Me</span>
             </button>
             {isProfileDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-md shadow-lg py-2 z-50">
+              <div 
+                className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-md shadow-lg py-2 z-50"
+                data-testid="profile-dropdown-menu"
+              >
                 <Link to="/profile" onClick={() => setIsProfileDropdownOpen(false)} className="block px-4 py-2 text-gray-700 hover:bg-gray-100">View Profile</Link>
                 <Link to="/settings" onClick={() => setIsProfileDropdownOpen(false)} className="block px-4 py-2 text-gray-700 hover:bg-gray-100">Settings</Link>
-                <button onClick={() => { setIsProfileDropdownOpen(false); logout(); }} className="block px-4 py-2 text-gray-700 hover:bg-gray-100 w-full text-left">Logout</button>
+                <button onClick={logout} className="block px-4 py-2 text-gray-700 hover:bg-gray-100 w-full text-left">Logout</button>
               </div>
             )}
           </div>
 
           {/* Apps dropdown */}
           <div className="relative">
-            <button onClick={() => setIsAppsDropdownOpen(!isAppsDropdownOpen)} className="flex flex-col items-center text-gray-500 hover:text-blue-700 focus:outline-none">
+            <button 
+              onClick={() => setIsAppsDropdownOpen(!isAppsDropdownOpen)} 
+              className="flex flex-col items-center text-gray-500 hover:text-blue-700 focus:outline-none"
+              data-testid="apps-dropdown-button"
+            >
               <PiDotsNine className="h-6 w-6" />
               <span className="text-xs mt-0">Apps</span>
             </button>
             {isAppsDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-md shadow-lg py-2 z-50">
+              <div 
+                className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-md shadow-lg py-2 z-50"
+                data-testid="apps-dropdown-menu"
+              >
                 <Link to="/companyform" onClick={() => setIsAppsDropdownOpen(false)} className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
                   <div className="flex items-center gap-2">
                     <Typography className="text-gray-700 text-[15px]">Create a Company Page</Typography>

@@ -40,13 +40,13 @@ const ProfileCard = ({loggedUser}) => {
             className="w-20 h-20 rounded-full mx-auto -mt-10 border-4 border-white"
           />
           <Typography variant="h5" className="text-black mt-4 font-bold">
-            {name}
+            {userData?.profile?.userName || " "}
           </Typography>
           <Typography className="text-black mt-2">
-            {userData?.bio || " "}
+            {userData?.profile?.bio || " "}
           </Typography>
           <Typography className="text-gray-600 text-sm">
-            {userData?.location || " "}
+            {userData?.profile?.location || " "}
           </Typography>
         
           <Typography className="text-black text-sm font-small">

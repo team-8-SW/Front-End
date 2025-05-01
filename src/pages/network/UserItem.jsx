@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import api from "../../services/profile";
 
 const ManageBlockList = () => {
   const [users, setUsers] = useState([]);
   const [blockedIds, setBlockedIds] = useState(new Set());
 
   useEffect(() => {
-    axios.get("/api/users/me/blocked", {
+    api.get("/api/users/me/blocked", {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
     }).then(res => setBlockedIds(new Set(res.data.map(u => u.id))));
 
-    axios.get("/api/connections", {
+    api.get("/api/connections", {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
     }).then(res => setUsers(res.data));
   }, []);

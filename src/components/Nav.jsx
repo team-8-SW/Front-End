@@ -13,7 +13,7 @@ import UserSearch from "../pages/network/UserSearch"
 import socket from "../services/socket";
 import { fetchPendingConnections } from "../services/api";
 
-const Nav = () => {
+const Nav = ({searching,setSearching}) => {
   const location = useLocation();
   const hiddenPaths = [
     "/login", "/signup", "/detailedjobs", "/detailedjobs/:jobId", 
@@ -100,7 +100,17 @@ const Nav = () => {
               </svg>
             </Typography>
           </Link>
-          {isHomePage? <PostsSearch token={token}/> : <UserSearch token={token} />}
+          {isHomePage ? (
+            <PostsSearch
+              token={token}
+              searching={searching}
+              setSearching={setSearching}
+              setGlobalPosts={(posts) => {}} // You’ll set this from Home.js
+            />
+          ) : (
+            <UserSearch token={token} />
+          )}
+
         </div>
 
         <div className="flex gap-6 text-gray-600">

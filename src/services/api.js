@@ -673,20 +673,18 @@ export const getSavedPosts=async(token) => {
     }
 };
 
-export const searchPosts = async (query, token) => {
-  try {
-    const response = await api.get(
-      "/api/posts/search",
-      { query },{
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+export const searchPosts = async (params, token) => {
+  try{
+    const response = await api.get('/api/posts/search', {
+      params,
+      
+    });
+    console.log("Search response:", response.data); // Debugging line
     return response.data;
-  } catch (error) {
+  }
+  catch (error) {
     console.error("Error searching posts:", error);
-    throw error;
+    return error
   }
 };
 

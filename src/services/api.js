@@ -501,7 +501,7 @@ export const forgotPassword = (data) => {
 };
 
 export const resetPassword = (data) => {
-  return axios.post('http://localhost:5000/api/auth/reset-password', {
+  return api.post('/api/auth/reset-password', {
     token: data.token,
     newPassword: data.newPassword,
     confirmPassword: data.confirmPassword

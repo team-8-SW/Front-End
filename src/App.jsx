@@ -56,46 +56,48 @@ function App() {
   const [loggedUser, setLoggedUser] = useState(null);
   const navigate = useNavigate();
   const [searching, setSearching] = useState(false);
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    console.log("Token:", token);
-
-    const publicRoutes = ["/signup", "/login", "/forgot-password", "/reset-password"];
-
-    if (publicRoutes.includes(window.location.pathname)) {
-      return;
-    }
-
+  const publicRoutes = ["/signup", "/login", "/forgot-password", "/reset-password"];
+    const isPublic = publicRoutes.some((route) => location.pathname.startsWith(route));
+    useEffect(() => {
+      const token = localStorage.getItem("token");
+      console.log("Token:", token);
+      console.log("isPublic:", isPublic, "| path:", location.pathname);
     
-    api
-      .get("/api/profiles/", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      })
-      .then((res) => {
-        setLoggedUser({
-          ...res.data,
-          id: res.data.profile.id,
+      if (isPublic) {
+        return; // ✅ Skip auth fetch
+      }
+    
+      api
+        .get("/api/profiles/", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        })
+        .then((res) => {
+          setLoggedUser({
+            ...res.data,
+            id: res.data.profile.id,
+          });
+          console.log("User data:", res.data);
+        })
+        .catch((err) => {
+          console.error("Failed to fetch user:", err);
+          if (err.response?.status === 401) {
+            localStorage.removeItem("token");
+            navigate("/login");
+          }
         });
-        console.log("User data:", res.data);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch user:", err);
-        if (err.response?.status === 401) {
-          localStorage.removeItem("token");
-          navigate("/login");
-        }
-      });
-  }, [navigate]);
+    }, [navigate, location.pathname]);
+    
+  
 
   return (
     <div className="bg-backGroundColor min-h-screen">
-      <Nav  
-        searching={searching}
-        setSearching={setSearching}
-      />
+      {!isPublic && (
+  <Nav searching={searching} setSearching={setSearching} />
+)}
+
       <StripeProvider>
       <Routes>
 

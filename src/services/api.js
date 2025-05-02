@@ -486,7 +486,7 @@ export const fetchPendingConnections = async (token) => {
 //   (error) => Promise.reject(error)
 // );
 export const forgotPassword = (data) => {
-  return api.post('/api/auth/forgot-password', data, {
+  return axios.post('http://localhost:5000/api/auth/forgot-password', data, {
     headers: {
       'Content-Type': 'application/json'
     }
@@ -494,7 +494,7 @@ export const forgotPassword = (data) => {
 };
 
 export const resetPassword = (data) => {
-  return api.post('/api/auth/reset-password', {
+  return axios.post('http://localhost:5000/api/auth/reset-password', {
     token: data.token,
     newPassword: data.newPassword,
     confirmPassword: data.confirmPassword

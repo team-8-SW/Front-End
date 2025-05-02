@@ -194,7 +194,7 @@ const Nav = ({searching,setSearching}) => {
                 data-testid="profile-dropdown-menu"
               >
                 <Link to="/profile" onClick={() => setIsProfileDropdownOpen(false)} className="block px-4 py-2 text-gray-700 hover:bg-gray-100">View Profile</Link>
-                <Link to="/settings" onClick={() => setIsProfileDropdownOpen(false)} className="block px-4 py-2 text-gray-700 hover:bg-gray-100">Settings</Link>
+                <Link to="" onClick={() => setIsProfileDropdownOpen(false)} className="block px-4 py-2 text-gray-700 hover:bg-gray-100">Settings</Link>
                 <button onClick={logout} className="block px-4 py-2 text-gray-700 hover:bg-gray-100 w-full text-left">Logout</button>
               </div>
             )}

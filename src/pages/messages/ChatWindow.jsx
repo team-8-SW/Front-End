@@ -5,8 +5,10 @@ const ChatWindow = ({ conversation, currentUserId }) => {
   const [messages, setMessages] = useState([]);
   const [messageContent, setMessageContent] = useState('');
   const [lastSeenMessageId, setLastSeenMessageId] = useState(null);
-  const [isTyping, setIsTyping] = useState(false); // State for typing indicator
+  const [isTyping, setIsTyping] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const messagesEndRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   const otherUser = conversation?.participants.find((p) => p.id !== currentUserId) || {};
 
@@ -27,7 +29,7 @@ const ChatWindow = ({ conversation, currentUserId }) => {
         isSender: msg.sender_id === currentUserId,
         mediaUrl: msg.media_url,
         mediaType: msg.media_type,
-        is_Read: msg.sender_id === currentUserId ? 'sent' : null,
+        status: msg.sender_id === currentUserId ? 'sent' : null,
       }));
       setMessages(mappedMessages);
       setTimeout(scrollToBottom, 100);
@@ -36,36 +38,32 @@ const ChatWindow = ({ conversation, currentUserId }) => {
     socket.emit('join_room', currentUserId);
 
     if (otherUser.id) {
-      socket.emit('get_read_status', { userId2: otherUser.id });
+      socket.emit('get_read_status', { userId1: currentUserId, userId2: otherUser.id });
       socket.emit('get_typing_status', { senderId: currentUserId, receiverId: otherUser.id });
     }
 
-    const formatTimestamp = (timestamp) => {
-      const date = new Date(timestamp);
-      const now = new Date();
-      
-      // If message is from today, show time only
-      if (date.toDateString() === now.toDateString()) {
-        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const updateMessageStatuses = (msgs) => {
+      if (!lastSeenMessageId) return msgs;
+
+      let lastSeenIndex = -1;
+      for (let i = 0; i < msgs.length; i++) {
+        if (msgs[i].id === lastSeenMessageId) {
+          lastSeenIndex = i;
+          break;
+        }
       }
-      
-      // If message is from yesterday, show "Yesterday"
-      const yesterday = new Date(now);
-      yesterday.setDate(yesterday.getDate() - 1);
-      if (date.toDateString() === yesterday.toDateString()) {
-        return 'Yesterday';
-      }
-      
-      // If message is from this week, show day name
-      const weekAgo = new Date(now);
-      weekAgo.setDate(weekAgo.getDate() - 7);
-      if (date > weekAgo) {
-        return date.toLocaleDateString([], { weekday: 'short' });
-      }
-      
-      // Otherwise show full date
-      return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+
+      if (lastSeenIndex === -1) return msgs;
+
+      return msgs.map((msg, index) => {
+        if (!msg.isSender) return msg;
+        if (index <= lastSeenIndex) {
+          return { ...msg, status: 'read' };
+        }
+        return { ...msg, status: 'sent' };
+      });
     };
+
     const handleNewMessage = (message) => {
       const isRelevantMessage =
         (message.senderId === currentUserId && message.receiverId === otherUser.id) ||
@@ -97,53 +95,26 @@ const ChatWindow = ({ conversation, currentUserId }) => {
       }
     };
 
-    const updateMessageStatuses = (msgs) => {
-      if (!lastSeenMessageId) return msgs;
-
-      let lastSeenIndex = -1;
-      for (let i = 0; i < msgs.length; i++) {
-        if (msgs[i].id === lastSeenMessageId) {
-          lastSeenIndex = i;
-          break;
-        }
-      }
-
-      if (lastSeenIndex === -1) return msgs;
-
-      return msgs.map((msg, index) => {
-        if (!msg.isSender) return msg;
-        if (index <= lastSeenIndex) {
-          return { ...msg, status: 'read' };
-        }
-        return { ...msg, status: 'sent' };
-      });
-    };
-
     const handleReadStatus = (status) => {
       setLastSeenMessageId(status.lastMessageId);
-      setMessages((prev) => {
-        const updatedMessages = [...prev];
-        if (status.isRead) {
-          return updateMessageStatuses(updatedMessages);
-        }
-        return updatedMessages;
-      });
+      setMessages((prev) => updateMessageStatuses([...prev]));
     };
 
     const handleConversationRead = ({ by }) => {
       if (by === otherUser.id) {
-        socket.emit('get_read_status', { userId2: otherUser.id });
+        socket.emit('get_read_status', { userId1: currentUserId, userId2: otherUser.id });
       }
     };
 
     const handleTyping = (data) => {
       if (data.from === otherUser.id) {
-        socket.emit('get_typing_status', { senderId: currentUserId, receiverId: otherUser.id });
+        setIsTyping(true);
+        setTimeout(() => setIsTyping(false), 2000);
       }
     };
 
     const handleTypingStatus = (data) => {
-      if (data.senderId === currentUserId && data.receiverId === otherUser.id) {
+      if (data.senderId === otherUser.id && data.receiverId === currentUserId) {
         setIsTyping(data.isTyping);
       }
     };
@@ -152,7 +123,7 @@ const ChatWindow = ({ conversation, currentUserId }) => {
     socket.on('read_status', handleReadStatus);
     socket.on('conversation_read', handleConversationRead);
     socket.on('typing', handleTyping);
-    socket.on('typing_status', handleTypingStatus);
+    socket.on('typing_status_response', handleTypingStatus);
     socket.on('connect_error', (err) => {
       console.error('WebSocket connection error:', err);
     });
@@ -162,10 +133,10 @@ const ChatWindow = ({ conversation, currentUserId }) => {
       socket.off('read_status', handleReadStatus);
       socket.off('conversation_read', handleConversationRead);
       socket.off('typing', handleTyping);
-      socket.off('typing_status', handleTypingStatus);
+      socket.off('typing_status_response', handleTypingStatus);
       socket.off('connect_error');
     };
-  }, [conversation, currentUserId, otherUser.id]);
+  }, [conversation, currentUserId, otherUser.id, lastSeenMessageId]);
 
   // Additional scroll to bottom when component mounts
   useEffect(() => {
@@ -173,7 +144,7 @@ const ChatWindow = ({ conversation, currentUserId }) => {
   }, []);
 
   // Emit typing event when user types
-  const handleTyping = () => {
+  const handleTypingEvent = () => {
     if (conversation) {
       const otherUser = conversation.participants.find((p) => p.id !== currentUserId);
       if (otherUser) {
@@ -197,28 +168,99 @@ const ChatWindow = ({ conversation, currentUserId }) => {
 
     socket.emit('send_text', message);
 
-    setMessages((prev) => {
-      const updatedMessages = [
-        ...prev,
-        {
-          id: `temp-${Date.now()}`,
-          senderId: currentUserId,
-          receiverId: otherUser.id,
-          content: trimmed,
-          timestamp: new Date().toISOString(),
-          isSender: true,
-          status: 'sent',
-        },
-      ];
-
-      if (lastSeenMessageId) {
-        return updateMessageStatuses(updatedMessages);
-      }
-      return updatedMessages;
-    });
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: `temp-${Date.now()}`,
+        senderId: currentUserId,
+        receiverId: otherUser.id,
+        content: trimmed,
+        timestamp: new Date().toISOString(),
+        isSender: true,
+        status: 'sent',
+      },
+    ]);
 
     setMessageContent('');
     setTimeout(scrollToBottom, 100);
+  };
+
+  const handleSendMedia = async (file) => {
+    if (!file || !conversation) return;
+    
+    setIsUploading(true);
+    
+    try {
+      const otherUser = conversation.participants.find((p) => p.id !== currentUserId);
+      if (!otherUser) return;
+
+      // Create a temporary message while uploading
+      const tempMessage = {
+        id: `temp-${Date.now()}`,
+        senderId: currentUserId,
+        receiverId: otherUser.id,
+        content: '',
+        timestamp: new Date().toISOString(),
+        isSender: true,
+        status: 'sending',
+        mediaUrl: URL.createObjectURL(file),
+        mediaType: file.type.startsWith('image') ? 'image' : 
+                  file.type.startsWith('video') ? 'video' : 'file'
+      };
+
+      setMessages(prev => [...prev, tempMessage]);
+      setTimeout(scrollToBottom, 100);
+
+      // Prepare the WebSocket message
+      const message = {
+        senderId: currentUserId,
+        receiverId: otherUser.id,
+        file: file
+      };
+
+      // Emit the media message
+      socket.emit('send_media', message, (response) => {
+        if (response.error) {
+          setMessages(prev => prev.map(msg => 
+            msg.id === tempMessage.id ? 
+            { ...msg, status: 'error', content: 'Failed to send media' } : 
+            msg
+          ));
+          return;
+        }
+
+        // Update the temporary message with the server response
+        setMessages(prev => prev.map(msg => 
+          msg.id === tempMessage.id ? 
+          {
+            ...msg,
+            id: response.id,
+            mediaUrl: response.media.url,
+            mediaType: response.media.type,
+            status: 'sent',
+            timestamp: response.timestamp
+          } : 
+          msg
+        ));
+      });
+    } catch (error) {
+      console.error('Error sending media:', error);
+      setMessages(prev => prev.map(msg => 
+        msg.id === tempMessage.id ? 
+        { ...msg, status: 'error', content: 'Failed to send media' } : 
+        msg
+      ));
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      handleSendMedia(file);
+    }
+    e.target.value = ''; // Reset input
   };
 
   const handleQuickReply = (text) => {
@@ -258,6 +300,49 @@ const ChatWindow = ({ conversation, currentUserId }) => {
       groups.push(currentGroup);
     }
     return groups;
+  };
+
+  const renderMessageContent = (msg) => {
+    if (msg.mediaUrl) {
+      switch (msg.mediaType) {
+        case 'image':
+          return (
+            <div className="mt-1">
+              <img 
+                src={msg.mediaUrl} 
+                alt="Media content" 
+                className="max-w-full max-h-64 rounded-lg"
+              />
+              {msg.content && <p className="mt-2">{msg.content}</p>}
+            </div>
+          );
+        case 'video':
+          return (
+            <div className="mt-1">
+              <video controls className="max-w-full max-h-64 rounded-lg">
+                <source src={msg.mediaUrl} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+              {msg.content && <p className="mt-2">{msg.content}</p>}
+            </div>
+          );
+        default:
+          return (
+            <div className="mt-1">
+              <a 
+                href={msg.mediaUrl} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-blue-500 hover:underline"
+              >
+                Download file
+              </a>
+              {msg.content && <p className="mt-2">{msg.content}</p>}
+            </div>
+          );
+      }
+    }
+    return <p className="mt-1">{msg.content}</p>;
   };
 
   const messageGroups = groupMessagesByDay(messages);
@@ -341,22 +426,26 @@ const ChatWindow = ({ conversation, currentUserId }) => {
                 >
                   <div className="flex items-baseline justify-between">
                     <p className="font-medium mr-2">{msg.isSender ? "" : otherUser.name}</p>
+                    <span className="text-xs opacity-70">
+                      {formatTimestamp(msg.timestamp)}
+                    </span>
                   </div>
-                  <p className="mt-1">{msg.content}</p>
+                  {renderMessageContent(msg)}
                   {msg.isSender && (
                     <div className="flex justify-end mt-1">
                       <span
                         className={`text-xs ${
-                          msg.status === 'read' ? 'text-blue-500' : 'text-gray-400'
+                          msg.status === 'read' ? 'text-blue-200' : 
+                          msg.status === 'error' ? 'text-red-200' : 'text-gray-200'
                         }`}
                       >
-                        {msg.status === 'sent' ? 'Sent' : 'Read'}
-                        
+                        {msg.status === 'sent' ? 'Sent' : 
+                         msg.status === 'read' ? 'Read' : 
+                         msg.status === 'sending' ? 'Sending...' : 'Failed'}
                       </span>
                     </div>
                   )}
                 </div>
-                
               </div>
             ))}
           </div>
@@ -384,6 +473,15 @@ const ChatWindow = ({ conversation, currentUserId }) => {
 
       {/* Message input */}
       <div className="p-4 border-t bg-white flex items-center">
+        {/* Hidden file input */}
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          accept="image/*,video/*"
+          className="hidden"
+        />
+        
         <div className="flex-1 relative">
           <input
             type="text"
@@ -392,7 +490,7 @@ const ChatWindow = ({ conversation, currentUserId }) => {
             value={messageContent}
             onChange={(e) => {
               setMessageContent(e.target.value);
-              handleTyping();
+              handleTypingEvent();
             }}
             onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
           />
@@ -403,15 +501,23 @@ const ChatWindow = ({ conversation, currentUserId }) => {
           </button>
         </div>
         <div className="ml-3 flex space-x-3">
-          <button className="text-gray-500 hover:text-gray-700">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-              />
-            </svg>
+          <button 
+            onClick={() => fileInputRef.current.click()}
+            className="text-gray-500 hover:text-gray-700"
+            disabled={isUploading}
+          >
+            {isUploading ? (
+              <span className="text-sm">Uploading...</span>
+            ) : (
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
+              </svg>
+            )}
           </button>
           <button className="text-gray-500 hover:text-gray-700">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -438,16 +544,10 @@ const ChatWindow = ({ conversation, currentUserId }) => {
           </button>
           <button
             onClick={handleSendMessage}
-            className="px-4 py-1.5 bg-gray-200 rounded-full hover:bg-gray-300 text-sm font-medium"
+            className="px-4 py-1.5 bg-blue-500 text-white rounded-full hover:bg-blue-600 text-sm font-medium"
+            disabled={!messageContent.trim()}
           >
             Send
-          </button>
-          <button className="text-gray-500 hover:text-gray-700">
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-              <circle cx="4" cy="10" r="2" />
-              <circle cx="10" cy="10" r="2" />
-              <circle cx="16" cy="10" r="2" />
-            </svg>
           </button>
         </div>
       </div>

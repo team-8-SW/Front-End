@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Button, Input } from "@material-tailwind/react";
-import { handleAddNewComment, getComments, getUserName, getProfilePicture } from "../../../services/api";
+import {
+  handleAddNewComment,
+  getComments,
+  getUserName,
+  getProfilePicture,
+} from "../../../services/api";
 
 const CommentsSection = ({
   postId,
@@ -23,7 +28,10 @@ const CommentsSection = ({
         const data = await getComments(postId, token);
         setComments(Array.isArray(data) ? data : []);
 
-        const userIds = Array.from(new Set(data.map((comment) => comment.user_id)));
+        const userIds = Array.from(
+          new Set(data.map((comment) => comment.user_id))
+        );
+
         const userNameMap = {};
         const profilePictureMap = {};
 
@@ -59,7 +67,13 @@ const CommentsSection = ({
 
   const handlePostComment = async () => {
     try {
-      const response = await handleAddNewComment(postId, newComment, token, setCommentsCount, commentsCount);
+      const response = await handleAddNewComment(
+        postId,
+        newComment,
+        token,
+        setCommentsCount,
+        commentsCount
+      );
 
       const newCommentObject = {
         post_id: response.post_id,
@@ -69,8 +83,19 @@ const CommentsSection = ({
         created_at: response.created_at,
       };
 
+      // ✅ Ensure current user data is stored for display
+      setUserNames((prev) => ({
+        ...prev,
+        [response.user_id]: commenterName,
+      }));
+
+      setProfilePictures((prev) => ({
+        ...prev,
+        [response.user_id]: commenterProfilePicture,
+      }));
+
       setComments((prevComments) => [newCommentObject, ...prevComments]);
-      setVisibleComments((prevVisible) => (prevVisible + 1));
+      setVisibleComments((prevVisible) => prevVisible + 1);
       setNewComment("");
     } catch (error) {
       console.error("Error posting comment:", error);
@@ -112,13 +137,15 @@ const CommentsSection = ({
         >
           <div className="flex items-center gap-2">
             <img
-              src={profilePictures[comment.user_id] || "/default-profile.png"}
+              src={
+                profilePictures[comment.user_id] || "/default-profile.png"
+              }
               alt={`${userNames[comment.user_id] || "Unknown"}'s profile`}
               className="w-8 h-8 rounded-full object-cover"
             />
             <div>
               <p className="text-gray-800 font-semibold flex items-center gap-2">
-                {userNames[comment.user_id] || "Unknown"}
+                {userNames[comment.user_id] || "you"}
                 <span className="text-gray-500 text-xs">
                   {comment.created_at
                     ? new Date(comment.created_at).toLocaleString("en-US", {
@@ -134,7 +161,7 @@ const CommentsSection = ({
               </p>
             </div>
           </div>
-          <p className="ml-10 text-gray-700">{comment.content}</p> {/* Indented comment content */}
+          <p className="ml-10 text-gray-700">{comment.content}</p>
         </div>
       ))}
 

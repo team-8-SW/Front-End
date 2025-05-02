@@ -208,11 +208,26 @@ const MainPage = () => {
               <Typography variant="h3" color="blue-gray" className="mb-1">
                 {selectedJob.title}
               </Typography>
-              <Link to={`/viewcompany/${selectedJob.company_id}`} className="flex items-center gap-2 mb-2">
-              <Typography variant="h5" color="gray" className="underline">
-                {selectedJob.company_name}
-              </Typography>
-              </Link>
+              <div
+  onClick={async () => {
+    try {
+      await api.post(
+        `/api/company/${selectedJob.company_id}/view`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+    } catch (err) {
+      console.error("Error recording view:", err);
+    }
+    navigate(`/viewcompany/${selectedJob.company_id}`);
+  }}
+  className="flex items-center gap-2 mb-2 cursor-pointer hover:underline"
+>
+  <Typography variant="h5" color="gray">
+    {selectedJob.company_name}
+  </Typography>
+</div>
+
           
               <Typography variant="paragraph" className="mb-4 text-gray-600 mt-2">
                 {selectedJob.description}

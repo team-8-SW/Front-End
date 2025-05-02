@@ -139,8 +139,6 @@ function App() {
         <Route path="/EmailManagement" element={
           <ProtectedRoute>
             <EmailManagement
-              email={loggedUser?.profile?.email}
-              userId={loggedUser?.id}
             />
           </ProtectedRoute>
         } />

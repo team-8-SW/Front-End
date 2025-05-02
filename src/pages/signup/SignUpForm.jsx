@@ -79,9 +79,12 @@ const SignUpForm = () => {
     <div className="flex flex-col items-center w-full overflow-y-auto pb-6 relative">
       {/* LinkedIn logo positioned in upper left */}
       <div className="absolute top-4 left-8 md:left-16">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 84 21" width="84" height="21" className="fill-blue-600">
-          <path d="M12.5 0h-9A3.5 3.5 0 0 0 0 3.5v9A3.5 3.5 0 0 0 3.5 16h9a3.5 3.5 0 0 0 3.5-3.5v-9A3.5 3.5 0 0 0 12.5 0zM5 12H3V5h2v7zm-1-8a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm8 8h-2V8.5c0-.8-.7-1.5-1.5-1.5S7 7.7 7 8.5V12H5V5h2v1.1c.4-.7 1.3-1.1 2-1.1a3 3 0 0 1 3 3v4zm16-3c0 2.2-1.8 4-4.1 4-2.1 0-3.9-1.8-3.9-4s1.8-4 4-4c2.2 0 4 1.8 4 4zm-6 0c0 1.1.9 2 2 2s2-.9 2-2-.9-2-2-2-2 .9-2 2zm9-3h2v7h-2V9zm2.5-2a1.5 1.5 0 1 1 .001-3.001A1.5 1.5 0 0 1 33.5 7zM45 11.5V9h-2v2.5a.5.5 0 0 1-.5.5h-1v2h1c1.4 0 2.5-1.1 2.5-2.5zm-4-7.5h-2v9h6v-2h-4V4zm7 4c0-1.1.9-2 2-2h6V4h-6c-2.2 0-4 1.8-4 4s1.8 4 4 4h6v-2h-6c-1.1 0-2-.9-2-2zm11 2c-1.1 0-2-.9-2-2s.9-2 2-2h5V4h-5c-2.2 0-4 1.8-4 4s1.8 4 4 4h5v-2h-5zm7-4c0-1.1.9-2 2-2h6V4h-6c-2.2 0-4 1.8-4 4s1.8 4 4 4h6v-2h-6c-1.1 0-2-.9-2-2zm11-3c1.1 0 2 .9 2 2v1h-5c-1.1 0-2 .9-2 2s.9 2 2 2h3c.6 0 1-.4 1-1v-1h-3v-2h5v3c0 1.7-1.3 3-3 3h-3c-2.2 0-4-1.8-4-4s1.8-4 4-4h3z" />
-        </svg>
+      <img
+  src="\logos\LinkedIn-Logo.wine.svg" // ✅ Correct way
+  alt="LinkedIn"
+  width="84"
+  height="21"
+/>
       </div>
       
       <div className="mt-16 mb-6"></div>

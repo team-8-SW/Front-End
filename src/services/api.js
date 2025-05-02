@@ -33,7 +33,7 @@ export const useName = (userId, token) => {
 
 export const useUserData = (userId, token) => {
   const [user, setUser] = useState(null);
-console.log("User data in useUserData:", user); // Debugging line
+
 
   useEffect(() => {
     
@@ -47,7 +47,7 @@ console.log("User data in useUserData:", user); // Debugging line
             },
           });
           setUser(response.data);
-          console.log("fetched in use:", response.data); // Debugging line
+         
         } else if (userId && token) {
           const response = await axios.get(`http://localhost:5000/api/profiles/me/${userId}`,{
             headers:{
@@ -55,7 +55,7 @@ console.log("User data in useUserData:", user); // Debugging line
             }
           });
           setUser(response.data);
-          console.log(" fetched in anotheruse:", response.data); // Debugging line
+    
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -63,7 +63,7 @@ console.log("User data in useUserData:", user); // Debugging line
     };
   
     fetchData();
-    console.log("User data in useEffect:", user); // Debugging line
+    
   }, [userId,token]);
   
 

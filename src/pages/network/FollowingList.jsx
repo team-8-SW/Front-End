@@ -11,7 +11,7 @@ const FollowingList = () => {
   });
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('Followers');
-  const [updatingFollow, setUpdatingFollow] = useState(null); // Track which user is being updated
+  const [updatingFollow, setUpdatingFollow] = useState(null);
   const navigate = useNavigate();
 
   // Get user data from localStorage
@@ -20,10 +20,9 @@ const FollowingList = () => {
   const token = localStorage.getItem('token');
 
   // API call to follow a user
-  const handleFollow = async (userId) => {
-    setUpdatingFollow(userId);
+  const followUser = async (userId) => {
     try {
-      await axios.post(
+      const response = await axios.post(
         `http://localhost:5000/api/following/users/${userId}`,
         {},
         {
@@ -33,18 +32,65 @@ const FollowingList = () => {
           }
         }
       );
-      
-      // Update the followers list to remove the followed user
-      setFollowers(prev => prev.filter(user => user.id !== userId));
-      // Add to following list if we're on that tab
-      if (activeTab === 'Following') {
-        const userToAdd = followers.find(user => user.id === userId);
-        if (userToAdd) {
+      return response.data;
+    } catch (error) {
+      console.error("API Error:", error.response?.data || error.message);
+      throw error;
+    }
+  };
+
+  // API call to unfollow a user
+  const unfollowUser = async (userId) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:5000/api/following/users/${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("API Error:", error.response?.data || error.message);
+      throw error;
+    }
+  };
+
+  // Handle follow/unfollow action
+  const handleFollowAction = async (userId, isCurrentlyFollowing) => {
+    if (!userId) {
+      console.error("User ID is undefined");
+      alert("Failed to perform action: User ID is missing");
+      return;
+    }
+    
+    setUpdatingFollow(userId);
+    try {
+      if (isCurrentlyFollowing) {
+        await unfollowUser(userId);
+        // Update the following list
+        setFollowing(prev => prev.filter(user => user._id !== userId));
+        // Update followers list if needed
+        setFollowers(prev => prev.map(user => 
+          user._id === userId ? { ...user, isFollowing: false } : user
+        ));
+      } else {
+        const response = await followUser(userId);
+        if (response.message === "User followed successfully") {
+          // Update the following list
+          const userToAdd = followers.find(user => user._id === userId) || { _id: userId, isFollowing: true };
           setFollowing(prev => [...prev, userToAdd]);
+          // Update followers list if needed
+          setFollowers(prev => prev.map(user => 
+            user._id === userId ? { ...user, isFollowing: true } : user
+          ));
         }
       }
-    } catch (err) {
-      setError(err.response?.data?.error || 'Failed to follow user');
+    } catch (error) {
+      console.error("Follow/Unfollow error:", error);
+      alert(error.response?.data?.message || error.message || `Failed to ${isCurrentlyFollowing ? 'unfollow' : 'follow'} user`);
     } finally {
       setUpdatingFollow(null);
     }
@@ -55,11 +101,9 @@ const FollowingList = () => {
     const fetchFollowers = async () => {
       try {
         const response = await axios.get(`http://localhost:5000/api/following/followers`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
-        setFollowers(response.data);
+        setFollowers(response.data.map(user => ({ ...user, isFollowing: false })));
         setLoading(prev => ({ ...prev, followers: false }));
       } catch (err) {
         setError(err.response?.data?.error || 'Failed to fetch followers');
@@ -75,16 +119,14 @@ const FollowingList = () => {
     try {
       setLoading(prev => ({ ...prev, following: true }));
       const response = await axios.get(`http://localhost:5000/api/following/`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
       
       if (response.status === 404) {
         setFollowing([]);
       } else {
         const followingData = Array.isArray(response.data) ? response.data : [response.data];
-        setFollowing(followingData);
+        setFollowing(followingData.map(user => ({ ...user, isFollowing: true })));
       }
     } catch (err) {
       if (err.response?.status === 404) {
@@ -193,7 +235,7 @@ const FollowingList = () => {
                 </div>
               ) : (
                 displayedList.map((person) => (
-                  <div key={person.id} className="px-6 py-4 flex items-center justify-between">
+                  <div key={person._id} className="px-6 py-4 flex items-center justify-between">
                     <div className="flex items-center space-x-4">
                       <div className="flex-shrink-0">
                         {person.profilePictureUrl ? (
@@ -218,23 +260,26 @@ const FollowingList = () => {
                         <p className="text-sm text-gray-500">{person.headline || 'No headline'}</p>
                       </div>
                     </div>
-                    {activeTab === 'Followers' ? (
-                      <button 
-                        onClick={() => handleFollow(person.id)}
-                        disabled={updatingFollow === person.id}
-                        className={`px-4 py-1 rounded-full text-sm font-medium ${
-                          updatingFollow === person.id
-                            ? 'bg-gray-200 text-gray-500'
-                            : 'border border-gray-300 text-gray-700 hover:bg-gray-50'
-                        }`}
-                      >
-                        {updatingFollow === person.id ? 'Following...' : 'Follow back'}
-                      </button>
-                    ) : (
-                      <button className="px-4 py-1 border border-gray-300 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-50">
-                        Following
-                      </button>
-                    )}
+                    <button 
+                      onClick={() => handleFollowAction(
+                        person._id,
+                        activeTab === 'Following' // isCurrentlyFollowing
+                      )}
+                      disabled={updatingFollow === person._id}
+                      className={`px-4 py-1 rounded-full text-sm font-medium ${
+                        updatingFollow === person._id
+                          ? 'bg-gray-200 text-gray-500'
+                          : activeTab === 'Followers'
+                            ? 'border border-blue-300 text-blue-700 hover:bg-blue-50'
+                            : 'border border-red-300 text-red-700 hover:bg-red-50'
+                      }`}
+                    >
+                      {updatingFollow === person._id 
+                        ? 'Processing...' 
+                        : activeTab === 'Followers' 
+                          ? 'Follow' 
+                          : 'Unfollow'}
+                    </button>
                   </div>
                 ))
               )}
@@ -246,7 +291,6 @@ const FollowingList = () => {
         <div className="hidden lg:block w-80 flex flex-col gap-6">
           {/* Ad Banner */}
           <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-            
             <div className="p-4">
               <img
                 src="/photos/image.png"
@@ -258,7 +302,6 @@ const FollowingList = () => {
 
           {/* LinkedIn Premium Ad */}
           <div className="bg-white rounded-lg shadow-sm">
-            
             <div className="p-4">
               <h3 className="font-bold text-lg mb-2">
                 {userName}, unlock your full potential with LinkedIn Premium

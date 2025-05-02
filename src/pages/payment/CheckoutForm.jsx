@@ -1,8 +1,8 @@
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { api } from '../../services/profile'; // Adjust the import path as necessary
+import { api } from '../../services/profile';
 
 const CheckoutForm = () => {
   const stripe = useStripe();
@@ -16,6 +16,46 @@ const CheckoutForm = () => {
   const [postalCode, setPostalCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isPremium, setIsPremium] = useState(false); // Track premium status
+
+  const token = localStorage.getItem('token');
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const response = await api.get('/api/profiles/', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        setIsPremium(response.data?.profile?.is_premium || false);
+      } catch (err) {
+        console.error("Failed to fetch profile:", err);
+      }
+    };
+
+    fetchUserProfile();
+  }, [token]);
+
+  const handleCancelSubscription = async () => {
+    setLoading(true);
+    try {
+      const response = await api.post('/api/payments/cancel-subscription', {}, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (response.data?.isPremium === false) {
+        alert("Subscription cancelled successfully.");
+        setIsPremium(false); // Update UI
+      }
+    } catch (err) {
+      console.error("Error cancelling subscription:", err);
+      setError("Failed to cancel subscription.");
+    }
+    setLoading(false);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,44 +63,35 @@ const CheckoutForm = () => {
     setError('');
 
     try {
-      const token = localStorage.getItem('token');
-
       // Step 1: Create payment intent
       const { data } = await api.post('/api/payments/create-payment-intent', {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
       const clientSecret = data.clientSecret;
-console.log('Client Secret:', clientSecret);
+
       // Step 2: Confirm card payment
       const result = await stripe.confirmCardPayment(clientSecret, {
         payment_method: {
           card: elements.getElement(CardElement),
           billing_details: {
             name: `${firstName} ${lastName}`,
-            address: {
-              country: country,
-              postal_code: postalCode,
-            }
+            address: { country, postal_code: postalCode }
           }
         }
       });
 
       if (result.error) {
         setError(result.error.message);
-      } else {
-        if (result.paymentIntent.status === 'succeeded') {
-          // Step 3: Confirm to backend
-          await api.post('/api/payments/confirm', {
-            paymentIntentId: result.paymentIntent.id
-          }, {
-            headers: { Authorization: `Bearer ${token}` }
-          });
+      } else if (result.paymentIntent.status === 'succeeded') {
+        // Step 3: Confirm to backend
+        await api.post('/api/payments/confirm', {
+          paymentIntentId: result.paymentIntent.id
+        }, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
 
-          // Redirect after success
-          
-          navigate('/profile');
-        }
+        navigate('/profile');
       }
     } catch (err) {
       console.error(err);
@@ -71,93 +102,132 @@ console.log('Client Secret:', clientSecret);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-6 text-center">Secure Checkout</h2>
+    <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-md">
+      <h2 className="text-2xl font-bold mb-6 text-center">
+        {isPremium ? 'Manage Subscription' : 'Secure Checkout'}
+      </h2>
 
-      {/* Billing Cycle */}
-      <div className="mb-6">
-        <h3 className="text-lg font-semibold mb-2">Confirm your billing cycle</h3>
-        <div className="flex gap-4">
-          <label className="flex items-center gap-2">
-            <input
-              type="radio"
-              name="billingCycle"
-              value="monthly"
-              checked={billingCycle === 'monthly'}
-              onChange={(e) => setBillingCycle(e.target.value)}
-            />
-            Monthly (EGP 499.99 / month)
-          </label>
-          <label className="flex items-center gap-2">
-            <input
-              type="radio"
-              name="billingCycle"
-              value="annual"
-              checked={billingCycle === 'annual'}
-              onChange={(e) => setBillingCycle(e.target.value)}
-            />
-            Annual (EGP 249.99 / month billed yearly)
-          </label>
-        </div>
-      </div>
+      {isPremium ? (
+        <>
+          <p className="text-center text-gray-700 mb-4">
+            You are currently subscribed. Click below to cancel your subscription.
+          </p>
+          <button
+            onClick={handleCancelSubscription}
+            disabled={loading}
+            className="w-full py-3 bg-red-600 text-white font-semibold rounded hover:bg-red-700"
+          >
+            {loading ? 'Processing...' : 'Cancel Subscription'}
+          </button>
+        </>
+      ) : (
+        <form onSubmit={handleSubmit}>
+          {/* Billing Cycle */}
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold mb-2">Confirm your billing cycle</h3>
+            <div className="flex gap-4">
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name="billingCycle"
+                  value="monthly"
+                  checked={billingCycle === 'monthly'}
+                  onChange={(e) => setBillingCycle(e.target.value)}
+                />
+                Monthly (EGP 499.99 / month)
+              </label>
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name="billingCycle"
+                  value="annual"
+                  checked={billingCycle === 'annual'}
+                  onChange={(e) => setBillingCycle(e.target.value)}
+                />
+                Annual (EGP 249.99 / month billed yearly)
+              </label>
+            </div>
+          </div>
 
-      {/* Card Info */}
-      <div className="mb-6">
-        <h3 className="text-lg font-semibold mb-2">Credit/Debit Card</h3>
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          <input
-            type="text"
-            placeholder="First Name"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            required
-            className="p-2 border rounded"
-          />
-          <input
-            type="text"
-            placeholder="Last Name"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            required
-            className="p-2 border rounded"
-          />
-        </div>
+          {/* Card Info */}
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold mb-2">Credit/Debit Card</h3>
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <input
+                type="text"
+                placeholder="First Name"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                required
+                className="p-2 border rounded"
+              />
+              <input
+                type="text"
+                placeholder="Last Name"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                required
+                className="p-2 border rounded"
+              />
+            </div>
 
-        <div className="p-3 border rounded mb-4">
-          <CardElement options={{ hidePostalCode: true }} />
-        </div>
+            <div className="p-3 border rounded mb-4">
+              <CardElement options={{ hidePostalCode: true }} />
+            </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <input
-            type="text"
-            placeholder="Country"
-            value={country}
-            onChange={(e) => setCountry(e.target.value)}
-            required
-            className="p-2 border rounded"
-          />
-          <input
-            type="text"
-            placeholder="Postal Code"
-            value={postalCode}
-            onChange={(e) => setPostalCode(e.target.value)}
-            required
-            className="p-2 border rounded"
-          />
-        </div>
-      </div>
+            <div className="grid grid-cols-2 gap-4">
+            <select
+  value={country}
+  onChange={(e) => setCountry(e.target.value)}
+  required
+  className="p-2 border rounded"
+>
+  <option value="">Select Country</option>
+  <option value="EG">Egypt</option>
+  <option value="US">United States</option>
+  <option value="GB">United Kingdom</option>
+  <option value="FR">France</option>
+  <option value="DE">Germany</option>
+  <option value="IT">Italy</option>
+  <option value="ES">Spain</option>
+  <option value="SA">Saudi Arabia</option>
+  <option value="AE">United Arab Emirates</option>
+  <option value="CA">Canada</option>
+  <option value="AU">Australia</option>
+  <option value="IN">India</option>
+  <option value="JP">Japan</option>
+  <option value="CN">China</option>
+  <option value="BR">Brazil</option>
+  <option value="RU">Russia</option>
+  <option value="ZA">South Africa</option>
+  <option value="NG">Nigeria</option>
+  <option value="TR">Turkey</option>
+</select>
 
-      {/* Submit Button */}
-      <button
-        type="submit"
-        disabled={!stripe || loading}
-        className="w-full py-3 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700"
-      >
-        {loading ? 'Processing...' : billingCycle === 'monthly' ? 'Pay EGP 499.99' : 'Pay EGP 2999.88'}
-      </button>
+              <input
+                type="text"
+                placeholder="Postal Code"
+                value={postalCode}
+                onChange={(e) => setPostalCode(e.target.value)}
+                required
+                className="p-2 border rounded"
+              />
+            </div>
+          </div>
 
-      {error && <div className="mt-4 text-red-500 text-center">{error}</div>}
-    </form>
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={!stripe || loading}
+            className="w-full py-3 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700"
+          >
+            {loading ? 'Processing...' : billingCycle === 'monthly' ? 'Pay EGP 499.99' : 'Pay EGP 2999.88'}
+          </button>
+
+          {error && <div className="mt-4 text-red-500 text-center">{error}</div>}
+        </form>
+      )}
+    </div>
   );
 };
 

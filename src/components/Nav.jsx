@@ -11,6 +11,7 @@ import { unReadCount } from "../services/api";
 import PostsSearch from "../pages/home/Posts/PostsSearch";
 import UserSearch from "../pages/network/UserSearch"
 import socket from "../services/socket";
+import { api } from "../services/profile";
 import { fetchPendingConnections } from "../services/api";
 
 const Nav = ({searching,setSearching}) => {
@@ -29,6 +30,7 @@ const Nav = ({searching,setSearching}) => {
   const [unreadCount, setUnreadCount] = useState(0);
   const [unseenMessageCount, setUnseenMessageCount] = useState(0);
   const [pendingRequestCount, setPendingRequestCount] = useState(0);
+  const [isPremium, setIsPremium] = useState(false);
 
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
@@ -80,6 +82,16 @@ const Nav = ({searching,setSearching}) => {
     const interval = setInterval(fetchPendingCount, 10000);
     return () => clearInterval(interval);
   }, [token]);
+
+  useEffect(() => {
+    if (token) {
+      api.get("/api/profiles/", {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      .then((res) => setIsPremium(res.data?.profile?.is_premium || false))
+      .catch((err) => console.error("Error fetching is_premium:", err));
+    }
+  }, []);
 
   const logout = () => {
     localStorage.removeItem("token");
@@ -213,6 +225,18 @@ const Nav = ({searching,setSearching}) => {
               </div>
             )}
           </div>
+          <Link
+  to="/payment"
+  className="flex flex-col items-center gap-1 text-[#915907] hover:underline font-medium text-sm ml-2"
+>
+  <img
+    src="\logos\eb00f08b-bb75-4e5d-b334-d0b441aca0c5 (1).png"
+    alt="Premium Icon"
+    className="w-5 h-5"
+  />
+   {isPremium ? "You are now Premium" : "Try Premium"}
+</Link>
+
         </div>
       </div>
     </div>

@@ -29,7 +29,7 @@ export default function AdminReportsPage() {
           Authorization: `Bearer ${token}`
         }
       });
-      setReports(response.data);
+      setReports(response.data.filter((report) => report.status === "pending"));
     } catch (err) {
       console.error(err);
       setError("Failed to fetch reports");

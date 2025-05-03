@@ -32,6 +32,7 @@ const JobApplications = () => {
             }
           );
           profileData[app.applicant_id] = profileRes.data?.profile || {};
+          console.log("Profile data:", profileData[app.applicant_id]);
         } catch (err) {
           console.error(`Failed to fetch profile for ${app.applicant_id}`, err);
         }

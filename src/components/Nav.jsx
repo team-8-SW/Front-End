@@ -17,9 +17,7 @@ import { fetchPendingConnections } from "../services/api";
 const Nav = ({setSearching}) => {
   const location = useLocation();
   const hiddenPaths = [
-    "/login", "/signup", "/detailedjobs", "/detailedjobs/:jobId", 
-    "/adminhome", "/adminjobs", "/adminjobs/FlaggedJobsPage",
-    "/adminreport", "/adminreport/most-reported"
+    "/login", "/signup", "/detailedjobs", "/detailedjobs/:jobId"
   ];
 
   if (location.pathname.startsWith("/detailedjobs")) return null;

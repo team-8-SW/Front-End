@@ -1,27 +1,29 @@
 import { useState } from "react";
-import axios from "axios";
 import { Typography, Button, Input, Select, Option } from "@material-tailwind/react";
 import { api } from "../../services/profile"; // Adjust the import path as necessary
 
 // Schools list - same used in backend validation
 export const schoolsList = [
   "Cairo University",
-  "Stanford University",
-  "Massachusetts Institute of Technology",
+  "helwan University",
+  "Ain shams University",
+  "Alexandria University",
+  "Mansoura University",
+  "Assiut University",
+  "Zagazig University",
+  "Tanta University",
+  "Suez Canal University",
+  "Port Said University",
+  "Beni Suef University",
   "Harvard University",
-  "University of Oxford",
-  "ETH Zurich",
-  "University of Tokyo",
-  "National University of Singapore",
-  "University of Cambridge",
-  "Imperial College London",
+  "University of Oxford"
+ 
 ];
 
 const EducationFormModal = ({ onClose, onSave }) => {
   const [education, setEducation] = useState({
     school: "",
     degree: "",
-    major: "",
     from: "",
     to: ""
   });
@@ -100,13 +102,6 @@ const EducationFormModal = ({ onClose, onSave }) => {
           label="Degree"
           value={education.degree}
           onChange={(e) => setEducation({ ...education, degree: e.target.value })}
-          className="mb-4"
-        />
-
-        <Input
-          label="Major"
-          value={education.major}
-          onChange={(e) => setEducation({ ...education, major: e.target.value })}
           className="mb-4"
         />
 

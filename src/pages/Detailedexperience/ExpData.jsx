@@ -16,8 +16,9 @@ const formatDate = (dateStr) => {
 
 const ExpData = ({ experiences, userId, onDelete }) => {
   const handleDelete = () => {
-    handleDeleteExp(experiences.id, userId, onDelete); // Pass experience ID for deletion
+    handleDeleteExp(experiences.id, onDelete);
   };
+  
 
   return (
     <div className="flex justify-between mt-3 p-4 border-b border-gray-200">

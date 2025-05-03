@@ -6,14 +6,13 @@ import {
   ArrowPathRoundedSquareIcon as OutlinerepostIcon,
   PaperAirplaneIcon as ShareIcon,
 } from "@heroicons/react/24/outline";
-import axios from "axios";
-import { api } from "../../services/profile"; // Adjust the import path as necessary
+import { api } from "../../services/profile"; // Adjust path as necessary
 
 const CompanyPostsDetails = ({ post, companyLogo, companyid }) => {
   const [companyData, setCompanyData] = useState(null);
   const [isLiked, setIsLiked] = useState(false);
   const [commentCount, setCommentCount] = useState(0);
-  const [commentText, setCommentText] = useState(""); // NEW: input state
+  const [commentText, setCommentText] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -31,18 +30,29 @@ const CompanyPostsDetails = ({ post, companyLogo, companyid }) => {
 
     const fetchCommentCount = async () => {
       try {
-        const res = await api.get(
-          `/api/company/${post.id}/comment-count`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        const res = await api.get(`/api/company/${post.id}/comment-count`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         setCommentCount(res.data.commentCount || 0);
       } catch (err) {
         console.error("Failed to fetch comment count:", err);
       }
     };
 
+    const fetchLikeStatus = async () => {
+      try {
+        const res = await api.get(`/api/company/${post.id}/check`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setIsLiked(res.data.liked === true); // depends on backend response
+      } catch (err) {
+        console.error("Failed to check like status:", err);
+      }
+    };
+
     fetchCompany();
     fetchCommentCount();
+    fetchLikeStatus();
   }, [companyid, post.id]);
 
   const handleLike = async () => {
@@ -74,8 +84,8 @@ const CompanyPostsDetails = ({ post, companyLogo, companyid }) => {
           },
         }
       );
-      setCommentText(""); // clear input
-      setCommentCount(prev => prev + 1);
+      setCommentText("");
+      setCommentCount((prev) => prev + 1);
     } catch (err) {
       console.error("Error adding comment:", err);
     }
@@ -89,7 +99,7 @@ const CompanyPostsDetails = ({ post, companyLogo, companyid }) => {
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      alert("Reposted successfully!");
+    
     } catch (err) {
       console.error("Error reposting:", err);
     }
@@ -109,7 +119,9 @@ const CompanyPostsDetails = ({ post, companyLogo, companyid }) => {
         <div className="ml-3">
           <h2 className="font-semibold text-gray-900">{companyData?.name}</h2>
           <p className="text-sm text-gray-500">
-            {post.created_at ? new Date(post.created_at).toLocaleString() : "Just now"}
+            {post.created_at
+              ? new Date(post.created_at).toLocaleString()
+              : "Just now"}
           </p>
         </div>
       </div>

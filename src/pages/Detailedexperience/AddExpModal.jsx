@@ -3,10 +3,10 @@ import { Dialog, Button, Typography } from "@material-tailwind/react";
 import axios from "axios";
 import { api } from "../../services/profile"; // Adjust the import path as necessary
 
-const jobTitles = ["Software Engineer", "Data Scientist", "Product Manager", "UX Designer"];
-const companies = ["Google", "Microsoft", "Amazon", "Facebook"];
-const locations = ["New York, USA", "London, UK", "Berlin, Germany", "Tokyo, Japan"];
-const defaultSkills = ["JavaScript", "React", "Node.js", "C++", "Java"];
+const jobTitles = ["Software Engineer", "Data Scientist", "Product Manager", "UX Designer", "DevOps Engineer", "Sales Engineer", "Marketing Manager", "HR Manager", "Business Analyst", "Project Manager"];
+const companies = ["Google", "Microsoft", "Amazon", "Facebook", "Apple", "IBM", "Intel", "Oracle", "Salesforce", "Adobe","vodafone","Etisalat","Orange","Telecom Egypt"];
+const locations = ["New York, USA", "London, UK", "Berlin, Germany", "Tokyo, Japan","giza,egypt","cairo,egypt","alexandria,egypt","aswan,egypt","sharm el sheikh,egypt"];
+const defaultSkills = ["JavaScript", "React", "Node.js", "C++", "Java", "Python", "SQL", "HTML", "CSS", "Git", "Docker", "Kubernetes", "AWS", "Azure", "Google Cloud"];
 
 const AddExpModal = ({ open, onClose, onExpAdded }) => {
   const [expData, setExpData] = useState({

@@ -28,20 +28,31 @@ export const fetchUser = async ( setLoggedUser) => {
 
 
 
-export const handleDeleteExp = (experiences,userId,onDelete) => {
-  axios
-    .get(`http://localhost:3000/users/${userId}`)
-    .then((res) => {
-      const updatedExperience = res.data.experience.filter((exp) => !(exp.title == experiences.title&&exp.company==experiences.company&&exp.employmentType==experiences.employmentType&&exp.startDate==experiences.startDate&&exp.endDate==experiences.endDate&&exp.description==experiences.description&&exp.location==experiences.location&&exp.locationType==experiences.locationType));
-      return axios.patch(`http://localhost:3000/users/${userId}`, {
-        experience: updatedExperience,
-      });
-    })
-    .then(() => {
-      onDelete(experiences); // Update the UI in React
-    })
-    .catch((err) => console.error("Error deleting experience:", err));
+// In services/profile.js or wherever you manage API calls
+
+export const handleDeleteExp = async (experienceId, onDelete) => {
+  const token = localStorage.getItem("token");
+
+  if (!experienceId) {
+    console.error("Missing experience ID.");
+    return;
+  }
+
+  try {
+    await axios.delete(
+      `http://localhost:5000/api/profiles/me/experience/${experienceId}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    onDelete(experienceId); // update UI
+  } catch (err) {
+    console.error("Error deleting experience:", err);
+    alert(err.response?.data?.error || "Failed to delete experience");
+  }
 };
+
 export const handleDeleteEdu = async (edu, onDelete) => {
   const token = localStorage.getItem("token");
 

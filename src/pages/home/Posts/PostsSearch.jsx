@@ -27,7 +27,7 @@ const PostsSearch = ({ setSearching }) => {
     setPosts([]); // Clear previous posts before fetching new ones
   
     try {
-      const params = { keyword: searchQuery.trim() };
+      const params = { query: searchQuery.trim() };
       const response = await searchPosts(params);
       console.log("Search response:", response); // Log the response for debugging
       setPosts(response || []);

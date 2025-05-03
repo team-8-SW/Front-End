@@ -693,8 +693,8 @@ export const searchPosts = async (params) => {
     const response = await api.get('/api/posts/search', {
       params,
     });
-    console.log("Search response:", response.data); // Debugging line
-    return response.data;
+    console.log("Search response:", response.data.posts); // Debugging line
+    return response.data.posts;
   }
   catch (error) {
     console.error("Error searching posts:", error);

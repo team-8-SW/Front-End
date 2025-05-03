@@ -31,6 +31,7 @@ const Nav = ({searching,setSearching}) => {
   const [unseenMessageCount, setUnseenMessageCount] = useState(0);
   const [pendingRequestCount, setPendingRequestCount] = useState(0);
   const [isPremium, setIsPremium] = useState(false);
+  const[isAdmin, setIsAdmin] = useState(false);
 
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
@@ -88,7 +89,11 @@ const Nav = ({searching,setSearching}) => {
       api.get("/api/profiles/", {
         headers: { Authorization: `Bearer ${token}` }
       })
-      .then((res) => setIsPremium(res.data?.profile?.is_premium || false))
+      .then((res) =>{
+        setIsPremium(res.data?.profile?.is_premium || false);
+        setIsAdmin(res.data?.profile?.is_admin || false);
+        
+      } )
       .catch((err) => console.error("Error fetching is_premium:", err));
     }
   }, []);
@@ -236,6 +241,19 @@ const Nav = ({searching,setSearching}) => {
   />
    {isPremium ? "You are now Premium" : "Try Premium"}
 </Link>
+          {isAdmin && (
+            <Link
+              to="/adminhome"
+              className="flex flex-col items-center gap-1 text-[#915907] hover:underline font-medium text-sm ml-2"
+            >
+              <img
+                src="\logos\images.png"
+                alt="Admin Icon"
+                className="w-5 h-5"
+              />
+              Admin Home
+            </Link>
+          )}
 
         </div>
       </div>

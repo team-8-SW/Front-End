@@ -3,7 +3,7 @@ import { searchPosts } from "../../../services/api";
 import PostDetails from "./PostDetails";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
-const PostsSearch = ({ token, searching, setSearching, setGlobalPosts }) => {
+const PostsSearch = ({ searching, setSearching, setGlobalPosts }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -11,23 +11,25 @@ const PostsSearch = ({ token, searching, setSearching, setGlobalPosts }) => {
   const [searched, setSearched] = useState(false);
 
   const handleSearch = async (e) => {
-    e.preventDefault(); // Prevent form submission page reload
+    e.preventDefault(); // Prevent page reload
+  
     if (!searchQuery.trim()) {
-      setSearching(false); // Trigger Posts to show all posts again
-      setPosts([]);
+      setSearching(false);
       setSearched(false);
+      setPosts([]);
+      setGlobalPosts([]); // Optionally reset global posts
       return;
     }
-
+  
     setLoading(true);
     setSearching(true);
     setError("");
     setSearched(true);
-    setGlobalPosts([]); // Clear global posts to hide them immediately
-
+    setGlobalPosts([]); // Clear global posts
+  
     try {
-      const params = { keyword: searchQuery };
-      const response = await searchPosts(params, token);
+      const params = { query: searchQuery.trim() };
+      const response = await searchPosts(params);
       setPosts(response || []);
     } catch (error) {
       console.error("Error fetching search results:", error);
@@ -37,7 +39,7 @@ const PostsSearch = ({ token, searching, setSearching, setGlobalPosts }) => {
       setLoading(false);
     }
   };
-
+  
   return (
     <div className="relative w-full max-w-md">
       <form onSubmit={handleSearch} className="relative">

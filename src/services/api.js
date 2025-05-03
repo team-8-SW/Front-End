@@ -688,7 +688,7 @@ export const getSavedPosts=async(token) => {
     }
 };
 
-export const searchPosts = async (params, token) => {
+export const searchPosts = async (params) => {
   try{
     const response = await api.get('/api/posts/search', {
       params,

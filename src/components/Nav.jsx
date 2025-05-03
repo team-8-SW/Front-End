@@ -14,7 +14,7 @@ import socket from "../services/socket";
 import { api } from "../services/profile";
 import { fetchPendingConnections } from "../services/api";
 
-const Nav = ({searching,setSearching}) => {
+const Nav = ({setSearching}) => {
   const location = useLocation();
   const hiddenPaths = [
     "/login", "/signup", "/detailedjobs", "/detailedjobs/:jobId", 
@@ -114,10 +114,7 @@ const Nav = ({searching,setSearching}) => {
           </Link>
           {isHomePage ? (
             <PostsSearch
-              token={token}
-              searching={searching}
               setSearching={setSearching}
-              setGlobalPosts={(posts) => {}} // You’ll set this from Home.js
             />
           ) : (
             <UserSearch token={token} />

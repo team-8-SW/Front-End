@@ -3,9 +3,10 @@ import React, { useEffect, useState } from "react";
 import PostDetails from "./PostDetails";
 import { fetchPosts } from "../../../services/api";
 import { fetchMyPosts } from "../../../services/api"; // Adjust the import path as necessary
+import { usePosts } from "./PostsContext";
 
-const Posts = ({ loggedUser, searching, setSearching, globalPosts, setGlobalPosts }) => {
-  const [posts, setPosts] = useState([]);
+const Posts = ({ loggedUser, searching }) => {
+  const {posts, setPosts} = usePosts();
   const token = localStorage.getItem("token");
 
   useEffect(() => {
@@ -13,7 +14,6 @@ const Posts = ({ loggedUser, searching, setSearching, globalPosts, setGlobalPost
       try {
         const allPosts = await fetchPosts(token);
         setPosts(allPosts);
-        setGlobalPosts(allPosts); // Sync global posts for search fallback
       } catch (error) {
         console.error("Error fetching posts:", error);
       }
@@ -22,16 +22,17 @@ const Posts = ({ loggedUser, searching, setSearching, globalPosts, setGlobalPost
     if (!searching) {
       fetchAllPosts();
     }
-  }, [token, searching]);
+  }, [token, searching,setPosts]);
 
   const handleRemovePost = (postId) => {
     setPosts((prev) => prev.filter((p) => p.id !== postId));
-    setGlobalPosts((prev) => prev.filter((p) => p.id !== postId));
   };
 
   return (
     <div>
-      {!searching &&
+      {console.log("Posts:", posts)}
+      {posts.length === 0 && <p>No posts available</p>}
+      {posts.length > 0 &&
         posts.map((post) => (
           <div key={post.id}>
             <PostDetails post={post} loggedUser={loggedUser} onRemovePost={handleRemovePost} />

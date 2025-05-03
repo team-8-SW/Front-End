@@ -6,8 +6,8 @@ import Posts from "./Posts/Posts";
 import Nav from "../../components/Nav";
 import MyCompanies from "./MyCompanies";
 
-const Home = ({ loggedUser, searching, setSearching }) => {
-  const [globalPosts, setGlobalPosts] = useState([]);
+const Home = ({ loggedUser, searching }) => {
+  
 
   return (
     <div>
@@ -22,9 +22,6 @@ const Home = ({ loggedUser, searching, setSearching }) => {
             <Posts
               loggedUser={loggedUser}
               searching={searching}
-              setSearching={setSearching}
-              globalPosts={globalPosts}
-              setGlobalPosts={setGlobalPosts}
             />
           </div>
         </div>

@@ -2,10 +2,11 @@ import React, { useState } from "react";
 import { searchPosts } from "../../../services/api";
 import PostDetails from "./PostDetails";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { usePosts } from "./PostsContext";
 
-const PostsSearch = ({ searching, setSearching, setGlobalPosts }) => {
+const PostsSearch = ({ setSearching }) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [posts, setPosts] = useState([]);
+  const {posts, setPosts} = usePosts();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [searched, setSearched] = useState(false);
@@ -16,8 +17,8 @@ const PostsSearch = ({ searching, setSearching, setGlobalPosts }) => {
     if (!searchQuery.trim()) {
       setSearching(false);
       setSearched(false);
-      setPosts([]);
-      setGlobalPosts([]); // Optionally reset global posts
+      setPosts([]); // Clear posts if search query is empty
+      setError("Please enter a search term.");
       return;
     }
   
@@ -25,11 +26,12 @@ const PostsSearch = ({ searching, setSearching, setGlobalPosts }) => {
     setSearching(true);
     setError("");
     setSearched(true);
-    setGlobalPosts([]); // Clear global posts
+    setPosts([]); // Clear previous posts before fetching new ones
   
     try {
       const params = { query: searchQuery.trim() };
       const response = await searchPosts(params);
+      console.log("Search response:", response); // Log the response for debugging
       setPosts(response || []);
     } catch (error) {
       console.error("Error fetching search results:", error);
@@ -37,6 +39,8 @@ const PostsSearch = ({ searching, setSearching, setGlobalPosts }) => {
       setPosts([]);
     } finally {
       setLoading(false);
+      setSearching(false);
+      setSearched(true); // Set searched to true after fetching
     }
   };
   
@@ -73,21 +77,6 @@ const PostsSearch = ({ searching, setSearching, setGlobalPosts }) => {
         <div className="text-center mt-4">
           <p className="text-gray-500 text-lg font-semibold">No posts found.</p>
           <p className="text-gray-400 text-sm">Try searching for something else.</p>
-        </div>
-      )}
-
-      {posts.length > 0 && (
-        <div className="space-y-4 mt-4">
-          {posts.map((post) => (
-            <PostDetails
-              key={post.id}
-              post={post}
-              loggedUser={token}
-              onRemovePost={(id) =>
-                setPosts((prevPosts) => prevPosts.filter((p) => p.id !== id))
-              }
-            />
-          ))}
         </div>
       )}
     </div>

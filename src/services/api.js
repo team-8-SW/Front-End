@@ -692,7 +692,6 @@ export const searchPosts = async (params) => {
   try{
     const response = await api.get('/api/posts/search', {
       params,
-      
     });
     console.log("Search response:", response.data); // Debugging line
     return response.data;

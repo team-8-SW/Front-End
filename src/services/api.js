@@ -698,7 +698,7 @@ export const searchPosts = async (params) => {
   }
   catch (error) {
     console.error("Error searching posts:", error);
-    return error
+    return error;
   }
 };
 

@@ -17,8 +17,6 @@ const PostsSearch = ({ setSearching }) => {
     if (!searchQuery.trim()) {
       setSearching(false);
       setSearched(false);
-      setPosts([]); // Clear posts if search query is empty
-      setError("Please enter a search term.");
       return;
     }
   
@@ -29,7 +27,7 @@ const PostsSearch = ({ setSearching }) => {
     setPosts([]); // Clear previous posts before fetching new ones
   
     try {
-      const params = { query: searchQuery.trim() };
+      const params = { keyword: searchQuery.trim() };
       const response = await searchPosts(params);
       console.log("Search response:", response); // Log the response for debugging
       setPosts(response || []);
@@ -39,7 +37,6 @@ const PostsSearch = ({ setSearching }) => {
       setPosts([]);
     } finally {
       setLoading(false);
-      setSearching(false);
       setSearched(true); // Set searched to true after fetching
     }
   };
@@ -56,7 +53,6 @@ const PostsSearch = ({ setSearching }) => {
             if (e.target.value === "") {
               setSearching(false); // If search input is cleared, fetch all posts
               setSearched(false);
-              setPosts([]);
             }
           }}
           className="w-full border border-gray-300 rounded-full px-4 py-2 pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"

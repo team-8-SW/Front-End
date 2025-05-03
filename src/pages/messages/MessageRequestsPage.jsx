@@ -18,23 +18,9 @@ const MessageRequests = () => {
   useEffect(() => {
     console.log('Initializing MessageRequests component');
     
-    // First try HTTP request as fallback
-    const fetchRequestsHTTP = async () => {
-      try {
-        const response = await axios.get('/api/messages/requests', {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-        });
-        setRequests(response.data);
-        setLoading(false);
-      } catch (err) {
-        console.error('HTTP request failed:', err);
-        setError('Failed to load requests. Please try again.');
-        setLoading(false);
-      }
-    };
 
     // Initialize socket connection
-    const socket = io('http://localhost:5000', {
+    const socket = io(import.meta.env.VITE_SOCKET_URL, {
       auth: { token: localStorage.getItem("token") },
     });
     socketRef.current = socket;
@@ -61,6 +47,18 @@ const MessageRequests = () => {
 
     socket.on('message_requests', handleMessageRequests);
     socket.on('receive_message_request', handleNewRequest);
+    socket.on('message_request_accepted', (acceptedData) => {
+    console.log("Accepted request data:", acceptedData);
+    socket.on('decline_success', (data) => {
+        console.log('Decline successful:', data.message);
+      });
+      
+    
+     
+      setRequests(prev => prev.filter(req => req._id !== acceptedData.requestId && req.id !== acceptedData.requestId));
+    
+      // Optionally trigger refresh of main conversation list (e.g., via event, state, or context)
+    });
     socket.on('connect_error', (err) => {
       console.error('Socket error:', err);
       fetchRequestsHTTP(); // Fallback to HTTP
@@ -76,35 +74,68 @@ const MessageRequests = () => {
     };
   }, []);
 
-  const handleAccept = async (requestId) => {
-    setProcessingRequest(requestId);
-    try {
-      await socketRef.current.emit('accept_message_request', { requestId });
-      setRequests(prev => prev.filter(req => req._id !== requestId && req.id !== requestId));
-    } catch (err) {
-      setError('Failed to accept request');
-      console.error(err);
-    } finally {
-      setProcessingRequest(null);
+  const handleAccept = (requestId) => {
+    const selectedRequest = requests.find(req => req.id === requestId);
+    if (!selectedRequest) {
+      setError("Request not found");
+      return;
     }
-  };
-
-  const handleReject = async (requestId) => {
-    setProcessingRequest(requestId);
-    try {
-      await axios.post(
-        `/api/messages/reject/${requestId}`,
-        {},
-        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
-      );
-      setRequests(prev => prev.filter(req => req._id !== requestId && req.id !== requestId));
-    } catch (err) {
-      setError('Failed to reject request');
-      console.error(err);
-    } finally {
-      setProcessingRequest(null);
+  
+    const currentUser = JSON.parse(localStorage.getItem("user"));
+    const currentUserId = currentUser?._id || currentUser?.id;
+  
+    const otherUser = selectedRequest.participants?.find(p => p.id !== currentUserId);
+    const senderId = otherUser?.id;
+  
+    if (!senderId) {
+      setError("Sender ID not found");
+      return;
     }
+  
+    setProcessingRequest(requestId);
+  
+    socketRef.current.emit('accept_message_request', { senderId }, (response) => {
+      if (response?.success) {
+        setRequests(prev => prev.filter(req => req.id !== requestId));
+      } else {
+        setError('Failed to accept request');
+        console.error(response?.error);
+      }
+      setProcessingRequest(null);
+    });
   };
+  
+  const handleReject = (requestId) => {
+    const selectedRequest = requests.find(req => req.id === requestId);
+    if (!selectedRequest) {
+      setError("Request not found");
+      return;
+    }
+  
+    const currentUser = JSON.parse(localStorage.getItem("user"));
+    const currentUserId = currentUser?._id || currentUser?.id;
+  
+    const otherUser = selectedRequest.participants?.find(p => p.id !== currentUserId);
+    const senderId = otherUser?.id;
+  
+    if (!senderId) {
+      setError("Sender ID not found");
+      return;
+    }
+  
+    setProcessingRequest(requestId);
+  
+    socketRef.current.emit('decline_request', { senderId }, (response) => {
+      if (response?.success) {
+        setRequests(prev => prev.filter(req => req.id !== requestId));
+      } else {
+        setError('Failed to decline request');
+        console.error(response?.error);
+      }
+      setProcessingRequest(null);
+    });
+  };
+  
 
   const handleBack = () => navigate(-1);
 
@@ -159,59 +190,61 @@ const MessageRequests = () => {
               </div>
             ) : (
               <ul className="space-y-4">
-                {requests.map((request) => {
-                  // Normalize sender data
-                  const sender = request.sender || {};
-                  const senderName = sender.name || 'Unknown User';
-                  const senderInitial = senderName.charAt(0).toUpperCase();
-                  const senderEmail = sender.email || '';
-                  const messageContent = request.content || 'No message content';
+               {requests.map((request) => {
+               const currentUser = JSON.parse(localStorage.getItem("user"));
+              const currentUserId = currentUser?._id || currentUser?.id;
 
-                  return (
-                    <li key={request._id || request.id} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
-                      <div className="flex justify-between items-start">
-                        <div className="flex items-start space-x-4">
-                          <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
-                            {sender.avatar ? (
-                              <img src={sender.avatar} alt={senderName} className="w-full h-full rounded-full object-cover" />
-                            ) : (
-                              <span className="text-lg font-medium text-gray-600">{senderInitial}</span>
-                            )}
-                          </div>
-                          <div>
-                            <p className="font-medium">{senderName}</p>
-                            {senderEmail && <p className="text-sm text-gray-500">{senderEmail}</p>}
-                            <p className="mt-2 text-gray-700">"{messageContent}"</p>
-                          </div>
-                        </div>
-                        <div className="flex space-x-2">
-                          <button
-                            onClick={() => handleAccept(request._id || request.id)}
-                            disabled={processingRequest === (request._id || request.id)}
-                            className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                              processingRequest === (request._id || request.id)
-                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                : 'bg-green-600 text-white hover:bg-green-700'
-                            }`}
-                          >
-                            {processingRequest === (request._id || request.id) ? 'Processing...' : 'Accept'}
-                          </button>
-                          <button
-                            onClick={() => handleReject(request._id || request.id)}
-                            disabled={processingRequest === (request._id || request.id)}
-                            className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                              processingRequest === (request._id || request.id)
-                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
-                            }`}
-                          >
-                            {processingRequest === (request._id || request.id) ? 'Processing...' : 'Reject'}
-                          </button>
-                        </div>
-                      </div>
-                    </li>
-                  );
-                })}
+              // Find the other participant
+             const otherUser = request.participants?.find(p => p.id !== currentUserId);
+
+             const senderName = `${otherUser?.firstName || ''} ${otherUser?.lastName || ''}`.trim() || 'Unknown User';
+              const senderInitial = senderName.charAt(0).toUpperCase();
+              const senderUsername = otherUser?.userName || '';
+              const messageContent = request.lastMessage || 'No message content';
+              const requestId = request.id; // The unique request ID
+
+   return (
+    <li key={requestId} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
+      <div className="flex justify-between items-start">
+        <div className="flex items-start space-x-4">
+          <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
+            <span className="text-lg font-medium text-gray-600">{senderInitial}</span>
+          </div>
+          <div>
+            <p className="font-medium">{senderName}</p>
+            {senderUsername && <p className="text-sm text-gray-500">@{senderUsername}</p>}
+            <p className="mt-2 text-gray-700">"{messageContent}"</p>
+          </div>
+        </div>
+        <div className="flex space-x-2">
+          <button
+            onClick={() => handleAccept(requestId)}
+            disabled={processingRequest === requestId}
+            className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+              processingRequest === requestId
+                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                : 'bg-green-600 text-white hover:bg-green-700'
+            }`}
+          >
+          {processingRequest === requestId ? 'Processing...' : 'Accept'} 
+          </button>
+          <button
+            onClick={() => handleReject(requestId)}
+            disabled={processingRequest === requestId}
+            className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+              processingRequest === requestId
+                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+            }`}
+          >
+            {processingRequest === requestId ? 'Processing...' : 'Reject'}
+          </button>
+        </div>
+      </div>
+    </li>
+  );
+})}
+
               </ul>
             )}
           </div>

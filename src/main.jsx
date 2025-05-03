@@ -5,13 +5,16 @@ import App from './App.jsx'
 import { ThemeProvider } from "@material-tailwind/react";
 import { GoogleOAuthProvider } from '@react-oauth/google'; 
 import { BrowserRouter } from "react-router-dom";
+import { PostsProvider } from './pages/home/Posts/PostsContext.jsx';
 
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
   <ThemeProvider>
     <GoogleOAuthProvider clientId="93470150540-lbg03r6jfctm48l3nn6p5flmhniru635.apps.googleusercontent.com">
-      <App />
-      </GoogleOAuthProvider>
-    </ThemeProvider>
+      <PostsProvider>
+        <App />
+      </PostsProvider>
+    </GoogleOAuthProvider>
+  </ThemeProvider>
 </BrowserRouter>
 )

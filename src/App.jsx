@@ -95,7 +95,7 @@ function App() {
   return (
     <div className="bg-backGroundColor min-h-screen">
       {!isPublic && (
-  <Nav searching={searching} setSearching={setSearching} />
+  <Nav setSearching={setSearching} />
 )}
 
       <StripeProvider>
@@ -109,7 +109,7 @@ function App() {
         <Route path="/VerifyEmail" element={<VerifyEmail />} />
 
         {/* Protected Routes */}
-        <Route path="/" element={<ProtectedRoute><Home loggedUser={loggedUser} searching={searching} setSearching={setSearching} /></ProtectedRoute>} />
+        <Route path="/" element={<ProtectedRoute><Home loggedUser={loggedUser} searching={searching}/></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><Profile loggedUser={loggedUser} /></ProtectedRoute>} />
         <Route path="/view/:id" element={<ProtectedRoute><View loggedUser={loggedUser} /></ProtectedRoute>} />
         <Route path="/education" element={<ProtectedRoute><DetailsEducation loggedUser={loggedUser} /></ProtectedRoute>} />
@@ -139,8 +139,6 @@ function App() {
         <Route path="/EmailManagement" element={
           <ProtectedRoute>
             <EmailManagement
-              email={loggedUser?.profile?.email}
-              userId={loggedUser?.id}
             />
           </ProtectedRoute>
         } />

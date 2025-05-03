@@ -226,17 +226,24 @@ export const handleLoadMoreComments = (setVisibleComments) => {
   setVisibleComments((prev) => prev + 2);
 };
 
-export const updateEmail = async (newEmail, userId) => {
+export const updateEmail = async (newEmail, token) => {
   try {
-    const response = await api.put(`/api/auth/${userId}/email`, {
-      email: newEmail,
-    });
+    const response = await api.patch(
+      `/api/auth/updateemail`,
+      { email: newEmail },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     return response.data;
   } catch (error) {
     console.error("Error updating email:", error.response || error.message);
     throw error;
   }
 };
+
 
 export const fetchNotifications = async (token) => {
   try {
@@ -681,18 +688,17 @@ export const getSavedPosts=async(token) => {
     }
 };
 
-export const searchPosts = async (params, token) => {
+export const searchPosts = async (params) => {
   try{
     const response = await api.get('/api/posts/search', {
       params,
-      
     });
-    console.log("Search response:", response.data); // Debugging line
-    return response.data;
+    console.log("Search response:", response.data.posts); // Debugging line
+    return response.data.posts;
   }
   catch (error) {
     console.error("Error searching posts:", error);
-    return error
+    return error;
   }
 };
 

@@ -35,7 +35,7 @@ const MessagesPage = () => {
       
       // Initialize socket connection only if not on requests page
       if (!isRequestsPage) {
-        const socket = io('http://localhost:5000', {
+        const socket = io(import.meta.env.VITE_SOCKET_URL, {
           auth: { token: localStorage.getItem("token") },
         });
         socketRef.current = socket;

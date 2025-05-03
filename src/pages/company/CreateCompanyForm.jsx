@@ -53,7 +53,7 @@ const CreateCompanyForm = ({ setCompanyData }) => {
         }
       });
 
-      alert("Company created successfully!");
+     
       companyid = res.data.company.id;
       localStorage.setItem("companyData", JSON.stringify(res.data));
       if (setCompanyData) setCompanyData(res.data);

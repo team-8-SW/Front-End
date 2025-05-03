@@ -31,8 +31,8 @@ const PostModal = ({ isOpen, toggleModal, loggedUser }) => {
         {
           content: postContent,
           visibility: visibility,
-          media_url: media, // Base64-encoded media
-          media_type: mediaType, // Media type (e.g., image/jpeg)
+          //media_url: media, // Base64-encoded media
+          //media_type: mediaType, // Media type (e.g., image/jpeg)
         },
         {
           headers: {
@@ -53,8 +53,8 @@ const PostModal = ({ isOpen, toggleModal, loggedUser }) => {
           await tagUser(token, userId, post_id);
         }
       }
-      if (file) {
-        const res = await addMedia(file, token, post_id);
+      if (file || media) {
+        const res = await addMedia(file || media, token, post_id);
         console.log("Media added:", res);
       }
 

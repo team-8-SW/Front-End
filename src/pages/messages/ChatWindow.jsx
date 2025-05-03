@@ -184,76 +184,144 @@ const ChatWindow = ({ conversation, currentUserId }) => {
     setMessageContent('');
     setTimeout(scrollToBottom, 100);
   };
-
+  
   const handleSendMedia = async (file) => {
     if (!file || !conversation) return;
-    
-    setIsUploading(true);
-    
-    try {
-      const otherUser = conversation.participants.find((p) => p.id !== currentUserId);
-      if (!otherUser) return;
 
-      // Create a temporary message while uploading
-      const tempMessage = {
-        id: `temp-${Date.now()}`,
+    const otherUser = conversation.participants.find((p) => p.id !== currentUserId);
+    if (!otherUser) return;
+
+    // Generate a unique tempId for the temporary message
+    const tempId = `temp-${Date.now()}`;
+
+    // Create a temporary message while uploading
+    const tempMessage = {
+        tempId, // Temporary identifier
         senderId: currentUserId,
         receiverId: otherUser.id,
         content: '',
         timestamp: new Date().toISOString(),
         isSender: true,
         status: 'sending',
-        mediaUrl: URL.createObjectURL(file),
+        mediaUrl: URL.createObjectURL(file), // Temporary preview URL
         mediaType: file.type.startsWith('image') ? 'image' : 
-                  file.type.startsWith('video') ? 'video' : 'file'
-      };
+                   file.type.startsWith('video') ? 'video' : 'file',
+    };
 
-      setMessages(prev => [...prev, tempMessage]);
-      setTimeout(scrollToBottom, 100);
+    setMessages((prev) => [...prev, tempMessage]);
+    setTimeout(scrollToBottom, 100);
 
-      // Prepare the WebSocket message
-      const message = {
-        senderId: currentUserId,
-        receiverId: otherUser.id,
-        file: file
-      };
+    // Convert the file to Base64
+    const reader = new FileReader();
+    reader.onload = () => {
+        const fileBase64 = reader.result.split(',')[1]; // Extract Base64 string
 
-      // Emit the media message
-      socket.emit('send_media', message, (response) => {
-        if (response.error) {
-          setMessages(prev => prev.map(msg => 
-            msg.id === tempMessage.id ? 
-            { ...msg, status: 'error', content: 'Failed to send media' } : 
-            msg
-          ));
-          return;
-        }
+        // Emit the media message with tempId
+        socket.emit(
+            'send_media',
+            { receiverId: otherUser.id, file: fileBase64, tempId,  mimetype: file.type,  },
+            (response) => {
+                if (response.error) {
+                    console.error('Failed to send media message:', response.error);
+                    setMessages((prev) =>
+                        prev.map((msg) =>
+                            msg.tempId === tempId
+                                ? { ...msg, status: 'error', content: 'Failed to send media' }
+                                : msg
+                        )
+                    );
+                    return;
+                }
 
-        // Update the temporary message with the server response
-        setMessages(prev => prev.map(msg => 
-          msg.id === tempMessage.id ? 
-          {
-            ...msg,
-            id: response.id,
-            mediaUrl: response.media.url,
-            mediaType: response.media.type,
-            status: 'sent',
-            timestamp: response.timestamp
-          } : 
-          msg
-        ));
-      });
-    } catch (error) {
-      console.error('Error sending media:', error);
-      setMessages(prev => prev.map(msg => 
-        msg.id === tempMessage.id ? 
-        { ...msg, status: 'error', content: 'Failed to send media' } : 
-        msg
-      ));
-    } finally {
-      setIsUploading(false);
-    }
-  };
+                // Update the temporary message with the actual message details
+                setMessages((prev) =>
+                    prev.map((msg) =>
+                        msg.tempId === tempId
+                            ? {
+                                  ...msg,
+                                  id: response.id, // Replace tempId with actual ID
+                                  mediaUrl: response.media_url,
+                                  mediaType: response.media_type,
+                                  status: 'sent',
+                                  timestamp: response.timestamp,
+                              }
+                            : msg
+                    )
+                );
+            }
+        );
+    };
+    reader.readAsDataURL(file);
+};
+  // const handleSendMedia = async (file) => {
+  //   if (!file || !conversation) return;
+    
+  //   setIsUploading(true);
+    
+  //   try {
+  //     const otherUser = conversation.participants.find((p) => p.id !== currentUserId);
+  //     if (!otherUser) return;
+
+  //     // Create a temporary message while uploading
+  //     const tempMessage = {
+  //       id: `temp-${Date.now()}`,
+  //       //senderId: currentUserId,
+  //       receiverId: otherUser.id,
+  //       content: '',
+  //       timestamp: new Date().toISOString(),
+  //       isSender: true,
+  //       status: 'sending',
+  //       mediaUrl: URL.createObjectURL(file),
+  //       mediaType: file.type.startsWith('image') ? 'image' : 
+  //                 file.type.startsWith('video') ? 'video' : 'file'
+  //     };
+
+  //     setMessages(prev => [...prev, tempMessage]);
+  //     setTimeout(scrollToBottom, 100);
+
+  //     // Prepare the WebSocket message
+  //     const message = {
+  //       //senderId: currentUserId,
+  //       receiverId: otherUser.id,
+  //       file: file
+  //     };
+
+  //     // Emit the media message
+  //     socket.emit('send_media', message, (response) => {
+  //       if (response.error) {
+  //         setMessages(prev => prev.map(msg => 
+  //           msg.receiver_id === tempMessage.receiverId ? 
+  //           { ...msg, status: 'error', content: 'Failed to send media' } : 
+  //           msg
+  //         ));
+  //         return;
+  //       }
+
+  //       // Update the temporary message with the server response
+  //       setMessages(prev => prev.map(msg => 
+  //         msg.id === tempMessage.id ? 
+  //         {
+  //           ...msg,
+  //           id: response.id,
+  //           mediaUrl: response.media.url,
+  //           mediaType: response.media.type,
+  //           status: 'sent',
+  //           timestamp: response.timestamp
+  //         } : 
+  //         msg
+  //       ));
+  //     });
+  //   } catch (error) {
+  //     console.error('Error sending media:', error);
+  //     setMessages(prev => prev.map(msg => 
+  //       msg.id === tempMessage.id ? 
+  //       { ...msg, status: 'error', content: 'Failed to send media' } : 
+  //       msg
+  //     ));
+  //   } finally {
+  //     setIsUploading(false);
+  //   }
+  // };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];

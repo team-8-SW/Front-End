@@ -16,11 +16,7 @@ const ConversationList = ({ currentUserId, onSelect, onNewMessage }) => {
     const event = markAsRead ? 'mark_as_read' : 'mark_as_unread';
     socket.emit(event, { otherUserId: otherUser.id });
 
-    setConversations(prev =>
-      prev.map(conv =>
-        conv.id === conversation.id ? { ...conv, unreadCount: markAsRead ? 0 : 1 } : conv
-      )
-    );
+    console.log('get_unseen_count emitted');
     socket.emit('get_unseen_count');
   };
 
@@ -43,6 +39,7 @@ const ConversationList = ({ currentUserId, onSelect, onNewMessage }) => {
       const processedConversations = Array.isArray(data)
         ? data.map(conv => ({
             ...conv,
+            id: conv._id || conv.id, 
             participants: conv.participants.map(p => ({
               id: p.id,
               name: `${p.firstName} ${p.lastName}`,
@@ -58,8 +55,8 @@ const ConversationList = ({ currentUserId, onSelect, onNewMessage }) => {
     };
 
     const handleNewMessage = (message) => {
-      setConversations(prev => {
-        return prev.map(conv => {
+      setConversations(prev =>
+        prev.map(conv => {
           const isPartOfConversation = conv.participants.some(
             p => p.id === message.senderId || p.id === message.receiverId
           );
@@ -69,14 +66,14 @@ const ConversationList = ({ currentUserId, onSelect, onNewMessage }) => {
               ...conv,
               lastMessage: message.content,
               timestamp: message.timestamp,
-              unreadCount: message.senderId !== currentUserId 
-                ? (conv.unreadCount || 0) + 1 
-                : conv.unreadCount
             };
           }
+
           return conv;
-        });
-      });
+        })
+      );
+
+      socket.emit('get_unseen_count');
     };
 
     if (socket.connected) {
@@ -101,22 +98,41 @@ const ConversationList = ({ currentUserId, onSelect, onNewMessage }) => {
     };
   }, [currentUserId]);
 
+  // NEW: Get unseen counts from server and update per conversation
+  useEffect(() => {
+    if (!socket.connected) {
+      socket.connect();
+    }
+
+    const handleUnseenCount = (countMap) => {
+      setConversations(prev =>
+        prev.map(conv => {
+          const otherUser = conv.participants.find(p => p.id !== currentUserId);
+          if (!otherUser) return conv;
+
+          const count = countMap[otherUser.id] || 0;
+          console.log('Updating unreadCount for', otherUser.id, '->', countMap[otherUser.id]);
+          return { ...conv, unreadCount: count };
+        })
+      );
+    };
+
+    socket.on('unseen_count', handleUnseenCount);
+    socket.emit('get_unseen_count');
+
+    return () => {
+      socket.off('unseen_count', handleUnseenCount);
+    };
+  }, [currentUserId]);
+
   const handleSelectConversation = (conversation) => {
     const otherUser = conversation.participants.find(p => p.id !== currentUserId);
     if (!otherUser) return;
 
-    // Mark as read
     socket.emit('mark_as_read', { otherUserId: otherUser.id });
-
-    // Fetch conversation history
     socket.emit('get_conversation', { otherUserId: otherUser.id });
 
     const handleHistory = (history) => {
-      setConversations(prev =>
-        prev.map(conv =>
-          conv.id === conversation.id ? { ...conv, unreadCount: 0 } : conv
-        )
-      );
 
       if (onSelect) {
         onSelect({
@@ -125,11 +141,11 @@ const ConversationList = ({ currentUserId, onSelect, onNewMessage }) => {
           messages: Array.isArray(history) ? history : [],
         });
       }
+      socket.emit('get_unseen_count');
       socket.off('conversation_history', handleHistory);
     };
 
     socket.on('conversation_history', handleHistory);
-    socket.emit('get_unseen_count');
   };
 
   if (loading) {
@@ -243,18 +259,14 @@ const ConversationList = ({ currentUserId, onSelect, onNewMessage }) => {
                   <p className="font-medium truncate">
                     {otherUser.name || otherUser.userName || 'Unknown User'}
                   </p>
-                  <p className={`text-sm truncate ${
-                    hasUnread ? 'font-medium text-gray-900' : 'text-gray-500'
-                  }`}>
+                  <p className={`text-sm truncate ${hasUnread ? 'font-medium text-gray-900' : 'text-gray-500'}`}>
                     {conversation.lastMessage || 'No messages yet'}
                   </p>
                 </div>
               </div>
               <div className="ml-4 flex flex-col items-end">
-                <span className="text-xs text-gray-500 whitespace-nowrap">
-                  {lastMessageTime}
-                </span>
-                {conversation.unreadCount > 0 && (
+                <span className="text-xs text-gray-500 whitespace-nowrap">{lastMessageTime}</span>
+                {hasUnread && (
                   <div className="mt-1 flex items-center justify-center w-5 h-5 rounded-full bg-blue-500 text-white text-xs">
                     {conversation.unreadCount > 9 ? '9+' : conversation.unreadCount}
                   </div>

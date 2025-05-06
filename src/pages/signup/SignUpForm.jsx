@@ -58,7 +58,7 @@ const SignUpForm = () => {
       setEmailSent(true);
       setResendTimer(30);
     } catch (error) {
-      setMessage(error.response?.data?.message || "Failed to sign up. Please try again.");
+      setMessage( "Failed to sign up. Please try again using another email or username.");
       setMessageType("error");
       console.log(error.response?.data?.message || "Failed to sign up. Please try again.");
     }

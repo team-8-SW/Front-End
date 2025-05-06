@@ -743,3 +743,23 @@ export const getProfilePicture = async (userId,token) => {
     return "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3bHGb_Zk4zWeD4jw9ew8HboAT2zQIUZhYNA&s";
   }
 };
+
+export const updatePassword = async (currentPassword, newPassword, token) => {
+  try {
+    const response = await api.patch(
+      `/api/auth/update-password`,
+      {
+        currentPassword,
+        newPassword
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'An error occurred' };
+  }
+};

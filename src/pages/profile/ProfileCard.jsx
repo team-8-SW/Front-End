@@ -8,6 +8,8 @@ import ContactInfo from "./ContactInfo";
 import ProfilePhotoCard from "./ProfilePhotoCard";
 import CoverPhotoCard from "./CoverPhotoCard";
 import { api } from "../../services/profile";
+import { Link } from "react-router-dom";
+import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 
 const ProfileCard = ({ loggedUser }) => {
   const [open, setOpen] = useState(false);
@@ -142,6 +144,16 @@ const ProfileCard = ({ loggedUser }) => {
           <Input name="lastName" value={userData.lastName} onChange={handleChange} label="Last Name" required />
           <Input name="location" value={userData.location} onChange={handleChange} label="Location" required />
           <Input name="bio" value={userData.bio} onChange={handleChange} label="Bio" />
+          <div>
+          <Link
+          to="/UpdatePassword"
+          className="text-blue-600 flex items-center gap-1 hover:underline"
+         >
+          Update password
+          <ArrowTopRightOnSquareIcon className="w-4 h-4" />
+        </Link>
+        </div>
+
           <div className="flex justify-end mt-4">
             <Button color="red" onClick={() => setOpen(false)} className="mr-2">Cancel</Button>
             <Button type="submit" color="blue">Save</Button>

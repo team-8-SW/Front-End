@@ -51,6 +51,7 @@ import PaymentPage from "./pages/payment/PaymentPage";
 
 import AdminReportsPage from "./pages/adminreport/AdminReportsPage";
 import {api} from "./services/profile";
+import UpdatePassword from "./pages/UpdateEmail/UpdatePassword";
 
 function App() {
   const [loggedUser, setLoggedUser] = useState(null);
@@ -142,6 +143,7 @@ function App() {
             />
           </ProtectedRoute>
         } />
+        <Route path="/UpdatePassword" element={<ProtectedRoute><UpdatePassword/></ProtectedRoute>} />
         <Route path="/companyform" element={<ProtectedRoute><CreateCompanyForm loggedUser={loggedUser} /></ProtectedRoute>} />
         <Route path="/updatecompany/:companyid" element={<ProtectedRoute><EditCompanyForm /></ProtectedRoute>} />
         <Route path="/SearchResults" element={<ProtectedRoute><SearchResults /></ProtectedRoute>} />

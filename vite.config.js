@@ -3,7 +3,10 @@ import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react({
+    // This enables fast refresh
+    fastRefresh: true,
+  })],
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
@@ -17,7 +20,12 @@ export default defineConfig({
     },
   },
   server: {
+    open: true, 
     port: 8000,
+    watch: {
+      usePolling: true, // Helpful for some environments like WSL or network drives
+    },
+    hmr: true,
     host: true,
   },
   optimizeDeps: {

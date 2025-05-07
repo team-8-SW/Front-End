@@ -7,6 +7,7 @@ const ChatWindow = ({ conversation, currentUserId }) => {
   const [lastSeenMessageId, setLastSeenMessageId] = useState(null);
   const [isTyping, setIsTyping] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [paymentError, setPaymentError] = useState(false); // State to track payment restriction
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
 
@@ -62,6 +63,12 @@ const ChatWindow = ({ conversation, currentUserId }) => {
         }
         return { ...msg, status: 'sent' };
       });
+    };
+
+    const handlePaymentError = (error) => {
+      if (error.type === 'send_text') {
+        setPaymentError(true); // Set payment restriction state
+      }
     };
 
     const handleNewMessage = (message) => {
@@ -120,6 +127,7 @@ const ChatWindow = ({ conversation, currentUserId }) => {
     };
 
     socket.on('receive_message', handleNewMessage);
+    socket.on('payment_error', handlePaymentError); // Listen for payment restriction
     socket.on('read_status', handleReadStatus);
     socket.on('conversation_read', handleConversationRead);
     socket.on('typing', handleTyping);
@@ -130,6 +138,7 @@ const ChatWindow = ({ conversation, currentUserId }) => {
 
     return () => {
       socket.off('receive_message', handleNewMessage);
+      socket.off('payment_error', handlePaymentError);
       socket.off('read_status', handleReadStatus);
       socket.off('conversation_read', handleConversationRead);
       socket.off('typing', handleTyping);
@@ -154,6 +163,8 @@ const ChatWindow = ({ conversation, currentUserId }) => {
   };
 
   const handleSendMessage = () => {
+    if (paymentError) return; // Prevent sending messages if payment restriction is active
+
     const trimmed = messageContent.trim();
     if (trimmed.length < 1 || !conversation) return;
 
@@ -184,7 +195,7 @@ const ChatWindow = ({ conversation, currentUserId }) => {
     setMessageContent('');
     setTimeout(scrollToBottom, 100);
   };
-  
+
   const handleSendMedia = async (file) => {
     if (!file || !conversation) return;
 
@@ -253,75 +264,6 @@ const ChatWindow = ({ conversation, currentUserId }) => {
     };
     reader.readAsDataURL(file);
 };
-  // const handleSendMedia = async (file) => {
-  //   if (!file || !conversation) return;
-    
-  //   setIsUploading(true);
-    
-  //   try {
-  //     const otherUser = conversation.participants.find((p) => p.id !== currentUserId);
-  //     if (!otherUser) return;
-
-  //     // Create a temporary message while uploading
-  //     const tempMessage = {
-  //       id: `temp-${Date.now()}`,
-  //       //senderId: currentUserId,
-  //       receiverId: otherUser.id,
-  //       content: '',
-  //       timestamp: new Date().toISOString(),
-  //       isSender: true,
-  //       status: 'sending',
-  //       mediaUrl: URL.createObjectURL(file),
-  //       mediaType: file.type.startsWith('image') ? 'image' : 
-  //                 file.type.startsWith('video') ? 'video' : 'file'
-  //     };
-
-  //     setMessages(prev => [...prev, tempMessage]);
-  //     setTimeout(scrollToBottom, 100);
-
-  //     // Prepare the WebSocket message
-  //     const message = {
-  //       //senderId: currentUserId,
-  //       receiverId: otherUser.id,
-  //       file: file
-  //     };
-
-  //     // Emit the media message
-  //     socket.emit('send_media', message, (response) => {
-  //       if (response.error) {
-  //         setMessages(prev => prev.map(msg => 
-  //           msg.receiver_id === tempMessage.receiverId ? 
-  //           { ...msg, status: 'error', content: 'Failed to send media' } : 
-  //           msg
-  //         ));
-  //         return;
-  //       }
-
-  //       // Update the temporary message with the server response
-  //       setMessages(prev => prev.map(msg => 
-  //         msg.id === tempMessage.id ? 
-  //         {
-  //           ...msg,
-  //           id: response.id,
-  //           mediaUrl: response.media.url,
-  //           mediaType: response.media.type,
-  //           status: 'sent',
-  //           timestamp: response.timestamp
-  //         } : 
-  //         msg
-  //       ));
-  //     });
-  //   } catch (error) {
-  //     console.error('Error sending media:', error);
-  //     setMessages(prev => prev.map(msg => 
-  //       msg.id === tempMessage.id ? 
-  //       { ...msg, status: 'error', content: 'Failed to send media' } : 
-  //       msg
-  //     ));
-  //   } finally {
-  //     setIsUploading(false);
-  //   }
-  // };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -539,6 +481,17 @@ const ChatWindow = ({ conversation, currentUserId }) => {
         ))}
       </div>
 
+      {/* Payment Restriction Notice */}
+      {paymentError && (
+        <div className="p-4 bg-red-100 text-red-600 text-center">
+          You have reached your daily message limit. Upgrade to{' '}
+          <a href="/payment" className="text-blue-500 underline">
+            Premium
+          </a>{' '}
+          to send unlimited messages.
+        </div>
+      )}
+
       {/* Message input */}
       <div className="p-4 border-t bg-white flex items-center">
         {/* Hidden file input */}
@@ -561,6 +514,7 @@ const ChatWindow = ({ conversation, currentUserId }) => {
               handleTypingEvent();
             }}
             onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+            disabled={paymentError} // Disable input if payment restriction is active
           />
           <button className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -612,8 +566,10 @@ const ChatWindow = ({ conversation, currentUserId }) => {
           </button>
           <button
             onClick={handleSendMessage}
-            className="px-4 py-1.5 bg-blue-500 text-white rounded-full hover:bg-blue-600 text-sm font-medium"
-            disabled={!messageContent.trim()}
+            className={`px-4 py-1.5 rounded-full text-sm font-medium ${
+              paymentError ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'
+            }`}
+            disabled={paymentError || !messageContent.trim()} // Disable button if payment restriction is active
           >
             Send
           </button>
